@@ -53,16 +53,16 @@ public class SMWorldBorder extends StarMod {
 
                                     VarUtil.assignField(player, "timesWarned", 0);
                                     PlayerUtils.sendMessage(player, "Well. I warned you. Goodbye");
-                                    PlayerUtils.sendMessage(player, "Pretend you just heard a cool explosion, unfortunately the modloader is not on release builds yet so I cant play it for you.");
                                     ((SegmentController) currentControl).startCoreOverheating(null);
                                     AudioUtils.serverPlaySound("0022_explosion_two", 1F,1F, player);
                                     player.damage(100000, null, player);
                                 }else{
+                                    AudioUtils.clientPlaySound("0022_gameplay - low fuel warning constant beeps (loop)", 1F,1F);
                                     new StarRunnable(){
                                         @Override
                                         public void run() {
-                                            AudioUtils.serverPlaySound("0022_spaceship user - int. cockpit alarm 2 (loop)", 1F,1F, player);
-                                            if(ticksRan > 200){
+                                            AudioUtils.serverPlaySound("0022_gameplay - low fuel warning constant beeps (loop)", 1F,1F);
+                                            if(ticksRan > 170){
                                                 cancel();
                                             }
                                         }

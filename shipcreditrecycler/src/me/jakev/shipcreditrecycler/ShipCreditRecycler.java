@@ -25,6 +25,7 @@ public class ShipCreditRecycler extends StarMod {
         setModDescription("Allows users to get blueprints when not near a shop");
         setModAuthor("JakeV");
         setModSMVersion("0.202.101");
+        setServerSide(true);
     }
 
     @Override
