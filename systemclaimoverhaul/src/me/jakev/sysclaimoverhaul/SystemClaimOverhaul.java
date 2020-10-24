@@ -31,7 +31,7 @@ public class SystemClaimOverhaul extends StarMod {
     public void onGameStart() {
         setModName("SystemClaimOverhaul");
         setModVersion("0.1");
-        setModDescription("Allows users to get blueprints when not near a shop");
+        setModDescription("Bases system claim on reactor size between all stations.");
         setModAuthor("JakeV");
         setModSMVersion("0.202.101");
         setServerSide(true);
@@ -65,7 +65,9 @@ public class SystemClaimOverhaul extends StarMod {
                     long ms = System.currentTimeMillis();
                     sweep();
                     long time = System.currentTimeMillis() - ms;
-                    System.err.println("[SystemClaimOverhaul] Sweep time: " + time);
+                    if(ms > 2) {
+                        System.err.println("[SystemClaimOverhaul] Sweep time: " + time);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

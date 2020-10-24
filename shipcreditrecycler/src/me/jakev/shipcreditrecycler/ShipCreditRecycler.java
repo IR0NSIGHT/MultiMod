@@ -35,16 +35,18 @@ public class ShipCreditRecycler extends StarMod {
             public void onEvent(PlayerChatEvent event) {
                 String txt = event.getText();
                 PlayerState p = getPlayerFromName(event.getMessage().sender);
-                if(txt.toLowerCase().startsWith("!recycle")){
-                    PlayerControllable inside = PlayerUtils.getCurrentControl(p);
-                    if(inside instanceof SegmentController) {
-                        SegmentController root = ((SegmentController) inside).railController.getRoot();
-                        int creds = (int) (root.railController.calculateRailMassIncludingSelf() * 1000);
-                        root.setMarkedForDeletePermanentIncludingDocks(true);
-                        p.modCreditsServer(creds);
-                        PlayerUtils.sendMessage(p, "You have recieved: " + creds + " credits.");
-                    }else{
-                        PlayerUtils.sendMessage(p, "You are not in a ship.");
+                if(event.isServer()) {
+                    if (txt.toLowerCase().startsWith("!recycle")) {
+                        PlayerControllable inside = PlayerUtils.getCurrentControl(p);
+                        if (inside instanceof SegmentController) {
+                            SegmentController root = ((SegmentController) inside).railController.getRoot();
+                            int creds = (int) (root.railController.calculateRailMassIncludingSelf() * 1000);
+                            root.setMarkedForDeletePermanentIncludingDocks(true);
+                            p.modCreditsServer(creds);
+                            PlayerUtils.sendMessage(p, "You have recieved: " + creds + " credits.");
+                        } else {
+                            PlayerUtils.sendMessage(p, "You are not in a ship.");
+                        }
                     }
                 }
 

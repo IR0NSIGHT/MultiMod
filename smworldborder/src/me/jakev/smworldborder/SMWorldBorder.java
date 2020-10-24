@@ -28,7 +28,7 @@ public class SMWorldBorder extends StarMod {
     public void onGameStart() {
         setModName("SMWorldBorder");
         setModVersion("0.1");
-        setModDescription("Allows users to get blueprints when not near a shop");
+        setModDescription("Limits area of play");
         setModAuthor("JakeV");
         setModSMVersion("0.202.101");
         setServerSide(true);
@@ -62,7 +62,7 @@ public class SMWorldBorder extends StarMod {
                                         @Override
                                         public void run() {
                                             AudioUtils.serverPlaySound("0022_gameplay - low fuel warning constant beeps (loop)", 1F,1F);
-                                            if(ticksRan > 170){
+                                            if(ticksRan > 190){
                                                 cancel();
                                             }
                                         }
