@@ -1,7 +1,10 @@
 package me.jakev.alpharework;
 
+import api.common.GameClient;
 import api.common.GameServer;
 import api.listener.Listener;
+import api.listener.events.draw.CubeTexturePostLoadEvent;
+import api.listener.events.player.PlayerAcquireTargetEvent;
 import api.listener.events.register.RegisterAddonsEvent;
 import api.listener.events.systems.ShieldHitEvent;
 import api.mod.StarLoader;
@@ -10,8 +13,13 @@ import api.mod.config.FileConfiguration;
 import api.utils.game.SegmentControllerUtils;
 import api.utils.registry.UniversalRegistry;
 import api.utils.sound.AudioUtils;
+import api.utils.textures.StarLoaderTexture;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
+import org.schema.schine.graphicsengine.forms.Sprite;
+
+import javax.imageio.ImageIO;
+import java.io.IOException;
 
 public class AlphaRework extends StarMod {
     public static void main(String[] args) {
@@ -24,7 +32,7 @@ public class AlphaRework extends StarMod {
     @Override
     public void onGameStart() {
         setModName("AlphaRework");
-        setModVersion("0.1");
+        setModVersion("0.2");
         setModDescription("Reworks High/Low damage chambers.");
         setModAuthor("JakeV");
         setModSMVersion("0.202.104");
@@ -34,11 +42,26 @@ public class AlphaRework extends StarMod {
     @Override
     public void onPreEnableServer() {
         UniversalRegistry.registerURV(UniversalRegistry.RegistryType.PLAYER_USABLE_ID, this, ShieldHardenAddOn.UID_NAME);
+        UniversalRegistry.registerURV(UniversalRegistry.RegistryType.PLAYER_USABLE_ID, this, AlphaDriverAddOn.UID_NAME);
     }
+
+    public static Sprite betterCrossHair;
 
     @Override
     public void onEnable() {
         alphaRework = this;
+        StarLoader.registerListener(CubeTexturePostLoadEvent.class, new Listener<CubeTexturePostLoadEvent>() {
+            @Override
+            public void onEvent(CubeTexturePostLoadEvent event) {
+                try {
+                    betterCrossHair = StarLoaderTexture.newSprite(ImageIO.read(AlphaRework.class.getResourceAsStream("sprites/crosshair.png")), alphaRework, "mycrosshair");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, this);
+
+
         super.onEnable();
         config = getConfig("config");
 
@@ -46,6 +69,7 @@ public class AlphaRework extends StarMod {
             @Override
             public void onEvent(RegisterAddonsEvent event) {
                 event.addModule(new ShieldHardenAddOn(event.getContainer(), alphaRework));
+                event.addModule(new AlphaDriverAddOn(event.getContainer(), alphaRework));
             }
         }, alphaRework);
         StarLoader.registerListener(ShieldHitEvent.class, new Listener<ShieldHitEvent>() {
@@ -70,6 +94,16 @@ public class AlphaRework extends StarMod {
                 }
             }
         }, alphaRework);
+
+        StarLoader.registerListener(PlayerAcquireTargetEvent.class, new Listener<PlayerAcquireTargetEvent>() {
+            @Override
+            public void onEvent(PlayerAcquireTargetEvent event) {
+                if(GameClient.getClientState() != null){
+                    AudioUtils.clientPlaySound("0022_spaceship user - locked on target successful beep", 1F, 1F);
+                }
+            }
+        }, this);
+
     }
 
     @Override
