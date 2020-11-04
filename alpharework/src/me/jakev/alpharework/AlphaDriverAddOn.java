@@ -1,6 +1,5 @@
 package me.jakev.alpharework;
 
-import api.ModPlayground;
 import api.common.GameClient;
 import api.listener.events.systems.ReactorRecalibrateEvent;
 import api.utils.addon.SimpleAddOn;
@@ -35,13 +34,18 @@ public class AlphaDriverAddOn extends SimpleAddOn {
     public AlphaDriverAddOn(ManagerContainer<?> var1, AlphaRework mod) {
         super(var1, ElementKeyMap.EFFECT_OVERDRIVE_COMPUTER, mod, UID_NAME);
         alphaDir1 = AlphaRework.config.getConfigurableInt("overdrive_duration_1", 3);
-        alphaDir2 = AlphaRework.config.getConfigurableInt("overdrive_duration_2", 12);
-        removedPerSecond = 0.2F;
+        alphaDir2 = AlphaRework.config.getConfigurableInt("overdrive_duration_2", 6);
+        removedPerSecond = AlphaRework.config.getConfigurableFloat("driver_speed", 0.11F);
         onReactorRecalibrate(null);
         origConfigColor.set(PowerConsumptionBar.COLOR);
         origConfigWarnColor.set(PowerConsumptionBar.COLOR_WARN);
     }
     private boolean playerUsable = false;
+
+    @Override
+    public PowerConsumerCategory getPowerConsumerCategory() {
+        return super.getPowerConsumerCategory();
+    }
 
     @Override
     public void onReactorRecalibrate(ReactorRecalibrateEvent event) {
@@ -62,7 +66,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public float getChargeRateFull() {
-        return 5;
+        return AlphaRework.config.getConfigurableInt("alpha_charge_time", 20);
     }
 
     @Override
@@ -72,7 +76,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public double getPowerConsumedPerSecondCharging() {
-        return getSegmentController().getMass() * 2;
+        return getSegmentController().getMass() * AlphaRework.config.getConfigurableFloat("alpha_power_cons_per_mass", 2F);
     }
     public static short SHIELD_TYPE_DPS_1 = 1119;
     public static short SHIELD_TYPE_DPS_2 = 35;
@@ -94,7 +98,6 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public boolean executeModule() {
-        ModPlayground.broadcastMessage("Executing module, onServer=" + isOnServer() + ", charge=" + this.getCharge());
         return super.executeModule();
     }
 

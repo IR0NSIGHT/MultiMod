@@ -24,8 +24,8 @@ public class ShieldHardenAddOn extends SimpleAddOn {
     public static final String UID_NAME = "ShieldHardenAddOn";
     public ShieldHardenAddOn(ManagerContainer<?> var1, AlphaRework mod) {
         super(var1, ElementKeyMap.SHIELD_CAP_ID, mod, UID_NAME);
-        alphaDir1 = AlphaRework.config.getConfigurableInt("alpha_duration_1", 5);
-        alphaDir2 = AlphaRework.config.getConfigurableInt("alpha_duration_2", 8);
+        alphaDir1 = AlphaRework.config.getConfigurableInt("alpha_duration_1", 4);
+        alphaDir2 = AlphaRework.config.getConfigurableInt("alpha_duration_2", 7);
         onReactorRecalibrate(null);
     }
     private boolean playerUsable = false;
@@ -49,7 +49,7 @@ public class ShieldHardenAddOn extends SimpleAddOn {
 
     @Override
     public float getChargeRateFull() {
-        return 5;
+        return AlphaRework.config.getConfigurableInt("harden_charge_time", 20);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ShieldHardenAddOn extends SimpleAddOn {
 
     @Override
     public double getPowerConsumedPerSecondCharging() {
-        return getSegmentController().getMass() * 2;
+        return getSegmentController().getMass() * AlphaRework.config.getConfigurableFloat("harden_power_per_mass", 2F);
     }
     public static short SHIELD_TYPE_ALPHA_1 = 1035;
     public static short SHIELD_TYPE_ALPHA_2 = 34;

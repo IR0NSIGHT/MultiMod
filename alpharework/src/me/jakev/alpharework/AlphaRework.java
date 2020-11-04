@@ -2,6 +2,7 @@ package me.jakev.alpharework;
 
 import api.common.GameClient;
 import api.common.GameServer;
+import api.config.BlockConfig;
 import api.listener.Listener;
 import api.listener.events.draw.CubeTexturePostLoadEvent;
 import api.listener.events.player.PlayerAcquireTargetEvent;
@@ -16,6 +17,7 @@ import api.utils.sound.AudioUtils;
 import api.utils.textures.StarLoaderTexture;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.data.element.ElementKeyMap;
 import org.schema.schine.graphicsengine.forms.Sprite;
 
 import javax.imageio.ImageIO;
@@ -36,8 +38,16 @@ public class AlphaRework extends StarMod {
         setModDescription("Reworks High/Low damage chambers.");
         setModAuthor("JakeV");
         setModSMVersion("0.202.104");
+        setSMDResourceId(8182);
     }
 
+    @Override
+    public void onBlockConfigLoad(BlockConfig config) {
+        ElementKeyMap.getInfo(1119).chamberMutuallyExclusive.clear();
+        ElementKeyMap.getInfo(1035).chamberMutuallyExclusive.clear();
+        ElementKeyMap.getInfo(34).chamberMutuallyExclusive.clear();
+        ElementKeyMap.getInfo(35).chamberMutuallyExclusive.clear();
+    }
 
     @Override
     public void onPreEnableServer() {
@@ -88,7 +98,7 @@ public class AlphaRework extends StarMod {
                         if (GameServer.getServerState() != null) {
                             AudioUtils.serverPlaySound("0022_spaceship user - collision with metal small", 1F, 1F, SegmentControllerUtils.getAttachedPlayers(controller));
                         }
-                        event.setDamage(event.getDamage() * 0.25F);
+                        event.setDamage(event.getDamage() * 0.20F);
 
                     }
                 }
