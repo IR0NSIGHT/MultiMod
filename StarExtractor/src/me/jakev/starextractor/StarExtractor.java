@@ -1,6 +1,7 @@
 package me.jakev.starextractor;
 
 import api.common.GameServer;
+import api.config.BlockConfig;
 import api.listener.Listener;
 import api.listener.events.block.SegmentPieceAddEvent;
 import api.listener.events.entity.SegmentControllerFullyLoadedEvent;
@@ -13,6 +14,7 @@ import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
 import org.schema.game.common.controller.elements.ManagerContainer;
 import org.schema.game.common.data.SegmentPiece;
+import org.schema.game.common.data.element.ElementInformation;
 import org.schema.game.common.data.player.inventory.Inventory;
 import org.schema.game.common.data.world.SimpleTransformableSendableObject;
 
@@ -23,6 +25,9 @@ import java.util.ArrayList;
  * <insert description here>
  */
 public class StarExtractor extends StarMod {
+    public static void main(String[] args) {
+
+    }
     @Override
     public void onGameStart() {
         setModName("StarExtractor");
@@ -30,12 +35,19 @@ public class StarExtractor extends StarMod {
         setModAuthor("JakeV");
         setModDescription("fortntie battle royale simulator in roblox");
     }
+    ElementInformation we;
+    @Override
+    public void onBlockConfigLoad(BlockConfig config) {
+        //Refinery
+        we = config.newFactory(this, "Water Extractor", new short[]{123});
+        config.add(we);
+    }
 
     @Override
     public void onEnable() {
         ArrayList<Object> objects = PersistentObjectUtil.getObjects(this, ExtractorContainer.class);
         if(objects.isEmpty()){
-            objects.add(new ExtractorContainer());
+            PersistentObjectUtil.addObject(this, new ExtractorContainer());
         }
         final Vector3i[] extractorSystems = new Vector3i[]{new Vector3i(0,0,0)};
         final ExtractorContainer container = ((ExtractorContainer) objects.get(0));
@@ -55,8 +67,8 @@ public class StarExtractor extends StarMod {
                     systemContainer.water += systemContainer.regenRate;
                     ArrayList<StationContainer> removeQueue = new ArrayList<>();
                     for (StationContainer station : systemContainer.stations) {
-//                        GameServer.getServerState().getLocalAndRemoteObjectContainer().getUidObjectMap();
-                        boolean stationExists = GameServer.getServerState().existsEntity(SimpleTransformableSendableObject.EntityType.SPACE_STATION, station.entityUid);
+                        int uidWithoutType = SimpleTransformableSendableObject.EntityType.SPACE_STATION.dbPrefix.length();
+                        boolean stationExists = GameServer.getServerState().existsEntity(SimpleTransformableSendableObject.EntityType.SPACE_STATION, station.entityUid.substring(uidWithoutType));
                         if(!stationExists){
                             removeQueue.add(station);
                         }
@@ -75,10 +87,10 @@ public class StarExtractor extends StarMod {
                             for (Long extractor : station.extractors) {
                                 controller.getSegmentBuffer().getPointUnsave(extractor, piece);
                                 short type = piece.getType();
-                                if(type == /*TODO*/ 123){
+                                if(type == we.id){
                                     ManagerContainer<?> managerContainer = ((ManagedUsableSegmentController<?>) controller).getManagerContainer();
                                     Inventory inventory = managerContainer.getInventory(extractor);
-                                    int pos = inventory.incExistingOrNextFreeSlotWithoutException((short) 1, 10);
+                                    int pos = inventory.incExistingOrNextFreeSlotWithoutException((short) 1, 1);
                                     inventory.sendInventoryModification(pos);
                                 }else{
                                     rQueue.add(extractor);
@@ -99,15 +111,17 @@ public class StarExtractor extends StarMod {
                     for (StationContainer remove : removeQueue) {
                         systemContainer.stations.remove(remove);
                     }
-
-
                 }
+                PersistentObjectUtil.save(StarExtractor.this);
             }
         }.runTimer(this, 20);
 
         StarLoader.registerListener(SegmentPieceAddEvent.class, new Listener<SegmentPieceAddEvent>() {
             @Override
             public void onEvent(SegmentPieceAddEvent event) {
+                if(event.getNewType() != we.id){
+                    return;
+                }
                 long absIndex = event.getAbsIndex();
                 SegmentController controller = event.getSegmentController();
                 Vector3i system = controller.getSystem(new Vector3i());
@@ -126,6 +140,7 @@ public class StarExtractor extends StarMod {
                 }
                 if(cStation == null){
                     StationContainer cont = new StationContainer();
+                    cont.entityUid = controller.getUniqueIdentifier();
                     systemContainer.stations.add(cont);
                     cStation = cont;
                 }
