@@ -22,6 +22,7 @@ public class HoloProjectorMod extends StarMod {
 
     }
 
+    public static HoloProjectorMod mod;
     @Override
     public void onGameStart() {
         setModName("HoloProjector");
@@ -32,7 +33,6 @@ public class HoloProjectorMod extends StarMod {
     public static ElementInformation holoProjector;
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-        //new short[]{185, 12, 124, 234, 154}
         holoProjector = config.newElement(this, "Holoprojector", new short[]{194});
         holoProjector.blended = true;
         holoProjector.drawOnlyInBuildMode = true;
@@ -43,6 +43,7 @@ public class HoloProjectorMod extends StarMod {
     public static Sprite nothing;
     @Override
     public void onEnable() {
+        mod = this;
         ListenerCommon.init(this);
         FastListenerCommon.getTextBoxListeners().add(new TextDrawListener());
         StarLoader.registerListener(CubeTexturePostLoadEvent.class, new Listener<CubeTexturePostLoadEvent>() {
