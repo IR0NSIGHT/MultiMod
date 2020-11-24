@@ -7,7 +7,10 @@ import api.listener.fastevents.FastListenerCommon;
 import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.utils.textures.StarLoaderTexture;
+import org.schema.game.client.view.GameResourceLoader;
 import org.schema.game.common.data.element.ElementInformation;
+import org.schema.schine.graphicsengine.core.Controller;
+import org.schema.schine.graphicsengine.core.ResourceException;
 import org.schema.schine.graphicsengine.forms.Sprite;
 
 import javax.imageio.ImageIO;
@@ -43,6 +46,12 @@ public class HoloProjectorMod extends StarMod {
     public static Sprite nothing;
     @Override
     public void onEnable() {
+        GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
+        try {
+            resLoader.getMeshLoader().loadModMesh(this, "x", HoloProjectorMod.class.getResourceAsStream("SmallButton.zip"), "convexhull");
+        } catch (ResourceException | IOException e) {
+            e.printStackTrace();
+        }
         mod = this;
         ListenerCommon.init(this);
         FastListenerCommon.getTextBoxListeners().add(new TextDrawListener());

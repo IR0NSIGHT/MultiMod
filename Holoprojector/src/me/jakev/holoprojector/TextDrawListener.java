@@ -56,6 +56,10 @@ public class TextDrawListener implements TextBoxDrawListener {
         }
     }
 
+    @Override
+    public void preDraw(SegmentDrawer.TextBoxSeg.TextBoxElement textBoxElement, AbstractTextBox abstractTextBox) {
+    }
+
     @Nullable
     private static Sprite getImage(String url){
         Sprite bufferedImage = imgCache.get(url);
