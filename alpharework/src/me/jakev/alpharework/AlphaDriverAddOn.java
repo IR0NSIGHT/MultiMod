@@ -1,5 +1,6 @@
 package me.jakev.alpharework;
 
+import api.ModPlayground;
 import api.common.GameClient;
 import api.listener.events.systems.ReactorRecalibrateEvent;
 import api.utils.addon.SimpleAddOn;
@@ -40,6 +41,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
         origConfigColor.set(PowerConsumptionBar.COLOR);
         origConfigWarnColor.set(PowerConsumptionBar.COLOR_WARN);
     }
+
     private boolean playerUsable = false;
 
     @Override
@@ -71,7 +73,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public double getPowerConsumedPerSecondResting() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -103,6 +105,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public boolean onExecuteServer() {
+        ModPlayground.broadcastMessage("EXE ON SERVER");
         AudioUtils.serverPlaySound("0022_item - forcefield activate", 100F, 0.5F, getAttachedPlayers());
         AudioUtils.serverPlaySound("0022_gameplay - prompt 3", 100F, 1F, getAttachedPlayers());
         return true;
@@ -110,6 +113,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public boolean onExecuteClient() {
+        ModPlayground.broadcastMessage("EXE ON CLIENT");
         return true;
     }
 

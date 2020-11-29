@@ -17,10 +17,13 @@ import api.utils.sound.AudioUtils;
 import api.utils.textures.StarLoaderTexture;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.data.element.ElementInformation;
 import org.schema.game.common.data.element.ElementKeyMap;
 import org.schema.schine.graphicsengine.forms.Sprite;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class AlphaRework extends StarMod {
@@ -40,13 +43,17 @@ public class AlphaRework extends StarMod {
         setModSMVersion("0.202.104");
         setSMDResourceId(8182);
     }
-
+    StarLoaderTexture texture;
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
         ElementKeyMap.getInfo(1119).chamberMutuallyExclusive.clear();
         ElementKeyMap.getInfo(1035).chamberMutuallyExclusive.clear();
         ElementKeyMap.getInfo(34).chamberMutuallyExclusive.clear();
         ElementKeyMap.getInfo(35).chamberMutuallyExclusive.clear();
+        short textureId = (short) texture.getTextureId();
+        ElementInformation alphaTester = config.newElement(this, "AlphaTester", textureId);
+        BlockConfig.setBasicInfo(alphaTester, "aaaa", 1, 1F, true, false, 320);
+        config.add(alphaTester);
     }
 
     @Override
@@ -60,6 +67,14 @@ public class AlphaRework extends StarMod {
     @Override
     public void onEnable() {
         alphaRework = this;
+        BufferedImage img = new BufferedImage(128,128, BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = img.getGraphics();
+        try {
+            graphics.drawImage(ImageIO.read(AlphaRework.class.getResourceAsStream("sprites/crosshair.png")), 0, 0, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        texture = StarLoaderTexture.newBlockTexture(img, 256*4);
         StarLoader.registerListener(CubeTexturePostLoadEvent.class, new Listener<CubeTexturePostLoadEvent>() {
             @Override
             public void onEvent(CubeTexturePostLoadEvent event) {
