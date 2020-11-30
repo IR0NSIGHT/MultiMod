@@ -26,6 +26,7 @@ public class HoloProjectorMod extends StarMod {
     }
 
     public static HoloProjectorMod mod;
+
     @Override
     public void onGameStart() {
         setModName("HoloProjector");
@@ -33,7 +34,9 @@ public class HoloProjectorMod extends StarMod {
         setModAuthor("JakeV");
         setModDescription("Invisible display module block");
     }
+
     public static ElementInformation holoProjector;
+
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
         holoProjector = config.newElement(this, "Holoprojector", new short[]{194});
@@ -41,20 +44,32 @@ public class HoloProjectorMod extends StarMod {
         holoProjector.drawOnlyInBuildMode = true;
         BlockConfig.setBasicInfo(holoProjector, "Invisible display module", 100, 0.1F, true, true, 76);
         config.add(holoProjector);
+
+        ElementInformation chair = config.newElement(this, "le chair", new short[]{195});
+        BlockConfig.setBasicInfo(chair, "le chair", 100, 0.1F, true, true, 78);
+        config.assignLod(chair, this, "Epic", null);
+        config.add(chair);
     }
+
     public static Sprite monke;
     public static Sprite nothing;
+
     @Override
     public void onEnable() {
         GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
-        try {
-            resLoader.getMeshLoader().loadModMesh(this, "x", HoloProjectorMod.class.getResourceAsStream("SmallButton.zip"), "convexhull");
-        } catch (ResourceException | IOException e) {
-            e.printStackTrace();
-        }
+        StarLoaderTexture.runOnGraphicsThread(() -> {
+            try {
+//                resLoader.getMeshLoader().loadModMesh(HoloProjectorMod.this, "DisplayScreen", HoloProjectorMod.class.getResourceAsStream("DisplayScreen.zip"), null);
+                resLoader.getMeshLoader().loadModMesh(HoloProjectorMod.this, "Epic", HoloProjectorMod.class.getResourceAsStream("Epic.zip"), null);
+
+            } catch (ResourceException | IOException e) {
+                e.printStackTrace();
+            }
+        });
+
         mod = this;
         ListenerCommon.init(this);
-        FastListenerCommon.getTextBoxListeners().add(new TextDrawListener());
+        FastListenerCommon.textBoxListeners.add(new TextDrawListener());
         StarLoader.registerListener(CubeTexturePostLoadEvent.class, new Listener<CubeTexturePostLoadEvent>() {
             @Override
             public void onEvent(CubeTexturePostLoadEvent event) {
