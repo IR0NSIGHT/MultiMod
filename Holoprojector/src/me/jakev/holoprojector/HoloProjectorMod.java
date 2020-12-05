@@ -11,9 +11,11 @@ import org.schema.game.client.view.GameResourceLoader;
 import org.schema.game.common.data.element.ElementInformation;
 import org.schema.schine.graphicsengine.core.Controller;
 import org.schema.schine.graphicsengine.core.ResourceException;
+import org.schema.schine.graphicsengine.forms.Mesh;
 import org.schema.schine.graphicsengine.forms.Sprite;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Vector3f;
 import java.io.IOException;
 
 /**
@@ -47,7 +49,7 @@ public class HoloProjectorMod extends StarMod {
 
         ElementInformation chair = config.newElement(this, "le chair", new short[]{195});
         BlockConfig.setBasicInfo(chair, "le chair", 100, 0.1F, true, true, 78);
-        config.assignLod(chair, this, "Epic", null);
+        config.assignLod(chair, this, "displayscreen", null);
         config.add(chair);
     }
 
@@ -57,13 +59,21 @@ public class HoloProjectorMod extends StarMod {
     @Override
     public void onEnable() {
         GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
-        StarLoaderTexture.runOnGraphicsThread(() -> {
-            try {
+        StarLoaderTexture.runOnGraphicsThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 //                resLoader.getMeshLoader().loadModMesh(HoloProjectorMod.this, "DisplayScreen", HoloProjectorMod.class.getResourceAsStream("DisplayScreen.zip"), null);
-                resLoader.getMeshLoader().loadModMesh(HoloProjectorMod.this, "Epic", HoloProjectorMod.class.getResourceAsStream("Epic.zip"), null);
+                    resLoader.getMeshLoader().loadModMesh(HoloProjectorMod.this, "displayscreen", HoloProjectorMod.class.getResourceAsStream("displayscreen.zip"), null);
+                    Mesh displayscreen = resLoader.getMeshLoader().getModMesh(HoloProjectorMod.this, "displayscreen");
+                    displayscreen.setInitialScale(new Vector3f(0.4F,0.4F,0.4F));
+//                    displayscreen.setRot(new Vector3f(1,1,0)); // Correct scale
+                    displayscreen.setRot(new Vector3f(0,0,0));
+                    displayscreen.setFirstDraw(true);
 
-            } catch (ResourceException | IOException e) {
-                e.printStackTrace();
+                } catch (ResourceException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -76,6 +86,7 @@ public class HoloProjectorMod extends StarMod {
                 try {
                     monke = StarLoaderTexture.newSprite(ImageIO.read(HoloProjectorMod.class.getResourceAsStream("sprites/monke.png")), HoloProjectorMod.this, "holoprojector");
                     nothing = StarLoaderTexture.newSprite(ImageIO.read(HoloProjectorMod.class.getResourceAsStream("sprites/nothing.png")), HoloProjectorMod.this, "nothing");
+                    StarLoaderTexture.newSprite(ImageIO.read(HoloProjectorMod.class.getResourceAsStream("sprites/spark.png")), HoloProjectorMod.this, "hpspark");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
