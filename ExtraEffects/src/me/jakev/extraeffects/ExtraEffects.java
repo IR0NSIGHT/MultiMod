@@ -3,6 +3,7 @@ package me.jakev.extraeffects;
 import api.common.GameClient;
 import api.config.BlockConfig;
 import api.listener.Listener;
+import api.listener.events.controller.ClientInitializeEvent;
 import api.listener.events.input.KeyPressEvent;
 import api.listener.events.weapon.CannonProjectileAddEvent;
 import api.mod.StarLoader;
@@ -16,7 +17,6 @@ import me.jakev.extraeffects.particles.FireParticle;
 import me.jakev.extraeffects.particles.SmokeParticle;
 import org.schema.game.common.data.element.ElementInformation;
 import org.schema.game.common.data.element.ElementKeyMap;
-import org.schema.game.common.data.element.FactoryResource;
 import org.schema.schine.graphicsengine.core.GlUtil;
 import org.schema.schine.graphicsengine.forms.Sprite;
 
@@ -40,6 +40,7 @@ public class ExtraEffects extends StarMod {
         setModAuthor("JakeV");
         setModDescription("Various particles and sounds");
         inst = this;
+        setSMDResourceId(44);
     }
 
     public static final int[] pullers = new int[]{
@@ -58,25 +59,32 @@ public class ExtraEffects extends StarMod {
     ElementInformation imp;
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-        imp = config.newElement(this, "Factory assistant", new short[]{124});
-        imp.setBuildIconNum(ElementKeyMap.WEAPON_CONTROLLER_ID);
-
+        imp = config.newElement(this, "customblockname", new short[]{124});
+        imp.volume = 1;
+        BlockConfig.setBasicInfo(imp, "yeah", 1, 1, true, false, icon);
 
         imp.setMaxHitPointsE(100);
         imp.setArmorValue(1);
         imp.setCanActivate(false);
-
-        for (int id : pullers) BlockConfig.setBlocksConnectable(ElementKeyMap.getInfo(id), imp);
-        for (int id : factories) BlockConfig.setBlocksConnectable(imp, ElementKeyMap.getInfo(id));
         config.add(imp);
-        BlockConfig.addRecipe(imp, 5, 5, new FactoryResource(1, ElementKeyMap.AI_ELEMENT));
     }
 
     public static ExtraEffects inst;
     private Sprite spark;
     private Sprite smoke;
+
+    @Override
+    public void onClientCreated(ClientInitializeEvent event) {
+    }
+    int icon;
     @Override
     public void onEnable() {
+        try {
+            icon = StarLoaderTexture.newIconTexture(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/myicon.png"))).getTextureId();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         StarLoaderTexture.runOnGraphicsThread(() -> {
             synchronized (ExtraEffects.class) {
                 try {
