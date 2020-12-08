@@ -11,18 +11,13 @@ import api.mod.StarMod;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
-import api.utils.textures.StarLoaderTexture;
 import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.particles.FireParticle;
+import me.jakev.extraeffects.particles.FlashParticle;
 import me.jakev.extraeffects.particles.SmokeParticle;
-import org.schema.game.common.data.element.ElementInformation;
 import org.schema.game.common.data.element.ElementKeyMap;
-import org.schema.schine.graphicsengine.core.GlUtil;
-import org.schema.schine.graphicsengine.forms.Sprite;
 
-import javax.imageio.ImageIO;
 import javax.vecmath.Vector3f;
-import java.io.IOException;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -56,46 +51,20 @@ public class ExtraEffects extends StarMod {
             259, //advanced
             ElementKeyMap.STASH_ELEMENT
     };
-    ElementInformation imp;
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-        imp = config.newElement(this, "customblockname", new short[]{124});
-        imp.volume = 1;
-        BlockConfig.setBasicInfo(imp, "yeah", 1, 1, true, false, icon);
-
-        imp.setMaxHitPointsE(100);
-        imp.setArmorValue(1);
-        imp.setCanActivate(false);
-        config.add(imp);
     }
 
     public static ExtraEffects inst;
-    private Sprite spark;
-    private Sprite smoke;
+
 
     @Override
     public void onClientCreated(ClientInitializeEvent event) {
     }
-    int icon;
     @Override
     public void onEnable() {
-        try {
-            icon = StarLoaderTexture.newIconTexture(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/myicon.png"))).getTextureId();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SpriteList.init(this);
 
-        StarLoaderTexture.runOnGraphicsThread(() -> {
-            synchronized (ExtraEffects.class) {
-                try {
-                    spark = StarLoaderTexture.newSprite(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/spark.png")), ExtraEffects.this, "extraeffects_spark");
-                    smoke = StarLoaderTexture.newSprite(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/smoke.png")), ExtraEffects.this, "extraeffects_smoke");
-                    StarLoaderTexture.newSprite(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/m.png")), ExtraEffects.this, "extraeffects_monke");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
             @Override
             public void onEvent(CannonProjectileAddEvent event) {
@@ -115,14 +84,14 @@ public class ExtraEffects extends StarMod {
                 dir.normalize();
                 dir.scale(10);
 
-                ModParticleUtil.play(pos, spark, 20, 1000, new Vector3f(0, 0F, 0), new ModParticleFactory() {
+                ModParticleUtil.play(pos, SpriteList.SPARK.getSprite(), 20, 1000, new Vector3f(0, 0F, 0), new ModParticleFactory() {
                     @Override
                     public ModParticle newParticle() {
                         return new FireParticle(dir, 1);
                     }
                 });
                 dir.scale(0.5F);
-                ModParticleUtil.play(pos, smoke, 10, 500, new Vector3f(0, 0F, 0), new ModParticleFactory() {
+                ModParticleUtil.play(pos, SpriteList.SPARK.getSprite(), 10, 500, new Vector3f(0, 0F, 0), new ModParticleFactory() {
                     @Override
                     public ModParticle newParticle() {
                         return new SmokeParticle(dir, 3);
@@ -135,14 +104,14 @@ public class ExtraEffects extends StarMod {
             public void onEvent(KeyPressEvent event) {
                 if(event.getChar() == 'l') {
                     Transform transform = GameClient.getClientState().getCurrentPosition();
-                    Transform var1 = new Transform();
-                    GameClient.getClientPlayerState().getWordTransform(var1);
-                    Vector3f dir = GlUtil.getForwardVector(new Vector3f(), var1);
-                    dir.scale(3);
-                    ModParticleUtil.play(transform.origin, spark, 100, 5000, new Vector3f(0, 0F, 0), new ModParticleFactory() {
+                    Vector3f vector3f = new Vector3f();
+                    transform.basis.getColumn(2, vector3f);
+                    vector3f.scale(50);
+                    transform.origin.add(vector3f);
+                    ModParticleUtil.play(transform.origin, SpriteList.FLASH.getSprite(), 1, 500, new Vector3f(0, 0F, 0), new ModParticleFactory() {
                         @Override
                         public ModParticle newParticle() {
-                            return new FireParticle(dir, 1);
+                            return new FlashParticle();
                         }
                     });
                 }
