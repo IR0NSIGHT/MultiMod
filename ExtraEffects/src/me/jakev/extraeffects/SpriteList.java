@@ -13,7 +13,13 @@ import java.io.IOException;
 public enum SpriteList {
     SPARK,
     SMOKE,
-    FLASH;
+    FLASH,
+    ENERGY,
+    BALL,
+    CLOUD,
+    FIRE,
+
+    ;
 
     private Sprite sprite;
     private String name;
