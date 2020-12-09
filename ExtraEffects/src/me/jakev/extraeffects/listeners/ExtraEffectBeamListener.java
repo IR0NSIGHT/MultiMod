@@ -7,10 +7,9 @@ import api.mod.StarMod;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
-import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particles.EnergyParticle;
 import me.jakev.extraeffects.particles.FadeParticle;
+import me.jakev.extraeffects.particles.RingHitParticle;
 
 import javax.vecmath.Vector3f;
 
@@ -21,63 +20,58 @@ import javax.vecmath.Vector3f;
 public class ExtraEffectBeamListener {
     public static void init(StarMod mod) {
         StarLoader.registerListener(BeamPostAddEvent.class, new Listener<BeamPostAddEvent>() {
+            int ran = 0;
+
             @Override
             public void onEvent(BeamPostAddEvent event) {
+                ran++;
+
 
                 Vector3f start = new Vector3f(event.getBeamState().from);
 
 
                 Vector3f normal = new Vector3f();
+                Vector3f to = new Vector3f();
                 if (event.getBeamState().hitPoint == null) {
                     normal.set(event.getBeamState().to);
+                    to.set(event.getBeamState().to);
                 } else {
                     normal.set(event.getBeamState().hitPoint);
-                    ModParticleUtil.playClient(new Vector3f(event.getBeamState().hitPoint), SpriteList.ENERGY.getSprite(), 3, 700, 0.6F, 0, 0, 0, new ModParticleFactory() {
-                        @Override
-                        public ModParticle newParticle() {
-                            return new EnergyParticle();
-                        }
-                    });
+                    to.set(event.getBeamState().hitPoint);
+
                 }
                 normal.sub(event.getBeamState().from);
                 float length = normal.length();
                 normal.normalize();
 
-                float offset = 6F;
-                Vector3f normalNormal = new Vector3f(normal);
-                normal.scale(offset);
-
-                for (float i = 0; i < length; i += offset) {
-                    start.add(normal);
-//                    if (i > 900) {
-                    if (i > 100) {
-                        return;
-                    }
-                    if (i < 6) {
-                        continue;
-                    }
-
-                    Transform transform = new Transform();
-                    transform.origin.set(start);
-                    Vector3f orthA = new Vector3f(10,0,0);
-                    orthA.cross(orthA, normalNormal);
-                    Vector3f orthB = new Vector3f();
-                    orthB.cross(orthA, normalNormal);
-                    transform.basis.setColumn(2, normalNormal);
-                    transform.basis.setColumn(1, orthA);
-                    transform.basis.setColumn(0, orthB);
-
-                    for (float r = 0; r < Math.PI*2; r+=0.1F) {
-                        Vector3f n = new Vector3f((float)Math.sin(r)*5F,(float)Math.cos(r)*5F,0);
-                        transform.transform(n);
-                        ModParticleUtil.playClient(n, SpriteList.BALL.getSprite(), 1, 400, new Vector3f(0, 0, 0), new ModParticleFactory() {
-                            @Override
-                            public ModParticle newParticle() {
-                                return new FadeParticle();
-                            }
-                        });
-                    }
+                Vector3f inverseNormal = new Vector3f(normal);
+                inverseNormal.scale(-1F);
+                if (ran % 8 == 0) {
+                    ModParticleUtil.playClient(to, SpriteList.RING.getSprite(), 1, 2000, inverseNormal, new ModParticleFactory() {
+                        @Override
+                        public ModParticle newParticle() {
+                            return new RingHitParticle();
+                        }
+                    });
                 }
+
+                ModParticleUtil.playClient(to, SpriteList.BALL.getSprite(), 20, 900, 0.2F,0,0,0, new ModParticleFactory() {
+                    @Override
+                    public ModParticle newParticle() {
+                        return new FadeParticle();
+                    }
+                });
+
+                normal.scale(25);
+                start.add(normal);
+                start.add(normal);
+                ModParticleUtil.playClient(start, SpriteList.RING.getSprite(), 1, 1300, normal, new ModParticleFactory() {
+                    @Override
+                    public ModParticle newParticle() {
+                        return new FadeParticle(10);
+                    }
+                });
+
             }
         }, mod);
     }

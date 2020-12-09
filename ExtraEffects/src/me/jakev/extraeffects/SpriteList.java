@@ -20,6 +20,9 @@ public enum SpriteList {
     FIRE,
     FLOWER,
     THEONE,
+    RING,
+    FIREFLASH,
+    NOTHING,
 
     ;
 

@@ -8,26 +8,18 @@ import javax.vecmath.Vector4f;
  * Created by Jake on 12/8/2020.
  * <insert description here>
  */
-public class FadeParticle extends ModParticle {
+public class RingHitParticle extends ModParticle {
     static Vector4f startColor = new Vector4f(1,1,1,1);
     static Vector4f endColor = new Vector4f(1,1,1,0);
-    private float size = 1F;
-
-    public FadeParticle(float size) {
-        this.size = size;
-    }
-    public FadeParticle() {
-    }
-
     @Override
     public void spawn() {
         super.spawn();
-        sizeX = size;
-        sizeY = size;
     }
 
     @Override
     public void update(long currentTime) {
-        colorOverTime(this, currentTime, startColor, endColor);
+        sizeX+=1.5F;
+        sizeY+=1.5F;
+        fadeOverTime(this, currentTime);
     }
 }

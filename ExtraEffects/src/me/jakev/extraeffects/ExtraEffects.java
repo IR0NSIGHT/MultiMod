@@ -14,10 +14,7 @@ import api.utils.particle.ModParticleUtil;
 import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
-import me.jakev.extraeffects.particles.EnergyParticle;
-import me.jakev.extraeffects.particles.FireParticle;
-import me.jakev.extraeffects.particles.SmokeParticle;
-import me.jakev.extraeffects.particles.TheOneParticle;
+import me.jakev.extraeffects.particles.*;
 import org.schema.game.common.data.element.ElementKeyMap;
 
 import javax.vecmath.Vector3f;
@@ -113,10 +110,15 @@ public class ExtraEffects extends StarMod {
 //                    transform.basis.getColumn(2, vector3f);
 //                    transform.origin.add(vector3f);
                 if(event.getChar() == 'l') {
-                    ModParticleUtil.playClient(transform.origin, SpriteList.THEONE.getSprite(), 1, 60000, 0F, 0, 0, 0, new ModParticleFactory() {
+                    ModParticleUtil.playClient(transform.origin, SpriteList.NOTHING.getSprite(), 1, 10000, 0.4F,0,0,0, new ModParticleFactory() {
                         @Override
                         public ModParticle newParticle() {
-                            return new TheOneParticle();
+                            return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), 1, 4000, new Vector3f(0, 0, 0), new ModParticleFactory() {
+                                @Override
+                                public ModParticle newParticle() {
+                                    return new DebrisFlairParticle();
+                                }
+                            });
                         }
                     });
                 }else if(event.getChar() == ';'){
