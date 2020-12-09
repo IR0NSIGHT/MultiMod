@@ -18,6 +18,8 @@ public enum SpriteList {
     BALL,
     CLOUD,
     FIRE,
+    FLOWER,
+    THEONE,
 
     ;
 
