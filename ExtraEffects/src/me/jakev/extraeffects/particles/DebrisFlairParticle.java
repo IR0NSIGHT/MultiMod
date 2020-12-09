@@ -11,14 +11,14 @@ import javax.vecmath.Vector4f;
 public class DebrisFlairParticle extends ModParticle {
     static Vector4f startTint = new Vector4f(1, 1, 0, 1);
     static Vector4f midTint = new Vector4f(1, 0.3F, 0, 1F);
-    static Vector4f smokeTint = new Vector4f(0.2F, 0.2F, 0.2F, 1F);
+    static Vector4f smokeTint = new Vector4f(0.06F, 0F, 0F, 1F);
     static Vector4f endTint = new Vector4f(0, 0, 0, 0F);
 
     @Override
     public void update(long currentTime) {
         float pct = getLifetimePercent(currentTime);
-        float firePercent = 0.2F;
-        float transitionPercent = 0.3F;
+        float firePercent = 0.15F;
+        float transitionPercent = 0.25F;
         float endPercent = 1F;
         if (pct < firePercent) {
             colorByPercent(pct / firePercent, startTint, midTint);
@@ -27,7 +27,7 @@ public class DebrisFlairParticle extends ModParticle {
         }else if(pct < endPercent){
             colorByPercent((pct-transitionPercent) / (endPercent-transitionPercent), smokeTint, endTint);
         }
-        sizeOverTime(this, currentTime, 2,2.7F);
+        sizeOverTime(this, currentTime, 1.3F,2.3F);
     }
 
     public void colorByPercent(float pct, Vector4f start, Vector4f end) {

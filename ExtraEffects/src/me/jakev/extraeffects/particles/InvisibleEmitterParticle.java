@@ -19,7 +19,7 @@ public class InvisibleEmitterParticle extends ModParticle {
     private final Vector3f dir;
     private final ModParticleFactory factory;
 
-    private static final float r = 0.1F;
+    private static final float r = 0.005F;
     float rx = ModPlayground.randFloat(-r,r);
     float ry = ModPlayground.randFloat(-r,r);
     float rz = ModPlayground.randFloat(-r,r);
@@ -44,6 +44,7 @@ public class InvisibleEmitterParticle extends ModParticle {
         this.velocity.x += rx;
         this.velocity.y += ry;
         this.velocity.z += rz;
+        this.velocity.scale(0.999F);
         ModParticleUtil.playClient(this.position, spr, count, this.lifetime, dir, factory);
     }
 }

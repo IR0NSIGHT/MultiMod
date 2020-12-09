@@ -18,6 +18,7 @@ import me.jakev.extraeffects.particles.*;
 import org.schema.game.common.data.element.ElementKeyMap;
 
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -110,10 +111,16 @@ public class ExtraEffects extends StarMod {
 //                    transform.basis.getColumn(2, vector3f);
 //                    transform.origin.add(vector3f);
                 if(event.getChar() == 'l') {
-                    ModParticleUtil.playClient(transform.origin, SpriteList.NOTHING.getSprite(), 1, 10000, 0.4F,0,0,0, new ModParticleFactory() {
+                    ModParticleUtil.playClient(transform.origin, SpriteList.FLASH.getSprite(), 1, 130, new Vector3f(0, 0, 0), new ModParticleFactory() {
                         @Override
                         public ModParticle newParticle() {
-                            return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), 1, 4000, new Vector3f(0, 0, 0), new ModParticleFactory() {
+                            return new ColorFlashParticle(15, new Vector4f(1,1,0,1), new Vector4f(1F,0,0,1F));
+                        }
+                    });
+                    ModParticleUtil.playClient(transform.origin, SpriteList.NOTHING.getSprite(), 30, 5000, 1.6F,0,0,0, new ModParticleFactory() {
+                        @Override
+                        public ModParticle newParticle() {
+                            return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), 1, 5000, new Vector3f(0, 0, 0), new ModParticleFactory() {
                                 @Override
                                 public ModParticle newParticle() {
                                     return new DebrisFlairParticle();
