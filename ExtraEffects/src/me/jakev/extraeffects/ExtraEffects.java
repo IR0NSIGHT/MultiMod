@@ -12,13 +12,17 @@ import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
 import com.bulletphysics.linearmath.Transform;
+import me.jakev.extraeffects.listeners.EEParticleEmitterListener;
 import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
+import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
-import me.jakev.extraeffects.particles.*;
+import me.jakev.extraeffects.particles.EnergyParticle;
+import me.jakev.extraeffects.particles.FireParticle;
+import me.jakev.extraeffects.particles.SmokeParticle;
+import org.schema.game.common.data.element.ElementInformation;
 import org.schema.game.common.data.element.ElementKeyMap;
 
 import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -54,6 +58,8 @@ public class ExtraEffects extends StarMod {
     };
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
+        ElementInformation crystal = ElementKeyMap.getInfoFast(ElementKeyMap.CRYS_NOCX);
+        crystal.setOrientatable(true);
     }
 
     public static ExtraEffects inst;
@@ -67,12 +73,14 @@ public class ExtraEffects extends StarMod {
         SpriteList.init(this);
         ExtraEffectMissileListener.init(this);
         ExtraEffectBeamListener.init(this);
+        ExtraEffectExplodeListener.init(this);
+        EEParticleEmitterListener.init(this);
 
 
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
             @Override
             public void onEvent(CannonProjectileAddEvent event) {
-                Vector3f dir = new Vector3f();
+                final Vector3f dir = new Vector3f();
                 Vector3f pos = new Vector3f();
                 event.getContainer().getVelocity(event.getIndex(), dir);
                 event.getContainer().getPos(event.getIndex(), pos);
@@ -111,23 +119,13 @@ public class ExtraEffects extends StarMod {
 //                    transform.basis.getColumn(2, vector3f);
 //                    transform.origin.add(vector3f);
                 if(event.getChar() == 'l') {
-                    ModParticleUtil.playClient(transform.origin, SpriteList.FLASH.getSprite(), 1, 130, new Vector3f(0, 0, 0), new ModParticleFactory() {
-                        @Override
-                        public ModParticle newParticle() {
-                            return new ColorFlashParticle(15, new Vector4f(1,1,0,1), new Vector4f(1F,0,0,1F));
-                        }
-                    });
-                    ModParticleUtil.playClient(transform.origin, SpriteList.NOTHING.getSprite(), 30, 5000, 1.6F,0,0,0, new ModParticleFactory() {
-                        @Override
-                        public ModParticle newParticle() {
-                            return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), 1, 5000, new Vector3f(0, 0, 0), new ModParticleFactory() {
-                                @Override
-                                public ModParticle newParticle() {
-                                    return new DebrisFlairParticle();
-                                }
-                            });
-                        }
-                    });
+//                    ModParticleUtil.playClient(transform.origin, SpriteList.FIRESPARK.getSprite(), 600, 2000, 1.5F,false, new ModParticleFactory() {
+//                        @Override
+//                        public ModParticle newParticle() {
+//                            return new FadeParticle();
+//                        }
+//                    });
+
                 }else if(event.getChar() == ';'){
 
                     ModParticleUtil.playClient(transform.origin, SpriteList.THEONE.getSprite(), 50, 5000, 0F, 22,22,22, new ModParticleFactory() {

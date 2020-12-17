@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particles;
+package me.jakev.extraeffects.particles.shipexplode;
 
 import api.ModPlayground;
 import api.utils.particle.ModParticle;
@@ -17,6 +17,7 @@ public class InvisibleEmitterParticle extends ModParticle {
     private final int count;
     private final int lifetime;
     private final Vector3f dir;
+    private int randomLife;
     private final ModParticleFactory factory;
 
     private static final float r = 0.005F;
@@ -24,12 +25,13 @@ public class InvisibleEmitterParticle extends ModParticle {
     float ry = ModPlayground.randFloat(-r,r);
     float rz = ModPlayground.randFloat(-r,r);
 
-    public InvisibleEmitterParticle(Sprite spr, int count, int lifetime, Vector3f dir, ModParticleFactory factory) {
+    public InvisibleEmitterParticle(Sprite spr, int count, int lifetime, Vector3f dir, int randomLife, ModParticleFactory factory) {
 
         this.spr = spr;
         this.count = count;
         this.lifetime = lifetime;
         this.dir = dir;
+        this.randomLife = randomLife;
         this.factory = factory;
     }
 
@@ -37,6 +39,7 @@ public class InvisibleEmitterParticle extends ModParticle {
     public void spawn() {
         colorA = 0;
         super.spawn();
+        this.lifetimeMs += ModPlayground.randInt(-randomLife, randomLife);
     }
 
     @Override

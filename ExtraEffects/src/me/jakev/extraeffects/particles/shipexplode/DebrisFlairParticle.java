@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particles;
+package me.jakev.extraeffects.particles.shipexplode;
 
 import api.utils.particle.ModParticle;
 
@@ -11,8 +11,8 @@ import javax.vecmath.Vector4f;
 public class DebrisFlairParticle extends ModParticle {
     static Vector4f startTint = new Vector4f(1, 1, 0, 1);
     static Vector4f midTint = new Vector4f(1, 0.3F, 0, 1F);
-    static Vector4f smokeTint = new Vector4f(0.06F, 0F, 0F, 1F);
-    static Vector4f endTint = new Vector4f(0, 0, 0, 0F);
+    static Vector4f smokeTint = new Vector4f(0.1F, 0.1F, 0.1F, 1F);
+    static Vector4f endTint = new Vector4f(0.1F, 0.1F, 0.1F, 0F);
 
     @Override
     public void update(long currentTime) {
@@ -27,7 +27,8 @@ public class DebrisFlairParticle extends ModParticle {
         }else if(pct < endPercent){
             colorByPercent((pct-transitionPercent) / (endPercent-transitionPercent), smokeTint, endTint);
         }
-        sizeOverTime(this, currentTime, 1.3F,2.3F);
+//        sizeOverTime(this, currentTime, 1.3F,2.3F);
+        sizeOverTime(this, currentTime, 1.3F,5F);
     }
 
     public void colorByPercent(float pct, Vector4f start, Vector4f end) {

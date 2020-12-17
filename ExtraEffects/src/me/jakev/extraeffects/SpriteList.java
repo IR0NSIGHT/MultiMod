@@ -23,6 +23,8 @@ public enum SpriteList {
     RING,
     FIREFLASH,
     NOTHING,
+    FIRESPARK,
+    BIGSMOKE,
 
     ;
 

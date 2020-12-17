@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particles;
+package me.jakev.extraeffects.particles.shipexplode;
 
 import api.utils.particle.ModParticle;
 
