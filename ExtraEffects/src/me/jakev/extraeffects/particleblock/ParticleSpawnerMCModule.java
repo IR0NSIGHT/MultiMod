@@ -1,6 +1,5 @@
 package me.jakev.extraeffects.particleblock;
 
-import api.ModPlayground;
 import api.mod.StarMod;
 import api.network.PacketReadBuffer;
 import api.network.PacketWriteBuffer;
@@ -9,7 +8,7 @@ import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particles.SimpleFireParticle;
+import me.jakev.extraeffects.particles.ModuleParticle;
 import org.schema.game.common.controller.SegmentController;
 import org.schema.game.common.controller.elements.ManagerContainer;
 import org.schema.game.common.data.element.ElementCollection;
@@ -27,27 +26,31 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
     public ParticleSpawnerMCModule(SegmentController ship, ManagerContainer<?> managerContainer, StarMod mod) {
         super(ship, managerContainer, mod);
     }
-    String particleSprite = "FireParticle";
-    int particleCount = 1;
+    public int particleSprite = 1;
+    public int particleCount = 1;
+    public int lifetimeMs = 4000;
 
-    float startSize = 1;
-    float endSize = 1;
+    public float startSize = 1;
+    public float endSize = 1;
 
-    float launchSpeed = 1;
-    float randomVelocity = 0;
-    float speedDampener = 1;
+    public float launchSpeed = 1;
+    public float randomVelocity = 0;
+    public float speedDampener = 1;
+    public float rotationSpeed = 0.1F;
 
-    Vector4f startColor = new Vector4f(1,1,1,1);
-    Vector4f endColor = new Vector4f(1,1,1,0);
+    public float randomOffsetX = 0F;
+    public float randomOffsetY = 0F;
+    public float randomOffsetZ = 0F;
 
-    float randomOffsetX = 0;
-    float randomOffsetY = 0;
-    float randomOffsetZ = 0;
+    public Vector4f startColor = new Vector4f(1,1,1,1);
+    public Vector4f endColor = new Vector4f(1,1,1,0);
 
-    float rotationSpeed = 0;
 
     @Override
     public void handle(Timer timer) {
+        if(getManagerContainer().isOnServer()){
+            return;
+        }
 //                            if(timer.counter%4==0) {
         for (Long l : blocks.keySet()) {
             Vector3f pos = new Vector3f();
@@ -57,17 +60,20 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
             this.segmentController.getWorldTransform().transform(pos);
             byte orientation = blocks.get(l);
             Vector3f dir = new Vector3f(getDirFromOrientation(orientation));
-            dir.scale(3F);
-            dir.x += ModPlayground.randFloat(-0.2F, 0.2F);
-            dir.y += ModPlayground.randFloat(-0.2F, 0.2F);
-            dir.z += ModPlayground.randFloat(-0.2F, 0.2F);
+            dir.scale(launchSpeed);
             this.segmentController.getWorldTransform().basis.transform(dir);
-            ModParticleUtil.playClient(pos, SpriteList.FIRE.getSprite(), 1, 2000, dir, new ModParticleFactory() {
+            ModParticleUtil.playClient(pos, SpriteList.values()[particleSprite].getSprite(), particleCount, lifetimeMs, dir, new ModParticleFactory() {
                 @Override
                 public ModParticle newParticle() {
-                    return new SimpleFireParticle(2,30);
+                    return new ModuleParticle(ParticleSpawnerMCModule.this);
                 }
             });
+//            ModParticleUtil.playClient(pos, SpriteList.FIRE.getSprite(), 1, 2000, dir, new ModParticleFactory() {
+//                @Override
+//                public ModParticle newParticle() {
+//                    return new SimpleFireParticle(2,30);
+//                }
+//            });
         }
     }
 
@@ -87,7 +93,7 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
     public String getName() {
         return "ParticleSpawnerMCModule";
     }
-    private static final Vector3f coreOffset = new Vector3f(-15.5F,-15F,-15.5F);
+    private static final Vector3f coreOffset = new Vector3f(-15.5F,-14.5F,-15.5F);
     private static Vector3f forward = new Vector3f(0,0,1);
     private static Vector3f backward = new Vector3f(0,0,-1);
     private static Vector3f left = new Vector3f(-1,0,0);
