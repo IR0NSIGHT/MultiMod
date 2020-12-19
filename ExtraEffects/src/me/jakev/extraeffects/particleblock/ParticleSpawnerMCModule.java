@@ -3,7 +3,9 @@ package me.jakev.extraeffects.particleblock;
 import api.mod.StarMod;
 import api.network.PacketReadBuffer;
 import api.network.PacketWriteBuffer;
+import api.network.packets.PacketUtil;
 import api.utils.game.module.ModManagerContainerModule;
+import api.utils.game.module.PacketCSRequestMCModuleData;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
@@ -17,67 +19,56 @@ import org.schema.schine.graphicsengine.core.Timer;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Jake on 12/10/2020.
  * <insert description here>
  */
 public class ParticleSpawnerMCModule extends ModManagerContainerModule {
-    public ParticleSpawnerMCModule(SegmentController ship, ManagerContainer<?> managerContainer, StarMod mod) {
-        super(ship, managerContainer, mod);
+    public ParticleSpawnerMCModule(SegmentController ship, ManagerContainer<?> managerContainer, StarMod mod, short blockId) {
+        super(ship, managerContainer, mod, blockId);
+        modules.add(this);
     }
-    public int particleSprite = 1;
-    public int particleCount = 1;
-    public int lifetimeMs = 4000;
 
-    public float startSize = 1;
-    public float endSize = 1;
+    public HashMap<Long, ParticleBlockConfig> blockData = new HashMap<>();
 
-    public float launchSpeed = 1;
-    public float randomVelocity = 0;
-    public float speedDampener = 1;
-    public float rotationSpeed = 0.1F;
-
-    public float randomOffsetX = 0F;
-    public float randomOffsetY = 0F;
-    public float randomOffsetZ = 0F;
-
-    public Vector4f startColor = new Vector4f(1,1,1,1);
-    public Vector4f endColor = new Vector4f(1,1,1,0);
-
-
+    public static ArrayList<ParticleSpawnerMCModule> modules = new ArrayList<>();
     @Override
     public void handle(Timer timer) {
-        if(getManagerContainer().isOnServer()){
-            return;
-        }
+        //Want to spawn particle if:
+        // Is singleplayer and is a server module
+        // Is NOT singleplayer and is not server module
+        boolean onServer = getManagerContainer().isOnServer();
+        boolean singlePlayer = isOnSinglePlayer();
+        if((singlePlayer && onServer) || (!singlePlayer && !onServer)) {
 //                            if(timer.counter%4==0) {
-        for (Long l : blocks.keySet()) {
-            Vector3f pos = new Vector3f();
-            ElementCollection.getPosFromIndex(l, pos);
-            this.segmentController.getSegmentBuffer().getPointUnsave(l);
-            pos.add(coreOffset);
-            this.segmentController.getWorldTransform().transform(pos);
-            byte orientation = blocks.get(l);
-            Vector3f dir = new Vector3f(getDirFromOrientation(orientation));
-            dir.scale(launchSpeed);
-            this.segmentController.getWorldTransform().basis.transform(dir);
-            ModParticleUtil.playClient(pos, SpriteList.values()[particleSprite].getSprite(), particleCount, lifetimeMs, dir, new ModParticleFactory() {
-                @Override
-                public ModParticle newParticle() {
-                    return new ModuleParticle(ParticleSpawnerMCModule.this);
-                }
-            });
+            for (Long l : blocks.keySet()) {
+                Vector3f pos = new Vector3f();
+                ElementCollection.getPosFromIndex(l, pos);
+                this.segmentController.getSegmentBuffer().getPointUnsave(l);
+                pos.add(coreOffset);
+                this.segmentController.getWorldTransform().transform(pos);
+                byte orientation = blocks.get(l);
+                Vector3f dir = new Vector3f(getDirFromOrientation(orientation));
+                dir.scale(launchSpeed);
+                this.segmentController.getWorldTransform().basis.transform(dir);
+                ModParticleUtil.playClient(pos, SpriteList.values()[particleSprite].getSprite(), particleCount, lifetimeMs, dir, new ModParticleFactory() {
+                    @Override
+                    public ModParticle newParticle() {
+                        return new ModuleParticle(ParticleSpawnerMCModule.this);
+                    }
+                });
 //            ModParticleUtil.playClient(pos, SpriteList.FIRE.getSprite(), 1, 2000, dir, new ModParticleFactory() {
 //                @Override
 //                public ModParticle newParticle() {
 //                    return new SimpleFireParticle(2,30);
 //                }
 //            });
+            }
         }
     }
-
-
 
     @Override
     public double getPowerConsumedPerSecondResting() {
@@ -93,7 +84,7 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
     public String getName() {
         return "ParticleSpawnerMCModule";
     }
-    private static final Vector3f coreOffset = new Vector3f(-15.5F,-14.5F,-15.5F);
+    private static final Vector3f coreOffset = new Vector3f(-16.5F,-16.5F,-16.5F);
     private static Vector3f forward = new Vector3f(0,0,1);
     private static Vector3f backward = new Vector3f(0,0,-1);
     private static Vector3f left = new Vector3f(-1,0,0);
@@ -115,16 +106,55 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
 
     @Override
     public void onTagSerialize(PacketWriteBuffer buffer) throws IOException {
+        System.err.println("Writing tag, sprite: " + particleSprite);
+        buffer.writeInt(particleSprite);
         buffer.writeInt(particleCount);
-        System.err.println("Tag particle count [SER]: " + particleCount);
-//        buffer.writeString(particleName);
+        buffer.writeInt(lifetimeMs);
+
+        buffer.writeFloat(startSize);
+        buffer.writeFloat(endSize);
+
+        buffer.writeFloat(launchSpeed);
+        buffer.writeFloat(randomVelocity);
+        buffer.writeFloat(speedDampener);
+        buffer.writeFloat(rotationSpeed);
+
+        buffer.writeFloat(randomOffsetX);
+        buffer.writeFloat(randomOffsetY);
+        buffer.writeFloat(randomOffsetZ);
+
+        buffer.writeVector4f(startColor);
+        buffer.writeVector4f(endColor);
+    }
+
+    @Override
+    public void handlePlace(long abs, byte orientation) {
+        super.handlePlace(abs, orientation);
+        if(!isOnSinglePlayer() && !isOnServer()){
+            PacketUtil.sendPacketToServer(new PacketCSRequestMCModuleData(this.getManagerContainer(), this));
+        }
     }
 
     @Override
     public void onTagDeserialize(PacketReadBuffer buffer) throws IOException{
+        particleSprite = buffer.readInt();
+        System.err.println("reading tag tag, sprite: " + particleSprite);
         particleCount = buffer.readInt();
-        System.err.println("Tag particle count: " + particleCount);
-//        particleName = buffer.readString();
+        lifetimeMs = buffer.readInt();
+
+        startSize = buffer.readFloat();
+        endSize = buffer.readFloat();
+        launchSpeed = buffer.readFloat();
+        randomVelocity = buffer.readFloat();
+        speedDampener = buffer.readFloat();
+        rotationSpeed = buffer.readFloat();
+
+        randomOffsetX = buffer.readFloat();
+        randomOffsetY = buffer.readFloat();
+        randomOffsetZ = buffer.readFloat();
+
+        startColor = buffer.readVector4f();
+        endColor = buffer.readVector4f();
 
     }
 }

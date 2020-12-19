@@ -25,7 +25,7 @@ public class EEParticleEmitterListener {
             @Override
             public void onEvent(ManagerContainerRegisterEvent event) {
                 if(event.getContainer().getSegmentController() instanceof Ship) {
-                    event.addSimpleMCModule(block, new ParticleSpawnerMCModule(event.getSegmentController(), event.getContainer(), mod));
+                    event.addSimpleMCModule(block, new ParticleSpawnerMCModule(event.getSegmentController(), event.getContainer(), mod, block));
                 }
             }
         }, mod);

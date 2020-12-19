@@ -102,6 +102,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.lifetimeMs = (int) f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -118,11 +119,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input particle count", "bbb", String.valueOf(module.particleCount),
+                            "Input particle count", "Particle count", String.valueOf(module.particleCount),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
                                     module.particleCount = (int) f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -166,6 +168,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                     public void pressedOK(GUIListElement current) {
                         if (current != null) {
                             module.particleSprite = ((SpriteList) current.getContent().getUserPointer()).ordinal();
+                            module.syncToServer();
                         } else {
                             System.err.println("[UPLOAD] dropdown null selected");
                         }
@@ -211,6 +214,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.startSize = f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -232,6 +236,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.endSize = f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -286,6 +291,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.launchSpeed = f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -307,6 +313,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.randomVelocity = f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -328,6 +335,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.speedDampener = f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -349,6 +357,7 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                                 @Override
                                 public void onInput(float f) {
                                     module.rotationSpeed = f;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -385,11 +394,13 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerColorInput playerFloatInput = new PlayerColorInput(GameClient.getClientState(),
-                            "Input starting colour", "Input a hexadecimal color value, such as 'ff0033ff', \nThe format is RRGGBBAA. \nI will replace with a color wheel later", String.valueOf(module.rotationSpeed),
+                            "Input starting colour", "Input a hexadecimal color value, such as 'ff0033ff', \nThe format is RRGGBBAA. \nI will replace with a color wheel later",
+                            ((int) (module.endColor.x * 255)) + ", " + ((int) (module.endColor.y * 255)) + ", " + ((int) (module.endColor.z * 255)) + ", " + ((int) (module.endColor.w * 255)),
                             new ColorConsumer() {
                                 @Override
                                 public void consume(Vector4f color) {
                                     module.startColor = color;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -406,11 +417,13 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerColorInput playerFloatInput = new PlayerColorInput(GameClient.getClientState(),
-                            "Input starting colour", "Input a color value in format: '255, 255, 0, 255'\bThe format is R,G,B,A. 255 is the max value, 0 is the min", String.valueOf(module.rotationSpeed),
+                            "Input starting colour", "Input a color value in format: '255, 255, 0, 255'\bThe format is R,G,B,A. 255 is the max value, 0 is the min",
+                            ((int) (module.endColor.x * 255)) + ", " + ((int) (module.endColor.y * 255)) + ", " + ((int) (module.endColor.z * 255)) + ", " + ((int) (module.endColor.w * 255)),
                             new ColorConsumer() {
                                 @Override
                                 public void consume(Vector4f color) {
                                     module.endColor = color;
+                                    module.syncToServer();
                                 }
                             });
                     playerFloatInput.activate();

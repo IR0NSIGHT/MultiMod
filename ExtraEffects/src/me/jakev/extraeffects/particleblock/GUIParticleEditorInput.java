@@ -13,7 +13,11 @@ public class GUIParticleEditorInput extends PlayerInput {
     private GUIParticleEmitterPanel panel;
     public GUIParticleEditorInput(GameClientState client, ParticleSpawnerMCModule module) {
         super(client);
-        this.panel = new GUIParticleEmitterPanel(client,700,500, this, module );
+        if(module.isOnSinglePlayer()){
+            this.panel = new GUIParticleEmitterPanel(client,700,500, this, (ParticleSpawnerMCModule) module.getServerModule());
+        }else{
+            this.panel = new GUIParticleEmitterPanel(client,700,500, this, module);
+        }
         panel.setCallback(this);
     }
 
