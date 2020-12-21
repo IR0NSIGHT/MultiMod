@@ -1,10 +1,15 @@
-package me.jakev.extraeffects.particleblock;
+package me.jakev.extraeffects.particleblock.gui;
 
 import api.common.GameClient;
+import api.network.packets.PacketUtil;
 import me.jakev.extraeffects.SpriteList;
+import me.jakev.extraeffects.particleblock.ParticleBlockConfig;
+import me.jakev.extraeffects.particleblock.ParticleSpawnerMCModule;
+import me.jakev.extraeffects.particleblock.network.PacketCSUpdateParticleData;
 import org.schema.game.client.controller.PlayerGameDropDownInput;
 import org.schema.game.client.data.GameClientState;
 import org.schema.game.client.view.gui.GUIInputPanel;
+import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.data.SegmentPiece;
 import org.schema.schine.graphicsengine.core.MouseEvent;
 import org.schema.schine.graphicsengine.forms.font.FontLibrary;
@@ -23,9 +28,11 @@ import javax.vecmath.Vector4f;
 public class GUIParticleEmitterPanel extends GUIInputPanel {
     GUIParticleEditorInput panel;
     private final ParticleSpawnerMCModule module;
+    private final ParticleBlockConfig block;
+    private final long blockIndex;
     private SegmentPiece openedOn;
 
-    public GUIParticleEmitterPanel(InputState state, int width, int height, final GUIParticleEditorInput panel, ParticleSpawnerMCModule module) {
+    public GUIParticleEmitterPanel(InputState state, int width, int height, final GUIParticleEditorInput panel, ParticleSpawnerMCModule module, ParticleBlockConfig block, long blockIndex) {
         super("GUITPPanelNew",
                 state,
                 width,
@@ -47,6 +54,9 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
 
         this.panel = panel;
         this.module = module;
+        this.block = block;
+        this.blockIndex = blockIndex;
+
         setOkButton(false);
 
     }
@@ -62,6 +72,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             return true;
         }
     };
+    public void updateToServer(){
+        if(!module.isOnSinglePlayer()) {
+            PacketCSUpdateParticleData packet = new PacketCSUpdateParticleData((ManagedUsableSegmentController<?>) module.getManagerContainer().getSegmentController(), blockIndex);
+            PacketUtil.sendPacketToServer(packet);
+        }
+    }
 
     @Override
     public void onInit() {
@@ -77,19 +93,19 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
         spriteNamePane.addText(0, 0, new Object() {
             @Override
             public String toString() {
-                return "Particle Name: " + module.particleSprite;
+                return "Particle Name: " + block.particleSprite;
             }
         });
         spriteNamePane.addText(0, 1, new Object() {
             @Override
             public String toString() {
-                return "Particle Count: " + module.particleCount;
+                return "Particle Count: " + block.particleCount;
             }
         });
         spriteNamePane.addText(0, 2, new Object() {
             @Override
             public String toString() {
-                return "Particle Lifetime (MS): " + module.lifetimeMs;
+                return "Particle Lifetime (MS): " + block.lifetimeMs;
             }
         });
         spriteNamePane.addButton(1, 2, "Particle Lifetime", GUIHorizontalArea.HButtonColor.BLUE, new GUICallback() {
@@ -97,12 +113,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Particle Lifetime", "Input particle lifetime in milliseconds", String.valueOf(module.lifetimeMs),
+                            "Particle Lifetime", "Input particle lifetime in milliseconds", String.valueOf(block.lifetimeMs),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.lifetimeMs = (int) f;
-                                    module.syncToServer();
+                                    block.lifetimeMs = (int) f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -119,12 +135,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input particle count", "Particle count", String.valueOf(module.particleCount),
+                            "Input particle count", "Particle count", String.valueOf(block.particleCount),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.particleCount = (int) f;
-                                    module.syncToServer();
+                                    block.particleCount = (int) f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -167,10 +183,10 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                     @Override
                     public void pressedOK(GUIListElement current) {
                         if (current != null) {
-                            module.particleSprite = ((SpriteList) current.getContent().getUserPointer()).ordinal();
-                            module.syncToServer();
+                            block.particleSprite = ((SpriteList) current.getContent().getUserPointer()).ordinal();
+                            updateToServer();
                         } else {
-                            System.err.println("[UPLOAD] dropdown null selected");
+                            System.err.println("[] dropdown null selected");
                         }
                         deactivate();
                     }
@@ -195,13 +211,13 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
         sizePane.addText(0, 0, new Object() {
             @Override
             public String toString() {
-                return "Start Size: " + module.startSize;
+                return "Start Size: " + block.startSize;
             }
         });
         sizePane.addText(0, 1, new Object() {
             @Override
             public String toString() {
-                return "End Size: " + module.endSize;
+                return "End Size: " + block.endSize;
             }
         });
         sizePane.addButton(1, 0, "Start Size", GUIHorizontalArea.HButtonColor.BLUE, new GUICallback() {
@@ -209,12 +225,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input start size", "Should be something like '5.25', a decimal", String.valueOf(module.startSize),
+                            "Input start size", "Should be something like '5.25', a decimal", String.valueOf(block.startSize),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.startSize = f;
-                                    module.syncToServer();
+                                    block.startSize = f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -231,12 +247,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input end size", "Should be something like '5.25', a decimal", String.valueOf(module.endSize),
+                            "Input end size", "Should be something like '5.25', a decimal", String.valueOf(block.endSize),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.endSize = f;
-                                    module.syncToServer();
+                                    block.endSize = f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -260,25 +276,25 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
         miscPane.addText(0, 0, new Object() {
             @Override
             public String toString() {
-                return "Launch speed: " + module.launchSpeed;
+                return "Launch speed: " + block.launchSpeed;
             }
         });
         miscPane.addText(0, 1, new Object() {
             @Override
             public String toString() {
-                return "Random Velocity: " + module.randomVelocity;
+                return "Random Velocity: " + block.randomVelocity;
             }
         });
         miscPane.addText(0, 2, new Object() {
             @Override
             public String toString() {
-                return "Speed Dampener: " + module.speedDampener;
+                return "Speed Dampener: " + block.speedDampener;
             }
         });
         miscPane.addText(0, 3, new Object() {
             @Override
             public String toString() {
-                return "Rotation speed: " + module.rotationSpeed;
+                return "Rotation speed: " + block.rotationSpeed;
             }
         });
         miscPane.addButton(1, 0, "Launch speed", GUIHorizontalArea.HButtonColor.BLUE, new GUICallback() {
@@ -286,12 +302,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input Launch speed", "Should be something like '5.25', a decimal", String.valueOf(module.launchSpeed),
+                            "Input Launch speed", "Should be something like '5.25', a decimal", String.valueOf(block.launchSpeed),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.launchSpeed = f;
-                                    module.syncToServer();
+                                    block.launchSpeed = f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -308,12 +324,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input Random velocity", "Should be something like '5.25', a decimal, \nThis controls how much random speed is added to a particle", String.valueOf(module.randomVelocity),
+                            "Input Random velocity", "Should be something like '5.25', a decimal, \nThis controls how much random speed is added to a particle", String.valueOf(block.randomVelocity),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.randomVelocity = f;
-                                    module.syncToServer();
+                                    block.randomVelocity = f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -330,12 +346,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input Random velocity", "Should be something like '5.25', a decimal, \nVelocity is multiplied by this every tick", String.valueOf(module.speedDampener),
+                            "Input Random velocity", "Should be something like '5.25', a decimal, \nVelocity is multiplied by this every tick", String.valueOf(block.speedDampener),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.speedDampener = f;
-                                    module.syncToServer();
+                                    block.speedDampener = f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -352,12 +368,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
             public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerFloatInput playerFloatInput = new PlayerFloatInput(GameClient.getClientState(),
-                            "Input Random velocity", "Should be something like '5.25', a decimal, \nHow much the particle rotates every tick", String.valueOf(module.rotationSpeed),
+                            "Input Random velocity", "Should be something like '5.25', a decimal, \nHow much the particle rotates every tick", String.valueOf(block.rotationSpeed),
                             new FloatConsumer() {
                                 @Override
                                 public void onInput(float f) {
-                                    module.rotationSpeed = f;
-                                    module.syncToServer();
+                                    block.rotationSpeed = f;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -380,13 +396,13 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
         colorPane.addText(0, 0, new Object() {
             @Override
             public String toString() {
-                return "Start Color: " + module.startColor;
+                return "Start Color: " + block.startColor;
             }
         });
         colorPane.addText(0, 1, new Object() {
             @Override
             public String toString() {
-                return "End Color: " + module.endColor;
+                return "End Color: " + block.endColor;
             }
         });
         colorPane.addButton(1, 0, "Start Color", GUIHorizontalArea.HButtonColor.BLUE, new GUICallback() {
@@ -395,12 +411,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerColorInput playerFloatInput = new PlayerColorInput(GameClient.getClientState(),
                             "Input starting colour", "Input a hexadecimal color value, such as 'ff0033ff', \nThe format is RRGGBBAA. \nI will replace with a color wheel later",
-                            ((int) (module.endColor.x * 255)) + ", " + ((int) (module.endColor.y * 255)) + ", " + ((int) (module.endColor.z * 255)) + ", " + ((int) (module.endColor.w * 255)),
+                            ((int) (block.endColor.x * 255)) + ", " + ((int) (block.endColor.y * 255)) + ", " + ((int) (block.endColor.z * 255)) + ", " + ((int) (block.endColor.w * 255)),
                             new ColorConsumer() {
                                 @Override
                                 public void consume(Vector4f color) {
-                                    module.startColor = color;
-                                    module.syncToServer();
+                                    block.startColor = color;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();
@@ -418,12 +434,12 @@ public class GUIParticleEmitterPanel extends GUIInputPanel {
                 if (mouseEvent.pressedLeftMouse()) {
                     PlayerColorInput playerFloatInput = new PlayerColorInput(GameClient.getClientState(),
                             "Input starting colour", "Input a color value in format: '255, 255, 0, 255'\bThe format is R,G,B,A. 255 is the max value, 0 is the min",
-                            ((int) (module.endColor.x * 255)) + ", " + ((int) (module.endColor.y * 255)) + ", " + ((int) (module.endColor.z * 255)) + ", " + ((int) (module.endColor.w * 255)),
+                            ((int) (block.endColor.x * 255)) + ", " + ((int) (block.endColor.y * 255)) + ", " + ((int) (block.endColor.z * 255)) + ", " + ((int) (block.endColor.w * 255)),
                             new ColorConsumer() {
                                 @Override
                                 public void consume(Vector4f color) {
-                                    module.endColor = color;
-                                    module.syncToServer();
+                                    block.endColor = color;
+                                    updateToServer();
                                 }
                             });
                     playerFloatInput.activate();

@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particleblock;
+package me.jakev.extraeffects.particleblock.gui;
 
 import javax.vecmath.Vector4f;
 

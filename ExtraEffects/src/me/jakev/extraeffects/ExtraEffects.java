@@ -1,5 +1,6 @@
 package me.jakev.extraeffects;
 
+import api.DebugFile;
 import api.common.GameClient;
 import api.config.BlockConfig;
 import api.listener.Listener;
@@ -8,21 +9,30 @@ import api.listener.events.input.KeyPressEvent;
 import api.listener.events.weapon.CannonProjectileAddEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
+import api.network.Packet;
+import api.network.packets.PacketUtil;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
+import api.utils.textures.StarLoaderTexture;
 import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.listeners.EEParticleEmitterListener;
 import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
+import me.jakev.extraeffects.particleblock.network.PacketCSRequestParticleData;
+import me.jakev.extraeffects.particleblock.network.PacketCSUpdateParticleData;
+import me.jakev.extraeffects.particleblock.network.PacketSCUpdateParticleData;
 import me.jakev.extraeffects.particles.EnergyParticle;
 import me.jakev.extraeffects.particles.FireParticle;
 import me.jakev.extraeffects.particles.SmokeParticle;
 import org.schema.game.common.data.element.ElementInformation;
 import org.schema.game.common.data.element.ElementKeyMap;
 
+import javax.imageio.ImageIO;
 import javax.vecmath.Vector3f;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -42,40 +52,59 @@ public class ExtraEffects extends StarMod {
         inst = this;
         setSMDResourceId(44);
     }
-
-    public static final int[] pullers = new int[]{
-            211, //basic
-            217, //standard
-            259, //advanced
-            677, //shipyard
-            ElementKeyMap.STASH_ELEMENT
-    };
-    public static final int[] factories = new int[]{
-            211, //basic
-            217, //standard
-            259, //advanced
-            ElementKeyMap.STASH_ELEMENT
-    };
+    private static short[] emitterIds;
+    public static short emitterId;
+    public static short emitterIconId;
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
         ElementInformation crystal = ElementKeyMap.getInfoFast(ElementKeyMap.CRYS_NOCX);
         crystal.setOrientatable(true);
+
+        assert emitterIds != null;
+        ElementInformation emitter = config.newElement(this, "Particle Emitter", emitterIds);
+        BlockConfig.setBasicInfo(emitter, "Emits particles", 100, 0.1F, true, true, emitterIconId);
+        emitter.setOrientatable(true);
+        emitter.setHasActivationTexure(true);
+        emitterId = emitter.getId();
+        config.add(emitter);
+
     }
 
     public static ExtraEffects inst;
-
 
     @Override
     public void onClientCreated(ClientInitializeEvent event) {
     }
     @Override
     public void onEnable() {
+        PacketUtil.registerPacket(PacketCSUpdateParticleData.class);
+        PacketUtil.registerPacket(PacketSCUpdateParticleData.class);
+        PacketUtil.registerPacket(PacketCSRequestParticleData.class);
+
+        Packet.dumpPacketLookup();
+
         SpriteList.init(this);
         ExtraEffectMissileListener.init(this);
         ExtraEffectBeamListener.init(this);
         ExtraEffectExplodeListener.init(this);
         EEParticleEmitterListener.init(this);
 
+        try {
+            BufferedImage blockTexture = ImageIO.read(ExtraEffects.class.getResourceAsStream("res/particle_block.png"));
+            BufferedImage iconTexture = ImageIO.read(ExtraEffects.class.getResourceAsStream("res/particle_icon.png"));
+            StarLoaderTexture slIcon = StarLoaderTexture.newIconTexture(iconTexture);
+            emitterIconId = (short) slIcon.getTextureId();
+            int res = 256;
+            StarLoaderTexture front = StarLoaderTexture.newBlockTexture(blockTexture.getSubimage(0, 0, res, res));
+            StarLoaderTexture sides = StarLoaderTexture.newBlockTexture(blockTexture.getSubimage(res, 0, res, res));
+            StarLoaderTexture rear = StarLoaderTexture.newBlockTexture(blockTexture.getSubimage(res*2, 0, res, res));
+            short sideId = (short) sides.getTextureId();
+            short rearId = (short) rear.getTextureId();
+            emitterIds = new short[]{(short) front.getTextureId(), sideId,rearId,rearId,sideId, sideId};
+            DebugFile.log("Loaded block textures", this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
             @Override

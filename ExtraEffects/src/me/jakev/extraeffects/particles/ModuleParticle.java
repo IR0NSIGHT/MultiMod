@@ -2,7 +2,7 @@ package me.jakev.extraeffects.particles;
 
 import api.ModPlayground;
 import api.utils.particle.ModParticle;
-import me.jakev.extraeffects.particleblock.ParticleSpawnerMCModule;
+import me.jakev.extraeffects.particleblock.ParticleBlockConfig;
 
 import javax.vecmath.Vector3f;
 
@@ -11,9 +11,9 @@ import javax.vecmath.Vector3f;
  * <insert description here>
  */
 public class ModuleParticle extends ModParticle {
-    private ParticleSpawnerMCModule module;
+    private ParticleBlockConfig module;
 
-    public ModuleParticle(ParticleSpawnerMCModule module) {
+    public ModuleParticle(ParticleBlockConfig module) {
         this.module = module;
     }
 

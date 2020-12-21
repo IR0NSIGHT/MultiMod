@@ -10,6 +10,7 @@ import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.FadeParticle;
 import me.jakev.extraeffects.particles.RingHitParticle;
+import org.schema.game.common.controller.elements.beam.damageBeam.DamageBeamHandler;
 
 import javax.vecmath.Vector3f;
 
@@ -26,9 +27,11 @@ public class ExtraEffectBeamListener {
             public void onEvent(BeamPostAddEvent event) {
                 ran++;
 
+                if(!(event.getHandler() instanceof DamageBeamHandler)){
+                   return;
+                }
 
                 Vector3f start = new Vector3f(event.getBeamState().from);
-
 
                 Vector3f normal = new Vector3f();
                 Vector3f to = new Vector3f();
@@ -54,13 +57,6 @@ public class ExtraEffectBeamListener {
                         }
                     });
                 }
-
-                ModParticleUtil.playClient(to, SpriteList.BALL.getSprite(), 20, 900, 0.2F,0,0,0, new ModParticleFactory() {
-                    @Override
-                    public ModParticle newParticle() {
-                        return new FadeParticle();
-                    }
-                });
 
                 normal.scale(25);
                 start.add(normal);

@@ -1,7 +1,11 @@
-package me.jakev.extraeffects.particleblock;
+package me.jakev.extraeffects.particleblock.gui;
 
+import api.common.GameCommon;
+import me.jakev.extraeffects.ExtraEffects;
+import me.jakev.extraeffects.particleblock.ParticleSpawnerMCModule;
 import org.schema.game.client.controller.PlayerInput;
 import org.schema.game.client.data.GameClientState;
+import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.schine.graphicsengine.core.MouseEvent;
 import org.schema.schine.graphicsengine.forms.gui.GUIElement;
 
@@ -11,12 +15,16 @@ import org.schema.schine.graphicsengine.forms.gui.GUIElement;
  */
 public class GUIParticleEditorInput extends PlayerInput {
     private GUIParticleEmitterPanel panel;
-    public GUIParticleEditorInput(GameClientState client, ParticleSpawnerMCModule module) {
+    public GUIParticleEditorInput(GameClientState client, ParticleSpawnerMCModule module, long index) {
         super(client);
         if(module.isOnSinglePlayer()){
-            this.panel = new GUIParticleEmitterPanel(client,700,500, this, (ParticleSpawnerMCModule) module.getServerModule());
+            ManagedUsableSegmentController<?> ship = (ManagedUsableSegmentController<?>)
+                    GameCommon.getGameObject(module.getManagerContainer().getSegmentController().getId());
+            ParticleSpawnerMCModule realModule = (ParticleSpawnerMCModule) ship.getManagerContainer().getModMCModule(ExtraEffects.emitterId);
+            assert realModule != module : "Uh oh";
+            this.panel = new GUIParticleEmitterPanel(client,700,500, this, realModule, realModule.blockData.get(index), index);
         }else{
-            this.panel = new GUIParticleEmitterPanel(client,700,500, this, module);
+            this.panel = new GUIParticleEmitterPanel(client,700,500, this, module, module.blockData.get(index), index);
         }
         panel.setCallback(this);
     }

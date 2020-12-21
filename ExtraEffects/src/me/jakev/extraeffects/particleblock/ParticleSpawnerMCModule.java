@@ -5,22 +5,23 @@ import api.network.PacketReadBuffer;
 import api.network.PacketWriteBuffer;
 import api.network.packets.PacketUtil;
 import api.utils.game.module.ModManagerContainerModule;
-import api.utils.game.module.PacketCSRequestMCModuleData;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.SpriteList;
+import me.jakev.extraeffects.particleblock.network.PacketCSRequestParticleData;
 import me.jakev.extraeffects.particles.ModuleParticle;
+import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
 import org.schema.game.common.controller.elements.ManagerContainer;
 import org.schema.game.common.data.element.ElementCollection;
 import org.schema.schine.graphicsengine.core.Timer;
 
 import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Jake on 12/10/2020.
@@ -45,6 +46,7 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
         if((singlePlayer && onServer) || (!singlePlayer && !onServer)) {
 //                            if(timer.counter%4==0) {
             for (Long l : blocks.keySet()) {
+                ParticleBlockConfig config = blockData.get(l);
                 Vector3f pos = new Vector3f();
                 ElementCollection.getPosFromIndex(l, pos);
                 this.segmentController.getSegmentBuffer().getPointUnsave(l);
@@ -52,12 +54,12 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
                 this.segmentController.getWorldTransform().transform(pos);
                 byte orientation = blocks.get(l);
                 Vector3f dir = new Vector3f(getDirFromOrientation(orientation));
-                dir.scale(launchSpeed);
+                dir.scale(config.launchSpeed);
                 this.segmentController.getWorldTransform().basis.transform(dir);
-                ModParticleUtil.playClient(pos, SpriteList.values()[particleSprite].getSprite(), particleCount, lifetimeMs, dir, new ModParticleFactory() {
+                ModParticleUtil.playClient(pos, SpriteList.values()[config.particleSprite].getSprite(), config.particleCount, config.lifetimeMs, dir, new ModParticleFactory() {
                     @Override
                     public ModParticle newParticle() {
-                        return new ModuleParticle(ParticleSpawnerMCModule.this);
+                        return new ModuleParticle(config);
                     }
                 });
 //            ModParticleUtil.playClient(pos, SpriteList.FIRE.getSprite(), 1, 2000, dir, new ModParticleFactory() {
@@ -84,7 +86,7 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
     public String getName() {
         return "ParticleSpawnerMCModule";
     }
-    private static final Vector3f coreOffset = new Vector3f(-16.5F,-16.5F,-16.5F);
+    private static final Vector3f coreOffset = new Vector3f(-16F,-16F,-16F);
     private static Vector3f forward = new Vector3f(0,0,1);
     private static Vector3f backward = new Vector3f(0,0,-1);
     private static Vector3f left = new Vector3f(-1,0,0);
@@ -105,56 +107,42 @@ public class ParticleSpawnerMCModule extends ModManagerContainerModule {
     }
 
     @Override
-    public void onTagSerialize(PacketWriteBuffer buffer) throws IOException {
-        System.err.println("Writing tag, sprite: " + particleSprite);
-        buffer.writeInt(particleSprite);
-        buffer.writeInt(particleCount);
-        buffer.writeInt(lifetimeMs);
-
-        buffer.writeFloat(startSize);
-        buffer.writeFloat(endSize);
-
-        buffer.writeFloat(launchSpeed);
-        buffer.writeFloat(randomVelocity);
-        buffer.writeFloat(speedDampener);
-        buffer.writeFloat(rotationSpeed);
-
-        buffer.writeFloat(randomOffsetX);
-        buffer.writeFloat(randomOffsetY);
-        buffer.writeFloat(randomOffsetZ);
-
-        buffer.writeVector4f(startColor);
-        buffer.writeVector4f(endColor);
-    }
-
-    @Override
     public void handlePlace(long abs, byte orientation) {
         super.handlePlace(abs, orientation);
+        if(blockData.get(abs) == null){
+            blockData.put(abs, new ParticleBlockConfig());
+        }
         if(!isOnSinglePlayer() && !isOnServer()){
-            PacketUtil.sendPacketToServer(new PacketCSRequestMCModuleData(this.getManagerContainer(), this));
+            PacketUtil.sendPacketToServer(new PacketCSRequestParticleData((ManagedUsableSegmentController<?>) this.getManagerContainer().getSegmentController(), abs));
+        }
+    }
+
+
+    @Override
+    public void onTagSerialize(PacketWriteBuffer buf) throws IOException {
+        buf.writeInt(blockData.size());
+        for (Map.Entry<Long, ParticleBlockConfig> entry : blockData.entrySet()) {
+            long index = entry.getKey();
+            ParticleBlockConfig config = entry.getValue();
+            buf.writeLong(index);
+            config.onTagSerialize(buf);
         }
     }
 
     @Override
-    public void onTagDeserialize(PacketReadBuffer buffer) throws IOException{
-        particleSprite = buffer.readInt();
-        System.err.println("reading tag tag, sprite: " + particleSprite);
-        particleCount = buffer.readInt();
-        lifetimeMs = buffer.readInt();
-
-        startSize = buffer.readFloat();
-        endSize = buffer.readFloat();
-        launchSpeed = buffer.readFloat();
-        randomVelocity = buffer.readFloat();
-        speedDampener = buffer.readFloat();
-        rotationSpeed = buffer.readFloat();
-
-        randomOffsetX = buffer.readFloat();
-        randomOffsetY = buffer.readFloat();
-        randomOffsetZ = buffer.readFloat();
-
-        startColor = buffer.readVector4f();
-        endColor = buffer.readVector4f();
+    public void onTagDeserialize(PacketReadBuffer buf) throws IOException {
+        int len = buf.readInt();
+        for (int i = 0; i < len; i++) {
+            long index = buf.readLong();
+            ParticleBlockConfig config = blockData.get(index);
+            if(config != null) {
+                config.onTagDeserialize(buf);
+            }else{
+                ParticleBlockConfig value = new ParticleBlockConfig();
+                blockData.put(index, value);
+                value.onTagDeserialize(buf);
+            }
+        }
 
     }
 }
