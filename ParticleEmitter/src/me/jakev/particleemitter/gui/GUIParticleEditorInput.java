@@ -1,8 +1,8 @@
-package me.jakev.extraeffects.particleblock.gui;
+package me.jakev.particleemitter.gui;
 
 import api.common.GameCommon;
-import me.jakev.extraeffects.ExtraEffects;
-import me.jakev.extraeffects.particleblock.ParticleSpawnerMCModule;
+import me.jakev.particleemitter.ParticleEmitterMod;
+import me.jakev.particleemitter.ParticleSpawnerMCModule;
 import org.schema.game.client.controller.PlayerInput;
 import org.schema.game.client.data.GameClientState;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
@@ -20,7 +20,7 @@ public class GUIParticleEditorInput extends PlayerInput {
         if(module.isOnSinglePlayer()){
             ManagedUsableSegmentController<?> ship = (ManagedUsableSegmentController<?>)
                     GameCommon.getGameObject(module.getManagerContainer().getSegmentController().getId());
-            ParticleSpawnerMCModule realModule = (ParticleSpawnerMCModule) ship.getManagerContainer().getModMCModule(ExtraEffects.emitterId);
+            ParticleSpawnerMCModule realModule = (ParticleSpawnerMCModule) ship.getManagerContainer().getModMCModule(ParticleEmitterMod.emitterId);
             assert realModule != module : "Uh oh";
             this.panel = new GUIParticleEmitterPanel(client,700,500, this, realModule, realModule.blockData.get(index), index);
         }else{

@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.listeners;
+package me.jakev.particleemitter.listeners;
 
 import api.listener.Listener;
 import api.listener.events.weapon.BeamPostAddEvent;
@@ -8,9 +8,9 @@ import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
 import com.bulletphysics.linearmath.Transform;
-import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particles.EnergyParticle;
-import me.jakev.extraeffects.particles.FadeParticle;
+import me.jakev.SpriteList;
+import me.jakev.particleemitter.particles.EnergyParticle;
+import me.jakev.particleemitter.particles.FadeParticle;
 
 import javax.vecmath.Vector3f;
 

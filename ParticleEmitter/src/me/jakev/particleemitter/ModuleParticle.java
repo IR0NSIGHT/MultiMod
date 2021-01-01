@@ -1,8 +1,7 @@
-package me.jakev.extraeffects.particles;
+package me.jakev.particleemitter;
 
 import api.ModPlayground;
 import api.utils.particle.ModParticle;
-import me.jakev.extraeffects.particleblock.ParticleBlockConfig;
 
 import javax.vecmath.Vector3f;
 

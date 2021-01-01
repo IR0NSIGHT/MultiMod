@@ -4,7 +4,6 @@ import api.ModPlayground;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
-import org.schema.schine.graphicsengine.forms.Sprite;
 
 import javax.vecmath.Vector3f;
 
@@ -13,7 +12,7 @@ import javax.vecmath.Vector3f;
  * <insert description here>
  */
 public class InvisibleEmitterParticle extends ModParticle {
-    private final Sprite spr;
+    private final int spr;
     private final int count;
     private final int lifetime;
     private final Vector3f dir;
@@ -25,7 +24,7 @@ public class InvisibleEmitterParticle extends ModParticle {
     float ry = ModPlayground.randFloat(-r,r);
     float rz = ModPlayground.randFloat(-r,r);
 
-    public InvisibleEmitterParticle(Sprite spr, int count, int lifetime, Vector3f dir, int randomLife, ModParticleFactory factory) {
+    public InvisibleEmitterParticle(int spr, int count, int lifetime, Vector3f dir, int randomLife, ModParticleFactory factory) {
 
         this.spr = spr;
         this.count = count;

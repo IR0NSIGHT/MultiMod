@@ -1,12 +1,12 @@
-package me.jakev.extraeffects.particleblock.network;
+package me.jakev.particleemitter.network;
 
 import api.network.Packet;
 import api.network.PacketReadBuffer;
 import api.network.PacketWriteBuffer;
 import api.network.packets.PacketUtil;
-import me.jakev.extraeffects.ExtraEffects;
-import me.jakev.extraeffects.particleblock.ParticleBlockConfig;
-import me.jakev.extraeffects.particleblock.ParticleSpawnerMCModule;
+import me.jakev.particleemitter.ParticleBlockConfig;
+import me.jakev.particleemitter.ParticleEmitterMod;
+import me.jakev.particleemitter.ParticleSpawnerMCModule;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.data.player.PlayerState;
 
@@ -33,7 +33,7 @@ public class PacketCSUpdateParticleData extends Packet {
     public void readPacketData(PacketReadBuffer buf) throws IOException {
         controller = (ManagedUsableSegmentController<?>) buf.readSendable();
         block = buf.readLong();
-        ParticleSpawnerMCModule module = (ParticleSpawnerMCModule) controller.getManagerContainer().getModMCModule(ExtraEffects.emitterId);
+        ParticleSpawnerMCModule module = (ParticleSpawnerMCModule) controller.getManagerContainer().getModMCModule(ParticleEmitterMod.emitterId);
         ParticleBlockConfig config = module.blockData.get(block);
         config.onTagDeserialize(buf);
     }
@@ -42,7 +42,7 @@ public class PacketCSUpdateParticleData extends Packet {
     public void writePacketData(PacketWriteBuffer buf) throws IOException {
         buf.writeSendable(controller);
         buf.writeLong(block);
-        ParticleSpawnerMCModule module = (ParticleSpawnerMCModule) controller.getManagerContainer().getModMCModule(ExtraEffects.emitterId);
+        ParticleSpawnerMCModule module = (ParticleSpawnerMCModule) controller.getManagerContainer().getModMCModule(ParticleEmitterMod.emitterId);
         ParticleBlockConfig config = module.blockData.get(block);
         config.onTagSerialize(buf);
     }
@@ -55,7 +55,7 @@ public class PacketCSUpdateParticleData extends Packet {
     @Override
     public void processPacketOnServer(PlayerState packetSender) {
         //Update module for all attached players TODO: Update for all players in the same sector
-        PacketSCUpdateParticleData packet = new PacketSCUpdateParticleData(controller, ExtraEffects.emitterId);
+        PacketSCUpdateParticleData packet = new PacketSCUpdateParticleData(controller, ParticleEmitterMod.emitterId);
         for (PlayerState player : controller.getAttachedPlayers()) {
             if(packetSender != player){
                 PacketUtil.sendPacket(player, packet);

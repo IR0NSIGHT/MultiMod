@@ -1,11 +1,10 @@
-package me.jakev.extraeffects.particleblock.gui;
+package me.jakev.particleemitter.gui;
 
 import api.common.GameClient;
 import api.network.packets.PacketUtil;
-import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particleblock.ParticleBlockConfig;
-import me.jakev.extraeffects.particleblock.ParticleSpawnerMCModule;
-import me.jakev.extraeffects.particleblock.network.PacketCSUpdateParticleData;
+import me.jakev.particleemitter.ParticleBlockConfig;
+import me.jakev.particleemitter.ParticleSpawnerMCModule;
+import me.jakev.particleemitter.SpriteList;
 import org.schema.game.client.controller.PlayerGameDropDownInput;
 import org.schema.game.client.data.GameClientState;
 import org.schema.game.client.view.gui.GUIInputPanel;
@@ -18,6 +17,7 @@ import org.schema.schine.graphicsengine.forms.gui.newgui.GUIDialogWindow;
 import org.schema.schine.graphicsengine.forms.gui.newgui.GUIHorizontalArea;
 import org.schema.schine.graphicsengine.forms.gui.newgui.GUIHorizontalButtonTablePane;
 import org.schema.schine.input.InputState;
+import me.jakev.particleemitter.network.PacketCSUpdateParticleData;
 
 import javax.vecmath.Vector4f;
 

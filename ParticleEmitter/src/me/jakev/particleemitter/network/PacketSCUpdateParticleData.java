@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particleblock.network;
+package me.jakev.particleemitter.network;
 
 import api.network.Packet;
 import api.network.PacketReadBuffer;

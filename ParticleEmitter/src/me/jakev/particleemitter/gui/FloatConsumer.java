@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particleblock.gui;
+package me.jakev.particleemitter.gui;
 
 /**
  * Created by Jake on 12/17/2020.

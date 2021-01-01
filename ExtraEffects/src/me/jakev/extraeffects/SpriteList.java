@@ -1,7 +1,6 @@
 package me.jakev.extraeffects;
 
-import api.utils.textures.StarLoaderTexture;
-import org.schema.schine.graphicsengine.forms.Sprite;
+import api.utils.particle.ModParticleUtil;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -28,26 +27,22 @@ public enum SpriteList {
 
     ;
 
-    private Sprite sprite;
+    private int sprite;
     private String name;
 
-    public static void init(ExtraEffects mod) {
-        StarLoaderTexture.runOnGraphicsThread(() -> {
-            synchronized (SpriteList.class) {
-                for (SpriteList value : SpriteList.values()) {
-                    String name = value.name().toLowerCase();
-                    value.name = name;
-                    try {
-                        value.sprite = StarLoaderTexture.newSprite(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/" + name + ".png")), mod, "extraeffects_" + name);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+    public static void init(ExtraEffects mod, ModParticleUtil.LoadEvent event) {
+        for (SpriteList value : SpriteList.values()) {
+            String name = value.name().toLowerCase();
+            value.name = name;
+            try {
+                value.sprite = event.addParticleSprite(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/" + name + ".png")), mod);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
 
-    public Sprite getSprite() {
+    public int getSprite() {
         return sprite;
     }
 

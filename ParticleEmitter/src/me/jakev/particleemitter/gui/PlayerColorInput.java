@@ -1,4 +1,4 @@
-package me.jakev.extraeffects.particleblock.gui;
+package me.jakev.particleemitter.gui;
 
 import org.schema.game.client.controller.PlayerGameTextInput;
 import org.schema.game.client.data.GameClientState;
