@@ -82,7 +82,7 @@ public class ExtraEffectCannonListener {
                 world.origin.set(pos);
                 dir.normalize();
                 dir.scale(0.09F);
-                ModParticleUtil.playClient(pos, SpriteList.BIGSMOKE.getSprite(), 1, 4000, dir, new ModParticleFactory() {
+                ModParticleUtil.playClient(pos, SpriteList.BIGSMOKE.getSprite(), 10, 4000, dir, new ModParticleFactory() {
                     @Override
                     public ModParticle newParticle() {
                         return new DirectionFadeParticle(dir, 0.01F, 0.5F,5F);

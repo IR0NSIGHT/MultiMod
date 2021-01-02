@@ -8,15 +8,13 @@ import api.listener.events.input.KeyPressEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.network.Packet;
-import api.utils.particle.ModParticle;
-import api.utils.particle.ModParticleFactory;
+import api.network.packets.PacketUtil;
 import api.utils.particle.ModParticleUtil;
 import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectCannonListener;
 import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
-import me.jakev.extraeffects.particles.FadeParticle;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -55,6 +53,7 @@ public class ExtraEffects extends StarMod {
 
     @Override
     public void onEnable() {
+        PacketUtil.registerPacket(PacketSCPlayExtraEffect.class);
         Packet.dumpPacketLookup();
         ExtraEffectMissileListener.init(this);
         ExtraEffectBeamListener.init(this);

@@ -13,10 +13,11 @@ public class SimpleFireParticle extends ModParticle {
     static Vector4f endColor = new Vector4f(0.8F,0,0,0F);
     private final float startSize;
     private final float endSize;
-
+    private static float initialRotation = 0;
     public SimpleFireParticle(float startSize, float endSize) {
         this.startSize = startSize;
         this.endSize = endSize;
+        rotate(this, initialRotation+=0.1F);
     }
 
     @Override
