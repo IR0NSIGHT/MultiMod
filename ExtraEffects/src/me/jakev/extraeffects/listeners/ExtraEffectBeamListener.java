@@ -7,6 +7,7 @@ import api.mod.StarMod;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
+import me.jakev.extraeffects.EEParticles;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.FadeParticle;
 import me.jakev.extraeffects.particles.RingHitParticle;
@@ -50,6 +51,7 @@ public class ExtraEffectBeamListener {
                 Vector3f inverseNormal = new Vector3f(normal);
                 inverseNormal.scale(-1F);
                 if (ran % 8 == 0) {
+                    ModParticleUtil.playClient(EEParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(2000));
                     ModParticleUtil.playClient(to, SpriteList.RING.getSprite(), 1, 2000, inverseNormal, new ModParticleFactory() {
                         @Override
                         public ModParticle newParticle() {

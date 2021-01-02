@@ -44,12 +44,13 @@ public class ExtraEffectMissileListener {
         StarLoader.registerListener(MissilePostAddEvent.class, new Listener<MissilePostAddEvent>() {
             @Override
             public void onEvent(MissilePostAddEvent event) {
-                Vector3f dir = new Vector3f();
+                final Vector3f dir = new Vector3f();
                 event.getMissile().getDirection(dir);
                 dir.normalize();
                 dir.scale(0.3F);
                 Vector3f origin = event.getMissile().getWorldTransform().origin;
-                ModParticleUtil.playClient(origin, SpriteList.BALL.getSprite(), 40, 1000, new Vector3f(0,0,0), new ModParticleFactory() {
+                ModParticleUtil.playClient(origin, SpriteList.BALL.getSprite(), 40, 1000,
+                        new Vector3f(0,0,0), new ModParticleFactory() {
                     @Override
                     public ModParticle newParticle() {
                         return new MissileShootParticle(dir, 0.15F, 1F);
