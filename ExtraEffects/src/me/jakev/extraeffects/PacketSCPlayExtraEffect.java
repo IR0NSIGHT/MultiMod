@@ -13,6 +13,7 @@ import me.jakev.extraeffects.particles.FadeParticle;
 import me.jakev.extraeffects.particles.FlashParticle;
 import me.jakev.extraeffects.particles.shipexplode.ColorFlashParticle;
 import me.jakev.extraeffects.particles.shipexplode.DebrisFlairParticle;
+import me.jakev.extraeffects.particles.shipexplode.FlashFieldEmitterParticle;
 import me.jakev.extraeffects.particles.shipexplode.InvisibleEmitterParticle;
 import org.schema.common.util.linAlg.Vector3i;
 import org.schema.game.common.data.player.PlayerState;
@@ -44,7 +45,7 @@ public class PacketSCPlayExtraEffect extends Packet {
             Vector3i currentSector = new Vector3i(value.getCurrentSector());
             currentSector.sub(sec);
             float dist = currentSector.lengthSquared();
-            if(dist < 2){
+            if(dist < 3){
                 ar.add(value);
             }
         }
@@ -52,8 +53,10 @@ public class PacketSCPlayExtraEffect extends Packet {
     }
 
     public static void executeShipExplode(Vector3i sector, Vector3f loc) {
+        System.err.println("SHIP EXPLODE");
+        PacketSCPlayExtraEffect packet = new PacketSCPlayExtraEffect(Type.SHIP_EXPLODE, loc);
         for (PlayerState player : getPlayers(sector)) {
-            PacketSCPlayExtraEffect packet = new PacketSCPlayExtraEffect(Type.SHIP_EXPLODE, loc);
+            System.err.println("SENDING TO: " + player);
             PacketUtil.sendPacket(player, packet);
         }
     }
@@ -83,41 +86,51 @@ public class PacketSCPlayExtraEffect extends Packet {
 
     @Override
     public void processPacketOnClient() {
-        System.err.println("Process on client");
         if (type == Type.SHIP_EXPLODE) {
-            new StarRunnable() {
-                @Override
-                public void run() {
-                    ModParticleUtil.playClient(pos, SpriteList.BIGSMOKE.getSprite(), 70, 3000, 0.3F, false, new ModParticleFactory() {
-                        @Override
-                        public ModParticle newParticle() {
-                            return new FadeParticle(10, 500);
-                        }
-                    });
-                }
-            }.runLater(ExtraEffects.inst, 2);
-            //130
-            ModParticleUtil.playClient(pos, SpriteList.FLASH.getSprite(), 1, 180, new Vector3f(0, 0, 0), new ModParticleFactory() {
-                @Override
-                public ModParticle newParticle() {//15
-                    return new ColorFlashParticle(25, new Vector4f(1, 1, 0, 1), new Vector4f(1F, 0, 0, 1F));
-                }
-            });
-
-            //30, 1.6
-            ModParticleUtil.playClient(pos, SpriteList.NOTHING.getSprite(), 40, 5000, 1.8F, 0, 0, 0, new ModParticleFactory() {
+            ModParticleUtil.playClient(pos, SpriteList.NOTHING.getSprite(), 1, 500, new Vector3f(0,0,0), new ModParticleFactory() {
                 @Override
                 public ModParticle newParticle() {
-                    return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), 1, 5000, new Vector3f(0, 0, 0), 1000, new ModParticleFactory() {
+                    return new FlashFieldEmitterParticle(60);
+                }
+            });
+            new StarRunnable(){
+                @Override
+                public void run() {
+                    new StarRunnable() {
+                        @Override
+                        public void run() {
+                            ModParticleUtil.playClient(pos, SpriteList.BIGSMOKE.getSprite(), 70, 3000, 0.3F, false, new ModParticleFactory() {
+                                @Override
+                                public ModParticle newParticle() {
+                                    return new FadeParticle(10, 500);
+                                }
+                            });
+                        }
+                    }.runLater(ExtraEffects.inst, 2);
+                    //130
+                    ModParticleUtil.playClient(pos, SpriteList.FLASH.getSprite(), 1, 180, new Vector3f(0, 0, 0), new ModParticleFactory() {
+                        @Override
+                        public ModParticle newParticle() {//15
+                            return new ColorFlashParticle(25, new Vector4f(1, 1, 0, 1), new Vector4f(1F, 0, 0, 1F));
+                        }
+                    });
+
+                    //30, 1.6
+                    ModParticleUtil.playClient(pos, SpriteList.NOTHING.getSprite(), 40, 5000, 1.8F, 0, 0, 0, new ModParticleFactory() {
                         @Override
                         public ModParticle newParticle() {
-                            return new DebrisFlairParticle();
+                            return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), 1, 5000, new Vector3f(0, 0, 0), 1000, new ModParticleFactory() {
+                                @Override
+                                public ModParticle newParticle() {
+                                    return new DebrisFlairParticle();
+                                }
+                            });
                         }
                     });
                 }
-            });
+            }.runLater(ExtraEffects.inst, 13);
+
         }else if(type == Type.MISSILE_HIT){
-            System.err.println("Missile hit");
             ModParticleUtil.playClient(pos, SpriteList.FLASH.getSprite(), 1, 5000, new Vector3f(0,0,0), new ModParticleFactory() {
                 @Override
                 public ModParticle newParticle() {

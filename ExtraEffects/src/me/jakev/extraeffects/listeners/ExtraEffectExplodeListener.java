@@ -65,18 +65,19 @@ public class ExtraEffectExplodeListener {
                 if (GameClient.getClientState() != null) {
                     if (((ManagedUsableSegmentController<?>) event.getSegmentPiece().getSegmentController()).getAttachedPlayers().contains(GameClient.getClientPlayerState())) {
                         if (event.getSegmentPiece().getType() == ElementKeyMap.LOGIC_REMOTE_INNER) {
-                            if (GameCommon.isClientConnectedToServer()) {
+                            if (GameCommon.isOnSinglePlayer()) {
                                 if (event.getSegmentPiece().isActive()) {
-                                    AudioUtils.clientPlaySound("0022_item - forcefield powerdown", 1F, 1F);
-                                } else {
                                     AudioUtils.clientPlaySound("0022_action - enter digits in digital keypad", 1F, 1F);
+                                } else {
+                                    AudioUtils.clientPlaySound("0022_item - forcefield powerdown", 1F, 1F);
                                 }
                             } else {
                                 if (event.getSegmentPiece().isActive()) {
-                                    AudioUtils.clientPlaySound("0022_action - enter digits in digital keypad", 1F, 1F);
-                                } else {
                                     AudioUtils.clientPlaySound("0022_item - forcefield powerdown", 1F, 1F);
+                                } else {
+                                    AudioUtils.clientPlaySound("0022_action - enter digits in digital keypad", 1F, 1F);
                                 }
+
                             }
                         }
                     }
