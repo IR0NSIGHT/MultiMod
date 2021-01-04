@@ -1,10 +1,9 @@
 package me.jakev.extraeffects.particles.shipexplode;
 
 import api.utils.particle.ModParticle;
-import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
+import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particles.FlashParticle;
 
 import javax.vecmath.Vector3f;
 
@@ -14,16 +13,9 @@ import javax.vecmath.Vector3f;
  */
 public class FlashFieldEmitterParticle extends ModParticle {
     private float radius;
-    private final ModParticleFactory factory;
 
     public FlashFieldEmitterParticle(float radius) {
         this.radius = radius;
-        this.factory = new ModParticleFactory() {
-            @Override
-            public ModParticle newParticle() {
-                return new FlashParticle(10);
-            }
-        };
     }
 
     @Override
@@ -36,6 +28,6 @@ public class FlashFieldEmitterParticle extends ModParticle {
     public void update(long currentTime) {
         Vector3f v = new Vector3f(this.position);
         v.add(ModParticleUtil.getRandomDir(radius));
-        ModParticleUtil.playClient(v, SpriteList.FLASH.getSprite(), 1, 1000, new Vector3f(0,0,0), factory);
+        ModParticleUtil.playClient(ExtraEffectsParticles.SIMPLE_FLASH, v, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder());
     }
 }

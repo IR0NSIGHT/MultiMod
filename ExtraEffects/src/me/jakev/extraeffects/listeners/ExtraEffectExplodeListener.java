@@ -9,9 +9,11 @@ import api.listener.events.player.PlayerAcquireTargetEvent;
 import api.listener.events.systems.ShieldHitEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
+import api.utils.particle.ModParticleUtil;
 import api.utils.sound.AudioUtils;
 import com.bulletphysics.linearmath.Transform;
-import me.jakev.extraeffects.PacketSCPlayExtraEffect;
+import me.jakev.extraeffects.ExtraEffectsParticles;
+import me.jakev.extraeffects.SpriteList;
 import org.schema.common.util.linAlg.Vector3i;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.data.element.ElementKeyMap;
@@ -28,8 +30,10 @@ public class ExtraEffectExplodeListener {
         StarLoader.registerListener(SegmentControllerOverheatEvent.class, new Listener<SegmentControllerOverheatEvent>() {
             @Override
             public void onEvent(SegmentControllerOverheatEvent event) {
-                Vector3f pos = event.getEntity().getWorldTransformCenterOfMass(new Transform()).origin;
-                PacketSCPlayExtraEffect.executeShipExplode(event.getEntity().getSector(new Vector3i()), pos);
+                Vector3i sector = event.getEntity().getSector(new Vector3i());
+                final Vector3f pos = event.getEntity().getWorldTransformCenterOfMass(new Transform()).origin;
+                ModParticleUtil.playServer(sector,
+                        ExtraEffectsParticles.EXPLOSION_TRIGGER, pos, SpriteList.NOTHING.getSprite(), new ModParticleUtil.Builder());
             }
         }, inst);
         StarLoader.registerListener(PlayerAcquireTargetEvent.class, new Listener<PlayerAcquireTargetEvent>() {
@@ -67,9 +71,9 @@ public class ExtraEffectExplodeListener {
                         if (event.getSegmentPiece().getType() == ElementKeyMap.LOGIC_REMOTE_INNER) {
                             if (GameCommon.isOnSinglePlayer()) {
                                 if (event.getSegmentPiece().isActive()) {
-                                    AudioUtils.clientPlaySound("0022_action - enter digits in digital keypad", 1F, 1F);
-                                } else {
                                     AudioUtils.clientPlaySound("0022_item - forcefield powerdown", 1F, 1F);
+                                } else {
+                                    AudioUtils.clientPlaySound("0022_action - enter digits in digital keypad", 1F, 1F);
                                 }
                             } else {
                                 if (event.getSegmentPiece().isActive()) {

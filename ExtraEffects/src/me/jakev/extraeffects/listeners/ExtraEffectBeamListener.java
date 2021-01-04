@@ -4,13 +4,9 @@ import api.listener.Listener;
 import api.listener.events.weapon.BeamPostAddEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
-import api.utils.particle.ModParticle;
-import api.utils.particle.ModParticleFactory;
 import api.utils.particle.ModParticleUtil;
-import me.jakev.extraeffects.EEParticles;
+import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particles.FadeParticle;
-import me.jakev.extraeffects.particles.RingHitParticle;
 import org.schema.game.common.controller.elements.beam.damageBeam.DamageBeamHandler;
 
 import javax.vecmath.Vector3f;
@@ -51,24 +47,18 @@ public class ExtraEffectBeamListener {
                 Vector3f inverseNormal = new Vector3f(normal);
                 inverseNormal.scale(-1F);
                 if (ran % 8 == 0) {
-                    ModParticleUtil.playClient(EEParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(2000));
-                    ModParticleUtil.playClient(to, SpriteList.RING.getSprite(), 1, 2000, inverseNormal, new ModParticleFactory() {
-                        @Override
-                        public ModParticle newParticle() {
-                            return new RingHitParticle();
-                        }
-                    });
+                    ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(1800)
+                            .setOffset(new Vector3f(1F,1F,1F)));
                 }
 
                 normal.scale(25);
                 start.add(normal);
                 start.add(normal);
-                ModParticleUtil.playClient(start, SpriteList.RING.getSprite(), 1, 1300, normal, new ModParticleFactory() {
-                    @Override
-                    public ModParticle newParticle() {
-                        return new FadeParticle(10);
-                    }
-                });
+                ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_SHOOT, start, SpriteList.RING.getSprite(),
+                        new ModParticleUtil.Builder()
+                                .setType(ModParticleUtil.Builder.Type.USE_OFFSET_AS_VELOCITY)
+                                .setLifetime(1300).setOffset(normal)
+                );
 
             }
         }, mod);
