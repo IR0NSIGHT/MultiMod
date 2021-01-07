@@ -31,12 +31,11 @@ public class ExtraEffects extends StarMod {
         setModAuthor("JakeV");
         setModDescription("Various particles and sounds");
         inst = this;
-        setSMDResourceId(44);
+        setSMDResourceId(8215);
     }
 
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-
     }
 
     public static ExtraEffects inst;

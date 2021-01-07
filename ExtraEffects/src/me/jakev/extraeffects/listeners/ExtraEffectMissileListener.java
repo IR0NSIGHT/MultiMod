@@ -23,6 +23,18 @@ import javax.vecmath.Vector3f;
  * <insert description here>
  */
 public class ExtraEffectMissileListener {
+    private static Vector3f[] interpolate(int times, Vector3f start, Vector3f end){
+        Vector3f segment = new Vector3f(end);
+        segment.sub(start);
+        segment.scale(1F/ times);
+        Vector3f[] arr = new Vector3f[times + 1];
+        arr[0] = start;
+        for (int i = 1; i < times + 1; i++) {
+            arr[i] = new Vector3f(arr[i - 1]);
+            arr[i].add(segment);
+        }
+        return arr;
+    }
     public static void init(StarMod mod){
         FastListenerCommon.missileUpdateListeners.add(new MissileUpdateListener() {
             @Override
@@ -31,9 +43,24 @@ public class ExtraEffectMissileListener {
             }
 
             @Override
-            public void updateClient(Missile missile, Timer timer) {
-                ModParticleUtil.playClient(ExtraEffectsParticles.MISSILE_FIRE_TRAIL, missile.getWorldTransform().origin, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(1600));
+            public void updateServerPost(Missile missile, Timer timer) {
+
             }
+            Vector3f pos = new Vector3f();
+            @Override
+            public void updateClient(Missile missile, Timer timer) {
+                pos.set(missile.getWorldTransform().origin);
+            }
+
+            @Override
+            public void updateClientPost(Missile missile, Timer timer) {
+
+                for (Vector3f pos : interpolate(2, this.pos, missile.getWorldTransform().origin)) {
+                    ModParticleUtil.playClient(ExtraEffectsParticles.MISSILE_FIRE_TRAIL, pos, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
+//                    ModParticleUtil.playClient(ExtraEffectsParticles.NORMAL_SMOKE, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(900).setType(ModParticleUtil.Builder.Type.EMISSION_BURST).setSpeed(0.2F));
+                }
+            }
+
         });
         StarLoader.registerListener(MissilePostAddEvent.class, new Listener<MissilePostAddEvent>() {
             @Override

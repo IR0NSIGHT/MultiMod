@@ -57,7 +57,7 @@ public class AlphaRework extends StarMod {
     }
 
     @Override
-    public void onPreEnableServer() {
+    public void onUniversalRegistryLoad() {
         UniversalRegistry.registerURV(UniversalRegistry.RegistryType.PLAYER_USABLE_ID, this, ShieldHardenAddOn.UID_NAME);
         UniversalRegistry.registerURV(UniversalRegistry.RegistryType.PLAYER_USABLE_ID, this, AlphaDriverAddOn.UID_NAME);
     }

@@ -24,7 +24,6 @@ public class SimpleFireParticle extends ModParticle {
     public void update(long currentTime) {
         colorOverTime(this, currentTime, startColor, endColor);
         sizeOverTime(this, currentTime, startSize, endSize);
-//        rotate(this, 0.9F);
-        rotate(this, 0.25F+ticksLived/240F);
+        rotate(this, 1.5F+ticksLived/240F);
     }
 }
