@@ -1,0 +1,15 @@
+{
+  "name": "AcidMissiles",
+  "author": "JakeV",
+  "description": "Makes missiles use acid.",
+  "version": "1.0",
+  "starmade_version": "0.202.109",
+  "force_enable": false,
+  "server_side": false,
+  "smd_resource_id": 1111,
+  "dependencies": [
+    -1
+  ],
+  "core_mod": true,
+  "requires_class_resize": true
+}

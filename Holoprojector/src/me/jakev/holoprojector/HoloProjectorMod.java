@@ -58,7 +58,7 @@ public class HoloProjectorMod extends StarMod {
 
     @Override
     public void onEnable() {
-        GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
+        final GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
         StarLoaderTexture.runOnGraphicsThread(new Runnable() {
             @Override
             public void run() {

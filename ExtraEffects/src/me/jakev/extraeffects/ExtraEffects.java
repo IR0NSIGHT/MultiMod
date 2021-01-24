@@ -25,13 +25,8 @@ public class ExtraEffects extends StarMod {
     }
 
     @Override
-    public void onGameStart() {
-        setModName("ExtraEffects");
-        setModVersion("0.1");
-        setModAuthor("JakeV");
-        setModDescription("Various particles and sounds");
+    public void onLoad() {
         inst = this;
-        setSMDResourceId(8215);
     }
 
     @Override
