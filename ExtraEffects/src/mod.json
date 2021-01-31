@@ -4,12 +4,13 @@
   "description": "New effects and particles",
   "version": "1.0",
   "starmade_version": "0.202.109",
-  "force_enable": false,
-  "server_side": false,
+  "client_mod": false,
+  "server_mod": false,
+  "main_class": "me.jakev.extraeffects.ExtraEffects",
   "smd_resource_id": 8215,
   "dependencies": [
     -1
   ],
-  "core_mod": false,
+  "core_mod": true,
   "requires_class_resize": false
 }
