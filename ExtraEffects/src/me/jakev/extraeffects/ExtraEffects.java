@@ -14,6 +14,13 @@ import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectCannonListener;
 import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
+import org.apache.poi.util.IOUtils;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.ProtectionDomain;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -22,6 +29,31 @@ import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
 public class ExtraEffects extends StarMod {
     public static void main(String[] args) {
 
+    }
+
+    @Override
+    public byte[] onClassTransform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] byteCode) {
+        if(className.endsWith("ScanAddOn")){
+            byte[] bytes = null;
+            try {
+                ZipInputStream file = new ZipInputStream(new FileInputStream(this.getSkeleton().getJarFile()));
+                while (true){
+                    ZipEntry nextEntry = file.getNextEntry();
+                    if(nextEntry == null) break;
+                    if(nextEntry.getName().endsWith("ScanAddOn.class")){
+                        bytes = IOUtils.toByteArray(file);
+                    }
+                }
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(bytes != null){
+                System.err.println("[ExtraEffects] Overwrote ScanAddOn class.");
+                return bytes;
+            }
+        }
+        return super.onClassTransform(loader, className, classBeingRedefined, protectionDomain, byteCode);
     }
 
     @Override

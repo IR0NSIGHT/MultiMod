@@ -35,7 +35,7 @@ public enum SpriteList {
             String name = value.name().toLowerCase();
             value.name = name;
             try {
-                value.sprite = event.addParticleSprite(ImageIO.read(ExtraEffects.class.getResourceAsStream("res/" + name + ".png")), mod);
+                value.sprite = event.addParticleSprite(ImageIO.read(mod.getJarResource("me/jakev/extraeffects/res/" + name + ".png")), mod);
             } catch (IOException e) {
                 e.printStackTrace();
             }

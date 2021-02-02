@@ -28,14 +28,6 @@ public class AcidMissiles extends StarMod {
     public static void main(String[] args) {
 
     }
-    @Override
-    public void onGameStart() {
-        setModName("AcidMissiles");
-        setModAuthor("JakeV");
-        setModVersion("1.0");
-        setModDescription("Makes missiles apply acid damage rather than cause death by allocating 1GB of memory per volley");
-        setSMDResourceId(4444);
-    }
 
     @Override
     public void onEnable() {
