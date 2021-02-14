@@ -1,0 +1,42 @@
+Series A - ModLoader topics
+Prefix:
+ -> New tutorial series
+ -> For those who know a little bit about programming. Perhaps not java
+ -> Everything from workspace setup to bytecode manipulation
+ -> Not in order! (bytecode/cmods are later topic)
+
+Episode 1 - Setting up the workspace:
+ -> Download IntelliJ
+ -> Download OpenJDK 7
+ -> Create project
+ -> Dependencies
+ -> Main class, onEnable
+ -> mod.json [Episode 3]
+ -> SMD Resource id
+ -> Artifact Jar
+ -> Uplinking
+ -> Integrated Debugger
+
+Episode 2 - Events & Runnables:
+ -> Events
+ -> Runnables
+ -> Repeating runnables
+
+Episode 3 - Distributing your mod:
+ -> Mod siding
+ -> SMD Resource id.
+
+Episode 4 - Core Mods:
+ -> Class transformers
+ -> Restart conditions
+
+Episode 5 - StarLoader workspace & Contributing
+ -> The only mod that works through source code patches
+ -> Writing events
+ -> Writing FastEvents
+ -> Writing new systems
+
+Series B: Various Mod Systems
+
+Series C: Non-StarLoader tutorials
+Episode 1: Bytecode, ASM & class replacement.
