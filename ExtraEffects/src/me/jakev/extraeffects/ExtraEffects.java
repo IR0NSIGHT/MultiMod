@@ -1,64 +1,29 @@
 package me.jakev.extraeffects;
 
 import api.common.GameClient;
-import api.common.GameCommon;
 import api.config.BlockConfig;
 import api.listener.Listener;
 import api.listener.events.controller.ClientInitializeEvent;
 import api.listener.events.input.KeyPressEvent;
-import api.mod.ModStarter;
 import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.network.Packet;
-import api.utils.StarRunnable;
 import api.utils.particle.ModParticleUtil;
 import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectCannonListener;
 import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
-import org.apache.poi.util.IOUtils;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.ProtectionDomain;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Created by Jake on 12/3/2020.
  * <insert description here>
  */
 public class ExtraEffects extends StarMod {
-    @Override
-    public byte[] onClassTransform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] byteCode) {
-        if(className.endsWith("BuildModeDrawer")){
-            byte[] bytes = null;
-            try {
-                ZipInputStream file = new ZipInputStream(new FileInputStream(this.getSkeleton().getJarFile()));
-                while (true){
-                    ZipEntry nextEntry = file.getNextEntry();
-                    if(nextEntry == null) break;
-                    if(nextEntry.getName().endsWith("BuildModeDrawer.class")){
-                        bytes = IOUtils.toByteArray(file);
-                    }
-                }
-                file.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if(bytes != null){
-                System.err.println("[ExtraEffects] Overwrote BuildModeDrawer class.");
-                return bytes;
-            }
-        }
-        return super.onClassTransform(loader, className, classBeingRedefined, protectionDomain, byteCode);
-    }
 
     @Override
     public void onLoad() {
         inst = this;
-        forceDefine("org.schema.game.client.view.BuildModeDrawer$MySuperEpicBuildModeClass");
     }
 
     @Override
@@ -79,20 +44,6 @@ public class ExtraEffects extends StarMod {
 
     @Override
     public void onEnable() {
-        new StarRunnable(){
-            @Override
-            public void run() {
-                System.err.println("STATE INFO REAL");
-                System.err.println("LastClient: " + ModStarter.lastConnectedToServer);
-                System.err.println("LastServer: " + ModStarter.lastConnectedToClient);
-
-                System.err.println("SC: " + GameCommon.isOnSinglePlayer());
-                System.err.println("DS: " + GameCommon.isDedicatedServer());
-                System.err.println("CCTS: " + GameCommon.isClientConnectedToServer());
-                System.err.println("END STATE INFO");
-            }
-        }.runTimer(this,1);
-
         Packet.dumpPacketLookup();
         ExtraEffectMissileListener.init(this);
         ExtraEffectBeamListener.init(this);

@@ -1,0 +1,16 @@
+{
+  "name": "LodBlockExample",
+  "author": "JakeV",
+  "description": "Lod example block",
+  "version": "1.0",
+  "starmade_version": "0.202.109",
+  "client_mod": false,
+  "server_mod": false,
+  "main_class": "me.jakev.lodblockexample.LodBlockExample",
+  "smd_resource_id": 99999,
+  "dependencies": [
+    -1
+  ],
+  "core_mod": false,
+  "requires_class_resize": false
+}
