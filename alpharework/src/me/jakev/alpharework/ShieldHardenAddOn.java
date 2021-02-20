@@ -134,10 +134,14 @@ public class ShieldHardenAddOn extends SimpleAddOn {
             }
         }
     }
-
+    int ticks = 0;
     @Override
     public void onInactive() {
 
+        //Recalibrate playerUsable on occasion
+        if(ticks++%100 == 0){
+            onReactorRecalibrate(null);
+        }
     }
 
     @Override

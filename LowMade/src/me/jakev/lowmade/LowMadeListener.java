@@ -1,5 +1,6 @@
 package me.jakev.lowmade;
 
+import api.DebugFile;
 import api.listener.Listener;
 import api.listener.events.draw.CubeTexturePostLoadEvent;
 import api.mod.StarLoader;
@@ -19,6 +20,7 @@ public class LowMadeListener {
         StarLoader.registerListener(CubeTexturePostLoadEvent.class, new Listener<CubeTexturePostLoadEvent>() {
             @Override
             public void onEvent(CubeTexturePostLoadEvent event) {
+                DebugFile.log("Fired cubetexturepostload", LowMade.inst);
                 Texture[] texArray = event.getTexArray();
                 //texArray == GameResourceLoader.cubeTextures ||
                 if (texArray == GameResourceLoader.cubeTexturesLow) {

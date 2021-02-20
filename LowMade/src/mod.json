@@ -2,7 +2,7 @@
   "name": "LowMade",
   "author": "JakeV",
   "description": "Uses 1x1 textures for far away blocks",
-  "version": "1.0",
+  "version": "1.1",
   "starmade_version": "0.202.109",
   "client_mod": true,
   "server_mod": false,

@@ -1,0 +1,16 @@
+{
+  "name": "AlphaRework",
+  "author": "JakeV",
+  "description": "Reworks High/Low damage chambers",
+  "version": "1.0",
+  "starmade_version": "0.202.109",
+  "client_mod": false,
+  "server_mod": false,
+  "main_class": "me.jakev.alpharework.AlphaRework",
+  "smd_resource_id": 8182,
+  "dependencies": [
+    -1
+  ],
+  "core_mod": false,
+  "requires_class_resize": false
+}

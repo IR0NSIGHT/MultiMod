@@ -32,6 +32,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
     public static final String UID_NAME = "AlphaDriverAddOn";
     Vector4i origConfigColor = new Vector4i();
     Vector4i origConfigWarnColor = new Vector4i();
+
     public AlphaDriverAddOn(ManagerContainer<?> var1, AlphaRework mod) {
         super(var1, ElementKeyMap.EFFECT_OVERDRIVE_COMPUTER, mod, UID_NAME);
         alphaDir1 = AlphaRework.config.getConfigurableInt("overdrive_duration_1", 3);
@@ -52,8 +53,14 @@ public class AlphaDriverAddOn extends SimpleAddOn {
     @Override
     public void onReactorRecalibrate(ReactorRecalibrateEvent event) {
         try {
+            if(!(getSegmentController() instanceof ManagedUsableSegmentController)){
+                return;
+            }
+            System.err.println("FIRED RECALIBRATE for: " + getSegmentController().getName());
             ReactorElement dps1 = SegmentControllerUtils.getChamberFromElement(getManagerUsableSegmentController(), ElementKeyMap.getInfo(SHIELD_TYPE_DPS_1));
+            System.err.println("DPS1: " + dps1);
             ReactorElement dps2 = SegmentControllerUtils.getChamberFromElement(getManagerUsableSegmentController(), ElementKeyMap.getInfo(SHIELD_TYPE_DPS_2));
+            System.err.println("DPS2: " + dps2);
             if (dps1 != null && dps1.isAllValid()) {
                 playerUsable = true;
             } else if (dps2 != null && dps2.isAllValid()) {
@@ -61,8 +68,8 @@ public class AlphaDriverAddOn extends SimpleAddOn {
             } else {
                 playerUsable = false;
             }
-        } catch (Exception ignored){
-
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
     }
 
@@ -80,6 +87,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
     public double getPowerConsumedPerSecondCharging() {
         return getSegmentController().getMass() * AlphaRework.config.getConfigurableFloat("alpha_power_cons_per_mass", 2F);
     }
+
     public static short SHIELD_TYPE_DPS_1 = 1119;
     public static short SHIELD_TYPE_DPS_2 = 35;
     int alphaDir1;
@@ -88,6 +96,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
 
     @Override
     public boolean isPlayerUsable() {
+//        return true;
         return playerUsable;
     }
 
@@ -120,7 +129,7 @@ public class AlphaDriverAddOn extends SimpleAddOn {
     @Override
     public void onDeactivateFromTime() {
         super.onDeactivateFromTime();
-        if(GameClient.getClientState() != null) {
+        if (GameClient.getClientState() != null) {
             Hud hud = GameClient.getClientState().getWorldDrawer().getGuiDrawer().getHud();
             try {
                 Field f = Hud.class.getDeclaredField("backgroundCrosshairHUD");
@@ -143,15 +152,16 @@ public class AlphaDriverAddOn extends SimpleAddOn {
             AudioUtils.clientPlaySound("0022_item - forcefield powerdown", 10F, 1F);
         }
     }
+
     @SuppressWarnings("rawtypes")
     @Override
     public void onActive() {
-        if(GameClient.getClientState() != null){
+        if (GameClient.getClientState() != null) {
             ManagedUsableSegmentController<?> controller = getManagerUsableSegmentController();
             ArrayList<SegmentController> allDocks = new ArrayList<>();
             controller.railController.getDockedRecusive(allDocks);
             for (SegmentController dock : allDocks) {
-                if(dock instanceof ManagedUsableSegmentController) {
+                if (dock instanceof ManagedUsableSegmentController) {
                     for (ElementCollectionManager manager : SegmentControllerUtils.getAllCollectionManagers((ManagedUsableSegmentController<?>) dock)) {
                         for (Object ec : manager.getElementCollections()) {
                             if (ec instanceof FireingUnit) {
@@ -175,8 +185,8 @@ public class AlphaDriverAddOn extends SimpleAddOn {
                 Field f = Hud.class.getDeclaredField("powerConsumptionBar");
                 f.setAccessible(true);
                 PowerConsumptionBar o = (PowerConsumptionBar) f.get(hud);
-                PowerConsumptionBar.COLOR.set(0,255,120,255);
-                PowerConsumptionBar.COLOR_WARN.set(0,255,255,255);
+                PowerConsumptionBar.COLOR.set(0, 255, 120, 255);
+                PowerConsumptionBar.COLOR_WARN.set(0, 255, 255, 255);
                 o.onInit();
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -184,9 +194,13 @@ public class AlphaDriverAddOn extends SimpleAddOn {
         }
     }
 
+    int ticks = 0;
     @Override
     public void onInactive() {
-
+        //Recalibrate playerUsable on occasion
+        if(ticks++%100 == 0){
+            onReactorRecalibrate(null);
+        }
     }
 
     @Override
