@@ -2,9 +2,11 @@ package me.jakev.lodblockexample;
 
 import api.config.BlockConfig;
 import api.mod.StarMod;
-import api.utils.textures.StarLoaderTexture;
+import api.utils.StarRunnable;
 import org.schema.game.client.view.GameResourceLoader;
 import org.schema.game.common.data.element.ElementInformation;
+import org.schema.game.common.data.element.ElementKeyMap;
+import org.schema.game.common.data.element.FactoryResource;
 import org.schema.schine.graphicsengine.core.Controller;
 import org.schema.schine.graphicsengine.core.ResourceException;
 
@@ -21,29 +23,32 @@ public class LodBlockExample extends StarMod {
 
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-        ElementInformation chair = config.newElement(this, "le chair", new short[]{195});
-        BlockConfig.setBasicInfo(chair, "le chair", 100, 0.1F, true, true, 78);
-        config.assignLod(chair, this, "EpicSlope", null);
+        ElementInformation chair = ElementKeyMap.getInfo(ElementKeyMap.TERRAIN_ROCK_WHITE);
+        BlockConfig.setBasicInfo(chair, "iFunny spike", 100, 0.1F, true, true, 91);
+        config.assignLod(chair, this, "Spike", null);
         config.add(chair);
+
+        BlockConfig.addRefineryRecipe(ElementKeyMap.capsuleRecipe,
+                new FactoryResource[]{new FactoryResource(1, ElementKeyMap.SHIPYARD_COMPUTER)},
+                new FactoryResource[]{new FactoryResource(2, ElementKeyMap.COCKPIT_ID)}
+                );
     }
 
 
     @Override
     public void onEnable() {
-
         System.err.println("Called OnEnable of LodBlockExample");
-        StarLoaderTexture.runOnGraphicsThread(new Runnable() {
+        new StarRunnable(true){
             @Override
             public void run() {
                 try {
                     System.err.println("Loading lodblockexam");
                     GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
-                    resLoader.getMeshLoader().loadModMesh(LodBlockExample.this, "EpicSlope", getJarResource("me/jakev/lodblockexample/EpicSlope.zip"), "Console");
+                    resLoader.getMeshLoader().loadModMesh(LodBlockExample.this, "Spike", getJarResource("me/jakev/lodblockexample/Spike.zip"), "Console");
                 } catch (ResourceException | IOException e) {
                     e.printStackTrace();
                 }
             }
-        });
-        mod = this;
+        }.runLater(this, 0);
     }
 }

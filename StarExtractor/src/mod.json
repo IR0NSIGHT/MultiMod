@@ -1,0 +1,16 @@
+{
+  "name": "StarExtractor",
+  "author": "JakeV",
+  "description": "StarExtractor Demo",
+  "version": "1.1",
+  "starmade_version": "0.202.109",
+  "client_mod": true,
+  "server_mod": false,
+  "main_class": "me.jakev.starextractor.StarExtractorNew",
+  "smd_resource_id": 88888,
+  "dependencies": [
+    -1
+  ],
+  "core_mod": false,
+  "requires_class_resize": false
+}
