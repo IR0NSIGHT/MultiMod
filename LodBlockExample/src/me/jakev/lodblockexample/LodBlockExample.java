@@ -23,11 +23,10 @@ public class LodBlockExample extends StarMod {
 
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-        ElementInformation chair = ElementKeyMap.getInfo(ElementKeyMap.TERRAIN_ROCK_WHITE);
+        ElementInformation chair = BlockConfig.newElement(this, "MyEpicNewBlock", new short[]{43});
         BlockConfig.setBasicInfo(chair, "iFunny spike", 100, 0.1F, true, true, 91);
-        config.assignLod(chair, this, "Spike", null);
-        config.add(chair);
-
+        BlockConfig.assignLod(chair, this, "Spike", null);
+        BlockConfig.add(chair);
         BlockConfig.addRefineryRecipe(ElementKeyMap.capsuleRecipe,
                 new FactoryResource[]{new FactoryResource(1, ElementKeyMap.SHIPYARD_COMPUTER)},
                 new FactoryResource[]{new FactoryResource(2, ElementKeyMap.COCKPIT_ID)}
