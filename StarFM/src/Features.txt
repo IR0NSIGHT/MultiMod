@@ -1,0 +1,42 @@
+[StarFM - (StarMade Faction Mechanics) initial features]
+- Controlling systems gives a mining bonus + passive resource pool bonus
+- System claim is based on how much "Control Power" a faction exerts on the system, this is based on reactor power. Stations will be more important.
+
+Station Overshields:
+ - Stations will have special shields based on a new chamber. These shields make the station completely invincible.
+ - Each station has its own Siege Time. This is a time that happens every 24 hours and makes the station vulnerable.
+
+Homebase:
+ - Factions could still have homebases, but it would half the control power of the system for said faction.
+
+[Post-Initial Features]
+ - Make ControlPower be based on offensive, defensive, reactor power, and the manufacturing power of all ships and stations in a system.
+ - Mining in a controlled system would alert the owning faction if they had a certain chamber.
+ - [Recon Overhaul (sort of)]:
+ - Fleets could be set to attack enemy/neutral miners.
+ - A long range chamber could be used to tell how close you are to the main station in a system.
+ - A station-only chamber that allows you to see locations of all nearby ships/stations (2 system radius)
+ - [FTL Mechanics]:
+ - Ships would not be able to jump in or out or through enemy systems unless a warp gate was set up nearby.
+
+[CODE LAYOUT]
+Control Power Sweep:
+    For `system` in `the galaxy`:
+         Map: [FactionId -> ControlPower]
+         Get all loaded and unloaded entities.
+         For every entity:
+                map[factionid] += calc(ControlPower) (Reactor Cap as of now)
+                Mark CP to be halfed if `entity` is a homebase
+
+         For the faction with the greatest control power, give them the claim to the system.
+         If CP is too low, remove ownership
+
+Siege Mechanics:
+    On station pre-damage: If station is not siegable, dont damage.
+    Is a station hittable?
+      - It needs to have the overshield chamber.
+      - It needs to not be during siege time.
+
+    Siege time:
+     - On right click of the chamber, popup a UI that allows faction rank 2+ to set the siege time.
+     - When the siege time is set, [todo: exploit countermeasure]
