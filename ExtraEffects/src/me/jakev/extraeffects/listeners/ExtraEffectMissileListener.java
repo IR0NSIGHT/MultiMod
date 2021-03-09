@@ -55,10 +55,10 @@ public class ExtraEffectMissileListener {
             @Override
             public void updateClientPost(Missile missile, Timer timer) {
 
-                for (Vector3f pos : interpolate(2, this.pos, missile.getWorldTransform().origin)) {
+//                for (Vector3f pos : interpolate(2, this.pos, missile.getWorldTransform().origin)) {
                     ModParticleUtil.playClient(ExtraEffectsParticles.MISSILE_FIRE_TRAIL, pos, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
 //                    ModParticleUtil.playClient(ExtraEffectsParticles.NORMAL_SMOKE, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(900).setType(ModParticleUtil.Builder.Type.EMISSION_BURST).setSpeed(0.2F));
-                }
+//                }
             }
 
         });

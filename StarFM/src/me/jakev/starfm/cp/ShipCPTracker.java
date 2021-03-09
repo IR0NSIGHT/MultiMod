@@ -1,7 +1,8 @@
-package me.jakev.starfm;
+package me.jakev.starfm.cp;
 
 import api.mod.ModSkeleton;
 import api.mod.config.PersistentObjectUtil;
+import me.jakev.starfm.StarFM;
 import org.schema.game.common.controller.SegmentController;
 import org.schema.game.common.controller.SpaceStation;
 

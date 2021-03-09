@@ -1,4 +1,4 @@
-package me.jakev.starfm;
+package me.jakev.starfm.cp;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.schema.common.util.linAlg.Vector3i;

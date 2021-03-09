@@ -9,14 +9,14 @@ Station Overshields:
 Homebase:
  - Factions could still have homebases, but it would half the control power of the system for said faction.
 
+Long-Range Recon System:
+ - Mining in a controlled system would alert the owning faction if they had a certain chamber. (hidden by stealth)
+ - Fleets could be set to attack enemy/neutral miners.
+ - A scanner chamber that allows you to see locations of all nearby ships/stations (2-5 sector radius)
+ - Chamber to see exact control power info
+
 [Post-Initial Features]
  - Make ControlPower be based on offensive, defensive, reactor power, and the manufacturing power of all ships and stations in a system.
- - Mining in a controlled system would alert the owning faction if they had a certain chamber.
- - [Recon Overhaul (sort of)]:
- - Fleets could be set to attack enemy/neutral miners.
- - A long range chamber could be used to tell how close you are to the main station in a system.
- - A station-only chamber that allows you to see locations of all nearby ships/stations (2 system radius)
- - [FTL Mechanics]:
  - Ships would not be able to jump in or out or through enemy systems unless a warp gate was set up nearby.
 
 [CODE LAYOUT]
