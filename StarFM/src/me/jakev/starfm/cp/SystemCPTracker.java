@@ -62,7 +62,7 @@ public class SystemCPTracker {
             Collections.sort(list, new Comparator<CPInfo>() {
                 @Override
                 public int compare(CPInfo o1, CPInfo o2) {
-                    return Integer.compare(o1.controlPower, o2.controlPower);
+                    return Integer.compare(o1.controlPower, o2.controlPower)*-1;
                 }
             });
             return list;

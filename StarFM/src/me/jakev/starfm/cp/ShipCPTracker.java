@@ -34,24 +34,39 @@ public class ShipCPTracker {
 
     public static CPInfo getControlPower(String uid) {
         CPInfo i = storage.cpMap.get(uid);
-        if (i == null) return nullInfo;
+        //SPECIAL CONDITION
+        //If we have a pirate station, set its CP to 1000
+        if(i == null) i = nullInfo;
+        if(i.factionId == 0 && i.controlPower == 0) {
+            if (uid.startsWith("ENTITY_SPACESTATION_ENTITY_SPACESTATION_Station_Piratestation")) {
+                i = new CPInfo(-1, 1000);
+            }
+        }
+        ///
         return i;
     }
 
     public static void updateControlPower(SegmentController seg) {
         boolean isStation = seg instanceof SpaceStation;
+        boolean isHomebase = seg.isHomeBase();
         int controlPower = 0;
         int faction = seg.getFactionId();
 
         //TODO: Temporary Control Power formula
         controlPower += seg.getMass();
         if (isStation) controlPower *= 2;
+        if(isHomebase) controlPower *= -1;
         //END
 
         String uidFull = seg.getUniqueIdentifierFull();
         storage.cpMap.put(uidFull, new CPInfo(faction, controlPower));
     }
 
+    private static int cpFormula(int reactor, int shields, int manuPower){
+        int reactorConst = 1;
+        int shieldsConst = 1;
+        return 1;
+    }
 
 }
 

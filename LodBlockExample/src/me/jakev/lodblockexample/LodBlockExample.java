@@ -3,13 +3,15 @@ package me.jakev.lodblockexample;
 import api.config.BlockConfig;
 import api.mod.StarMod;
 import api.utils.StarRunnable;
+import api.utils.textures.StarLoaderTexture;
 import org.schema.game.client.view.GameResourceLoader;
 import org.schema.game.common.data.element.ElementInformation;
-import org.schema.game.common.data.element.ElementKeyMap;
 import org.schema.game.common.data.element.FactoryResource;
 import org.schema.schine.graphicsengine.core.Controller;
 import org.schema.schine.graphicsengine.core.ResourceException;
+import org.schema.schine.resource.ResourceLoader;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 
 /**
@@ -21,21 +23,28 @@ public class LodBlockExample extends StarMod {
     public static LodBlockExample mod;
 
 
+    StarLoaderTexture icon;
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
-        ElementInformation chair = BlockConfig.newElement(this, "MyEpicNewBlock", new short[]{43});
-        BlockConfig.setBasicInfo(chair, "iFunny spike", 100, 0.1F, true, true, 91);
-        BlockConfig.assignLod(chair, this, "Spike", null);
+        ElementInformation chair = BlockConfig.newElement(this, "le toilet funny", new short[]{12});
+        BlockConfig.setBasicInfo(chair, "iFunny toilet", 100, 0.1F, true, true, icon.getTextureId());
+        BlockConfig.assignLod(chair, this, "toilet", null);
         BlockConfig.add(chair);
-        BlockConfig.addRefineryRecipe(ElementKeyMap.capsuleRecipe,
-                new FactoryResource[]{new FactoryResource(1, ElementKeyMap.SHIPYARD_COMPUTER)},
-                new FactoryResource[]{new FactoryResource(2, ElementKeyMap.COCKPIT_ID)}
-                );
+        BlockConfig.addRecipe(chair, 1, 5, new FactoryResource(1, (short) 1));
     }
 
+    @Override
+    public void onResourceLoad(ResourceLoader loader) {
+
+    }
 
     @Override
     public void onEnable() {
+        try {
+            icon = StarLoaderTexture.newIconTexture(ImageIO.read(getJarResource("me/jakev/lodblockexample/icon.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.err.println("Called OnEnable of LodBlockExample");
         new StarRunnable(true){
             @Override
@@ -43,7 +52,7 @@ public class LodBlockExample extends StarMod {
                 try {
                     System.err.println("Loading lodblockexam");
                     GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
-                    resLoader.getMeshLoader().loadModMesh(LodBlockExample.this, "Spike", getJarResource("me/jakev/lodblockexample/Spike.zip"), "Console");
+                    resLoader.getMeshLoader().loadModMesh(LodBlockExample.this, "toilet", getJarResource("me/jakev/lodblockexample/toilet.zip"), "Console");
                 } catch (ResourceException | IOException e) {
                     e.printStackTrace();
                 }

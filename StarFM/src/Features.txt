@@ -1,23 +1,27 @@
-[StarFM - (StarMade Faction Mechanics) initial features]
-- Controlling systems gives a mining bonus + passive resource pool bonus
+[StarFM - (StarMade Faction Mechanics)]
+Claim Mechanics:
+- Controlling systems gives a mining bonus + passive resource pool bonus (resource pools from regional-resources)
 - System claim is based on how much "Control Power" a faction exerts on the system, this is based on reactor power. Stations will be more important.
 
-Station Overshields:
+Invincible Station Mechanics:
  - Stations will have special shields based on a new chamber. These shields make the station completely invincible.
- - Each station has its own Siege Time. This is a time that happens every 24 hours and makes the station vulnerable.
+ - Each station has its own Siege Time. This is a time that happens every 24 hours and makes the station vulnerable. (The time is set by a faction member)
 
 Homebase:
- - Factions could still have homebases, but it would half the control power of the system for said faction.
+ - Factions could still have homebases, but it would half the control power of the system for said faction. Meaning that you will need a massive presence in your homebase system.
 
 Long-Range Recon System:
  - Mining in a controlled system would alert the owning faction if they had a certain chamber. (hidden by stealth)
- - Fleets could be set to attack enemy/neutral miners.
  - A scanner chamber that allows you to see locations of all nearby ships/stations (2-5 sector radius)
  - Chamber to see exact control power info
+ - Chamber to get siege time of a nearby station (In same-sector only)
+ - Chamber that allows you to tell who is in the same system as you [Hidden by stealth]
 
 [Post-Initial Features]
  - Make ControlPower be based on offensive, defensive, reactor power, and the manufacturing power of all ships and stations in a system.
  - Ships would not be able to jump in or out or through enemy systems unless a warp gate was set up nearby.
+ - Fleets could be set to attack enemy/neutral miners.
+
 
 [CODE LAYOUT]
 Control Power Sweep:
