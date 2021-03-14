@@ -38,6 +38,7 @@ public class FactionClaimSweeper extends StarRunnable {
     }
     @Override
     public void run() {
+        System.err.println("hi");
         //TODO Only update active sectors
         Vector3i system = getNextSystem();//new Vector3i(10,-10,10);
         ArrayList<CPInfo> infos = SystemCPTracker.getSystemControlPower(system);

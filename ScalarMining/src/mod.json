@@ -1,0 +1,16 @@
+{
+  "name": "ScalarMining",
+  "author": "JakeV",
+  "description": "Makes salvage beams scale with power",
+  "version": "1.0",
+  "starmade_version": "0.202.108",
+  "client_mod": false,
+  "server_mod": false,
+  "main_class": "me.jakev.scalarmining.ScalarMining",
+  "smd_resource_id": 123321,
+  "dependencies": [
+    -1
+  ],
+  "core_mod": false,
+  "requires_class_resize": false
+}
