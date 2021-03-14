@@ -14,7 +14,6 @@ import org.schema.schine.graphicsengine.core.Timer;
 
 import javax.vecmath.Vector3f;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Created by Jake on 3/13/2021.
@@ -38,9 +37,8 @@ public class ScalarMining extends StarMod {
             public void handle(
                     SalvageBeamHandler handler, BeamState hittingBeam, int hits, BeamHandlerContainer<SegmentController> container, SegmentPiece hitPiece, Vector3f from,
                     Vector3f to, Timer timer, Collection<Segment> updatedSegments) {
-                HashSet<Segment> segs = new HashSet<>(updatedSegments);
-                int r = (int) (hittingBeam.getPower()/8000F);
-                System.err.println("RAD:" + r);
+//                HashSet<Segment> segs = new HashSet<>(updatedSegments);
+                int r = Math.min(50, (int) (hittingBeam.getPower()/8000F));
                 int origX = hitPiece.getAbsolutePosX();
                 int origY = hitPiece.getAbsolutePosY();
                 int origZ = hitPiece.getAbsolutePosZ();
@@ -49,14 +47,17 @@ public class ScalarMining extends StarMod {
                         for (int z = -r; z < r; z++) {
                             if(x*x + y*y + z*z < r*r) {
                                 SegmentPiece pointUnsave = hitPiece.getSegmentController().getSegmentBuffer().getPointUnsave(origX + x, origY + y, origZ + z);
-                                segs.add(pointUnsave.getSegment());
-                                ((Salvager) handler.getBeamShooter()).handleSalvage(hittingBeam, hits, container, from, pointUnsave, timer, updatedSegments);
+                                if(pointUnsave != null) {
+//                                    segs.add(pointUnsave.getSegment());
+                                    ((Salvager) handler.getBeamShooter()).handleSalvage(hittingBeam, hits, container, from, pointUnsave, timer, updatedSegments);
+                                    pointUnsave.setType((short) 0);
+                                }
                             }
                         }
                     }
                 }
-                updatedSegments.clear();
-                updatedSegments.addAll(segs);
+//                updatedSegments.clear();
+//                updatedSegments.addAll(segs);
 
             }
         };

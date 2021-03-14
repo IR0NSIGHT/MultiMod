@@ -47,8 +47,8 @@ public class ExtraEffectBeamListener {
                 Vector3f inverseNormal = new Vector3f(normal);
                 inverseNormal.scale(-1F);
                 if (ran % 8 == 0) {
-                    ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(1800)
-                            .setOffset(new Vector3f(1F,1F,1F)));
+//                    ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(1800)
+//                            .setOffset(new Vector3f(1F,1F,1F)));
                 }
 
                 normal.scale(25);
@@ -57,7 +57,7 @@ public class ExtraEffectBeamListener {
                 ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_SHOOT, start, SpriteList.RING.getSprite(),
                         new ModParticleUtil.Builder()
                                 .setType(ModParticleUtil.Builder.Type.USE_OFFSET_AS_VELOCITY)
-                                .setLifetime(1300).setOffset(normal)
+                                .setLifetime(900).setOffset(normal)
                 );
 
             }
