@@ -54,7 +54,11 @@ public class ExtraEffectsParticles {
         BEAM_SHOOT = event.addParticle(new BasicModParticleFactory() {
             @Override
             public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new FadeParticle(5);
+                FadeParticle f = new FadeParticle(5);
+                f.colorR = (byte) (offset.x*127);
+                f.colorG = (byte) (offset.y*127);
+                f.colorB = (byte) (offset.z*127);
+                return f;
             }
         }, ExtraEffects.inst);
 
