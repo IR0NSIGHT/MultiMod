@@ -45,6 +45,7 @@ public class ExtraEffectCannonListener {
                 dir.scale(0.3F);
 
                 ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_HIT, pos, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
+                ModParticleUtil.playClient(ExtraEffectsParticles.ORANGE_FLASH, pos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(300));
             }
         }, mod);
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {

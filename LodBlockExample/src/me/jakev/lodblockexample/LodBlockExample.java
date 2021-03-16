@@ -6,6 +6,7 @@ import api.utils.StarRunnable;
 import api.utils.textures.StarLoaderTexture;
 import org.schema.game.client.view.GameResourceLoader;
 import org.schema.game.common.data.element.ElementInformation;
+import org.schema.game.common.data.element.ElementKeyMap;
 import org.schema.game.common.data.element.FactoryResource;
 import org.schema.schine.graphicsengine.core.Controller;
 import org.schema.schine.graphicsengine.core.ResourceException;
@@ -31,6 +32,11 @@ public class LodBlockExample extends StarMod {
         BlockConfig.assignLod(chair, this, "toilet", null);
         BlockConfig.add(chair);
         BlockConfig.addRecipe(chair, 1, 5, new FactoryResource(1, (short) 1));
+        for (ElementInformation elem : ElementKeyMap.infoArray) {
+            if(elem != null){
+                elem.deprecated = false;
+            }
+        }
     }
 
     @Override
@@ -52,7 +58,7 @@ public class LodBlockExample extends StarMod {
                 try {
                     System.err.println("Loading lodblockexam");
                     GameResourceLoader resLoader = (GameResourceLoader) Controller.getResLoader();
-                    resLoader.getMeshLoader().loadModMesh(LodBlockExample.this, "toilet", getJarResource("me/jakev/lodblockexample/toilet.zip"), "Console");
+                    resLoader.getMeshLoader().loadModMesh(LodBlockExample.this, "toilet", getJarResource("me/jakev/lodblockexample/toilet.zip"), "convexhull");
                 } catch (ResourceException | IOException e) {
                     e.printStackTrace();
                 }

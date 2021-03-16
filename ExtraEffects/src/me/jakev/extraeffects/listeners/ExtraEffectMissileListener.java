@@ -8,6 +8,7 @@ import api.listener.fastevents.FastListenerCommon;
 import api.listener.fastevents.MissileUpdateListener;
 import api.mod.StarLoader;
 import api.mod.StarMod;
+import api.utils.StarRunnable;
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
@@ -63,9 +64,23 @@ public class ExtraEffectMissileListener {
             }
 
         });
+        //Remove vanilla trails
+//        try {
+//            Field field = MissileTrailDrawer.class.getDeclaredField("MAX_TRAILS");
+//            field.setAccessible(true);
+//
+//            Field modifiersField = Field.class.getDeclaredField("modifiers");
+//            modifiersField.setAccessible(true);
+//            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+//
+//            field.set(null, 0);
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+        //
         StarLoader.registerListener(MissilePostAddEvent.class, new Listener<MissilePostAddEvent>() {
             @Override
-            public void onEvent(MissilePostAddEvent event) {
+            public void onEvent(final MissilePostAddEvent event) {
                 final Vector3f dir = new Vector3f();
                 event.getMissile().getDirection(dir);
                 dir.normalize();
@@ -73,6 +88,13 @@ public class ExtraEffectMissileListener {
                 Vector3f origin = event.getMissile().getWorldTransform().origin;
                 Sector sector = event.getMissile().getSector(event.getMissile().getSectorId());
                 ModParticleUtil.playServer(sector.pos, ExtraEffectsParticles.MISSILE_SHOOT, origin, SpriteList.BALL.getSprite(), new ModParticleUtil.Builder().setLifetime(1000).setAmount(40));
+                //Remove the vanilla missile trail
+                new StarRunnable(){
+                    @Override
+                    public void run() {
+//                        GameClientState.instance.getWorldDrawer().getTrailDrawer().endTrail(event.getMissile());
+                    }
+                }.runLater(ExtraEffects.inst, 3);
             }
         }, mod);
 
