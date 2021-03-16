@@ -24,6 +24,7 @@ public class ExtraEffectsParticles {
     public static int MISSILE_FIRE_TRAIL;
     public static int MISSILE_SHOOT;
     public static int SIMPLE_FLASH;
+    public static int SIMPLE_FLASH_SCALABLE;
 
     public static int MINOR_SMOKE;
     public static int NORMAL_SMOKE;
@@ -91,6 +92,13 @@ public class ExtraEffectsParticles {
                 return new FlashParticle(10);
             }
         }, ExtraEffects.inst);
+
+        SIMPLE_FLASH_SCALABLE = event.addParticle(new BasicModParticleFactory() {
+            @Override
+            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+                return new FlashScalableParticle(offset.x);
+            }
+        },ExtraEffects.inst);
 
         MINOR_SMOKE = event.addParticle(new BasicModParticleFactory() {
             @Override
