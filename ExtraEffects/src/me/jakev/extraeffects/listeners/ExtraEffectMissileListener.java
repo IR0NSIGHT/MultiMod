@@ -97,16 +97,21 @@ public class ExtraEffectMissileListener {
                 }.runLater(ExtraEffects.inst, 3);
             }
         }, mod);
+
         StarLoader.registerListener(ExplosionEvent.class, new Listener<ExplosionEvent>() {
             @Override
             public void onEvent(ExplosionEvent event) {
-                Vector3i sec = event.getSector().pos;
+                Vector3i sector = event.getSector().pos;
                 Vector3f toPos = event.getExplosion().fromPos;
-                ModParticleUtil.playServer(sec, ExtraEffectsParticles.SIMPLE_FLASH, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder());
-                ModParticleUtil.playServer(sec, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
+                float x = event.getExplosion().damageInitial;
+                float percentSize = ExtraEffects.extrapolate(100,1000000,x);
+                float absoluteSize = ExtraEffects.interpolate(10,400, percentSize) ;
+                ModParticleUtil.playServer(sector, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
+                ModParticleUtil.playServer(sector, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
                         new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setType(ModParticleUtil.Builder.Type.USE_OFFSET_AS_VELOCITY));
             }
         }, mod);
+
         StarLoader.registerListener(MissileHitByProjectileEvent.class, new Listener<MissileHitByProjectileEvent>() {
             @Override
             public void onEvent(MissileHitByProjectileEvent event) {
