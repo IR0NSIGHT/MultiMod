@@ -9,17 +9,19 @@ import javax.vecmath.Vector4f;
  * <insert description here>
  */
 public class RingHitParticle extends ModParticle {
-    static Vector4f startColor = new Vector4f(1,1,1,1);
-    static Vector4f endColor = new Vector4f(1,1,1,0);
+ //  static Vector4f startColor = new Vector4f(1,1,1,1);
+ //  static Vector4f endColor = new Vector4f(1,1,1,0);
     @Override
     public void spawn() {
         super.spawn();
+        sizeX = 0.2f;
+        sizeY = 0.2F;
     }
 
     @Override
     public void update(long currentTime) {
-        sizeX+=1.5F;
-        sizeY+=1.5F;
+        sizeX+=0.5F;
+        sizeY+=0.5F;
         fadeOverTime(this, currentTime);
     }
 }
