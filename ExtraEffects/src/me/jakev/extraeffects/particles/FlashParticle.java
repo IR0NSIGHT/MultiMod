@@ -7,23 +7,23 @@ import api.utils.particle.ModParticle;
  * <insert description here>
  */
 public class FlashParticle extends ModParticle {
-    private float size;
+    private float sizeGrow;
 
-    public FlashParticle(float size) {
-        this.size = size;
+    public FlashParticle(float sizeGrow) {
+        this.sizeGrow = sizeGrow;
     }
 
     @Override
     public void spawn() {
-        sizeX = size;
-        sizeY = size;
+        sizeX = sizeGrow;
+        sizeY = sizeGrow;
     }
 
     @Override
     public void update(long currentTime) {
         if (ticksLived < 3) {
-            sizeX += size;
-            sizeY += size;
+            sizeX += sizeGrow;
+            sizeY += sizeGrow;
         } else {
             sizeX -= 3;
             sizeY -= 3;

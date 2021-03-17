@@ -114,7 +114,7 @@ public class ExtraEffectMissileListener {
                 float absoluteSize = ExtraEffects.interpolate(10,400, percentSize) ;
                 ModParticleUtil.playServer(sector, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
                 ModParticleUtil.playServer(sector, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
-                        new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setType(ModParticleUtil.Builder.Type.USE_OFFSET_AS_VELOCITY));
+                        new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setEmissionBurst(true));
             }
         }, mod);
 
@@ -125,8 +125,7 @@ public class ExtraEffectMissileListener {
                     Vector3i sector = event.getMissile().getSector(event.getMissile().getSectorId()).pos;
                     Vector3f pos = event.getMissile().getWorldTransform().origin;
                     ModParticleUtil.playServer(sector, ExtraEffectsParticles.FLARE_EMITTER, pos, SpriteList.NOTHING.getSprite(),
-                            new ModParticleUtil.Builder().setLifetime(1000).setRandomLife(100).setAmount(6).setSpeed(0.6F).setUniformCircle(false).setType(ModParticleUtil.Builder.Type.EMISSION_BURST)
-                    );
+                            new ModParticleUtil.Builder().setLifetime(1000).setRandomLife(100).setAmount(6).setSpeed(0.6F).setEmissionBurst(true));
                 }
             }
         }, mod);

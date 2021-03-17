@@ -1,9 +1,8 @@
 package me.jakev.extraeffects;
 
+import api.utils.particle.IModParticleFactory;
 import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleUtil;
-import api.utils.particle.simpleimpl.BasicModParticleFactory;
-import api.utils.particle.simpleimpl.ParticleNoExtraData;
 import me.jakev.extraeffects.particles.*;
 import me.jakev.extraeffects.particles.shipexplode.*;
 
@@ -20,7 +19,6 @@ public class ExtraEffectsParticles {
 
     public static int CANNON_HIT;
     public static int CANNON_SHOOT;
-
     public static int GOD_PARTICLE;
 
     public static int MISSILE_FIRE_TRAIL;
@@ -40,137 +38,133 @@ public class ExtraEffectsParticles {
     public static int RED_FLASH;
 
     public static int EXPLOSION_TRIGGER;
+    public static int TEST_PARTICLE;
 
     public static void init(ModParticleUtil.LoadEvent event) {
-        BEAM_HIT = event.addParticle(new BasicModParticleFactory() {
+
+        BEAM_HIT = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                RingHitParticle ringHitParticle = new RingHitParticle();
-                ringHitParticle.colorR = (byte) (offset.x*127);
-                ringHitParticle.colorG = (byte) (offset.y*127);
-                ringHitParticle.colorB = (byte) (offset.z*127);
-                return ringHitParticle;
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                return new RingHitParticle();
             }
         }, ExtraEffects.inst);
 
-        BEAM_SHOOT = event.addParticle(new BasicModParticleFactory() {
+        BEAM_SHOOT = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                FadeParticle f = new FadeParticle(5);
-                f.colorR = (byte) (offset.x*127);
-                f.colorG = (byte) (offset.y*127);
-                f.colorB = (byte) (offset.z*127);
-                return f;
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                return new FadeParticle(5);
             }
         }, ExtraEffects.inst);
 
-        CANNON_HIT = event.addParticle(new BasicModParticleFactory() {
+        CANNON_HIT = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new CannonShotParticle();
             }
         }, ExtraEffects.inst);
 
-        CANNON_SHOOT = event.addParticle(new BasicModParticleFactory() {
+        CANNON_SHOOT = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new DirectionFadeParticle(offset, 0.01F, 0.5F,5F);
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                return new DirectionFadeParticle(builder.getVelocity(), 0.01F, 0.5F,5F);
             }
         }, ExtraEffects.inst);
 
-        GOD_PARTICLE = event.addParticle(new BasicModParticleFactory() {
+        GOD_PARTICLE = event.addParticle(
+                new IModParticleFactory() {
+                    @Override
+                    public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                        return new GodParticle(builder.getOffset());
+                    }
+                }, ExtraEffects.inst);
+
+        MISSILE_FIRE_TRAIL = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new GodParticle(offset);
-            }
-        }, ExtraEffects.inst);
-        MISSILE_FIRE_TRAIL = event.addParticle(new BasicModParticleFactory() {
-            @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new SimpleFireParticle((float) Math.random() * 3 + 12F,(float) Math.random() * 2 + 2F);
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                return new SimpleFireParticle(4F, 19F);
             }
         }, ExtraEffects.inst);
 
-        MISSILE_SHOOT = event.addParticle(new BasicModParticleFactory() {
+        MISSILE_SHOOT = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new MissileShootParticle(offset, 0.15F, 1F);
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                return new MissileShootParticle(builder.getVelocity(), 0.15F, 1F);
             }
         }, ExtraEffects.inst);
 
-        SIMPLE_FLASH = event.addParticle(new BasicModParticleFactory() {
+        SIMPLE_FLASH = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new FlashParticle(10);
             }
         }, ExtraEffects.inst);
 
-        SIMPLE_FLASH_SCALABLE = event.addParticle(new BasicModParticleFactory() {
+        SIMPLE_FLASH_SCALABLE = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new FlashScalableParticle(offset.x);
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                return new FlashScalableParticle(builder.getSize().x);
             }
         },ExtraEffects.inst);
 
-        MINOR_SMOKE = event.addParticle(new BasicModParticleFactory() {
+        MINOR_SMOKE = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new FadeParticle();
             }
         }, ExtraEffects.inst);
 
-        NORMAL_SMOKE = event.addParticle(new BasicModParticleFactory() {
+        NORMAL_SMOKE = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new FadeParticle(10);
             }
         }, ExtraEffects.inst);
 
-        FLASH_EMITTER = event.addParticle(new BasicModParticleFactory() {
+        FLASH_EMITTER = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new FlashFieldEmitterParticle(60);
             }
         }, ExtraEffects.inst);
 
-        BIG_SMOKE = event.addParticle(new BasicModParticleFactory() {
+        BIG_SMOKE = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new FadeParticle(100, 500);
             }
         }, ExtraEffects.inst);
 
-        ORANGE_FLASH = event.addParticle(new BasicModParticleFactory() {
+        ORANGE_FLASH = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new ColorFlashParticle(25, new Vector4f(1, 1, 0, 1), new Vector4f(1F, 0, 0, 1F));
             }
         }, ExtraEffects.inst);
 
-        RED_FLASH = event.addParticle(new BasicModParticleFactory() {
+        RED_FLASH = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new ColorFlashParticle(10, new Vector4f(1, 0, 0, 1), new Vector4f(1F, 1F, 0, 1F));
             }
         }, ExtraEffects.inst);
 
-        FLARE = event.addParticle(new BasicModParticleFactory() {
+        FLARE = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new DebrisFlairParticle();
             }
         }, ExtraEffects.inst);
 
-        FLARE_EMITTER = event.addParticle(new BasicModParticleFactory() {
+        FLARE_EMITTER = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new InvisibleEmitterParticle(SpriteList.FIREFLASH.getSprite(), FLARE, new ModParticleUtil.Builder().setLifetime(1000));
             }
         }, ExtraEffects.inst);
 
-        EXPLOSION_TRIGGER = event.addParticle(new BasicModParticleFactory() {
+        EXPLOSION_TRIGGER = event.addParticle(new IModParticleFactory() {
             @Override
-            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+            public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
                 return new ShipEmitterTriggerParticle();
             }
         }, ExtraEffects.inst);

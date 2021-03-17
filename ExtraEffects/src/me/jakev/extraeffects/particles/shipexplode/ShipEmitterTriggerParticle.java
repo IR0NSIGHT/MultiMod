@@ -24,7 +24,7 @@ public class ShipEmitterTriggerParticle extends ModParticle {
             new StarRunnable() {
                 @Override
                 public void run() {
-                    ModParticleUtil.Builder builder = new ModParticleUtil.Builder().setLifetime(6000).setType(ModParticleUtil.Builder.Type.EMISSION_BURST).setSpeed(0.7F).setAmount(70).setRandomLife(1000);
+                    ModParticleUtil.Builder builder = new ModParticleUtil.Builder().setLifetime(6000).setEmissionBurst(true).setSpeed(0.7F).setAmount(70).setRandomLife(1000);
                     ModParticleUtil.playClient(ExtraEffectsParticles.BIG_SMOKE, pos, SpriteList.BIGSMOKE.getSprite(), builder);
 
                 }
@@ -35,7 +35,7 @@ public class ShipEmitterTriggerParticle extends ModParticle {
             ModParticleUtil.playClient(ExtraEffectsParticles.FLARE_EMITTER, pos, SpriteList.NOTHING.getSprite(),
                     //sped=1.8
 //                                new ModParticleUtil.Builder().setLifetime(5000).setRandomLife(1000).setAmount(1000).setSpeed(3.3F).setUniformCircle(false).setType(ModParticleUtil.Builder.Type.EMISSION_BURST)
-                    new ModParticleUtil.Builder().setLifetime(5000).setRandomLife(1000).setAmount(100).setSpeed(2.3F).setUniformCircle(false).setType(ModParticleUtil.Builder.Type.EMISSION_BURST)
+                    new ModParticleUtil.Builder().setLifetime(5000).setRandomLife(1000).setAmount(100).setSpeed(2.3F).setEmissionBurst(true)
             );
         }else{
             markForDelete();
