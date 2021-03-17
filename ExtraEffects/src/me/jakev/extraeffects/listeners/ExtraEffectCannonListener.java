@@ -6,8 +6,10 @@ import api.listener.events.entity.SegmentHitByProjectileEvent;
 import api.listener.events.weapon.CannonProjectileAddEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
+import api.utils.particle.ModParticle;
 import api.utils.particle.ModParticleUtil;
 import com.bulletphysics.linearmath.Transform;
+import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import org.schema.game.common.controller.SegmentController;
@@ -51,6 +53,9 @@ public class ExtraEffectCannonListener {
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
             @Override
             public void onEvent(CannonProjectileAddEvent event) {
+                if (event.isServer()) {
+                    return;
+                }
                 final Vector3f dir = new Vector3f();
                 Vector3f pos = new Vector3f();
                 int ownerId = event.getContainer().getOwnerId(event.getIndex());
@@ -62,8 +67,9 @@ public class ExtraEffectCannonListener {
 
 //                SegmentController shooter = (SegmentController) GameCommon.getGameObject(ownerId);
 //                Vector3f velocity = shooter.getLinearVelocity(new Vector3f());
-
-
+                Vector3f velocity = new Vector3f();
+                event.getContainer().getVelocity(event.getIndex(), velocity); //mutate velocity, fill with values of shot.
+                //velocity.normalize(); velocity.scale(1);
                 /* Transform
                 Origin: [x, y, z]
                 Basis:
@@ -74,9 +80,34 @@ public class ExtraEffectCannonListener {
                 Transform world = new Transform();
                 world.origin.set(pos);
                 dir.normalize();
-                dir.scale(0.09F);
+                dir.scale(5);
+                Vector3f color = new Vector3f(
+                        event.getContainer().getColor(event.getIndex(),new Vector4f()).x,
+                        event.getContainer().getColor(event.getIndex(),new Vector4f()).y,
+                        event.getContainer().getColor(event.getIndex(),new Vector4f()).z);
+             //   for (int i = 0; i < 10; i++) {
+                 //
+                    //pos.add(dir);
 
-                ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_SHOOT, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(4000).setAmount(10));
+            //    }
+
+                ModParticleUtil.playClient(
+                        ExtraEffectsParticles.GOD_PARTICLE,
+                        new Vector3f(pos), SpriteList.SPARK.getSprite(),
+                        new ModParticleUtil.Builder().setLifetime(250)
+                                .setOffset(new Vector3f(velocity))
+                );
+                for (int i = 0; i < 500; i++) {
+                    pos.add(dir);
+                    ModParticleUtil.playClient(
+                            ExtraEffectsParticles.GOD_PARTICLE,
+                            new Vector3f(pos), SpriteList.MULTISPARK.getSprite(),
+                            new ModParticleUtil.Builder().setLifetime((int) (Math.random() * 2000) + 4000 + i)
+                                    //.setOffset(new Vector3f(velocity))
+                    );
+                }
+
+               // ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_SHOOT, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(4000).setAmount(10));
             }
         }, mod);
     }

@@ -24,7 +24,7 @@ public enum SpriteList {
     NOTHING,
     FIRESPARK,
     BIGSMOKE,
-
+    MULTISPARK
     ;
 
     private int sprite;

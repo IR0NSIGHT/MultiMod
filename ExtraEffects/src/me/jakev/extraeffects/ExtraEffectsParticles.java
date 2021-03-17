@@ -21,6 +21,8 @@ public class ExtraEffectsParticles {
     public static int CANNON_HIT;
     public static int CANNON_SHOOT;
 
+    public static int GOD_PARTICLE;
+
     public static int MISSILE_FIRE_TRAIL;
     public static int MISSILE_SHOOT;
     public static int SIMPLE_FLASH;
@@ -76,6 +78,12 @@ public class ExtraEffectsParticles {
             }
         }, ExtraEffects.inst);
 
+        GOD_PARTICLE = event.addParticle(new BasicModParticleFactory() {
+            @Override
+            public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
+                return new GodParticle(offset);
+            }
+        }, ExtraEffects.inst);
         MISSILE_FIRE_TRAIL = event.addParticle(new BasicModParticleFactory() {
             @Override
             public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
