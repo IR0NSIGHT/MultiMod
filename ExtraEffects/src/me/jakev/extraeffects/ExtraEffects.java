@@ -84,6 +84,7 @@ public class ExtraEffects extends StarMod {
      * @param point
      */
     public static float extrapolate (float min, float max, float point) {
+        //technote: benchmarked this version vs branchless, no improvement.
         if (point > max) {
             return 1;
         };
@@ -103,6 +104,7 @@ public class ExtraEffects extends StarMod {
      * @return
      */
     public static float interpolate (float min, float max, float percentage) {
+        //technote: benchmarked this version vs branchless, no improvement.
         if (percentage >= 1) {
             return max;
         };

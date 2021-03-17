@@ -8,12 +8,13 @@ package me.jakev.extraeffects;
  */
 public class test {
     public static void main (String[] args) {
-       System.out.println(ExtraEffects.extrapolate(20,120,20));
-        System.out.println(ExtraEffects.extrapolate(20,120,-20));
-        System.out.println(ExtraEffects.extrapolate(20,120,220));
-        System.out.println(ExtraEffects.extrapolate(20,120,95));
+        long startTime = System.currentTimeMillis();
 
-        System.out.println(ExtraEffects.interpolate(0,10,0.3f));
-        System.out.println(ExtraEffects.interpolate(2,12,0.3f));
+        for (int i = 0; i < 1000000; i++) {
+            ExtraEffects.extrapolate(0,100,Math.round(Math.random() * 100));
+        };
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("That took " + (endTime - startTime) + " milliseconds");
     }
 }

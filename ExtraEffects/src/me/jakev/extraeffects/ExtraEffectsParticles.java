@@ -79,7 +79,7 @@ public class ExtraEffectsParticles {
         MISSILE_FIRE_TRAIL = event.addParticle(new BasicModParticleFactory() {
             @Override
             public ModParticle newParticle(int factoryId, int sprite, int lifetime, Vector3f worldPos, Vector3f offset, float speed, boolean uniformCircle, ParticleNoExtraData extraData) {
-                return new SimpleFireParticle(4F, 19F);
+                return new SimpleFireParticle((float) Math.random() * 3 + 12F,(float) Math.random() * 2 + 2F);
             }
         }, ExtraEffects.inst);
 
