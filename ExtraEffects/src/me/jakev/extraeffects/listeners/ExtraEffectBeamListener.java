@@ -5,19 +5,17 @@ import api.listener.events.weapon.BeamPostAddEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.utils.particle.ModParticleUtil;
-import javassist.expr.Instanceof;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
-import org.schema.game.common.controller.SegmentControllerHpController;
 import org.schema.game.common.controller.elements.ShieldAddOn;
 import org.schema.game.common.controller.elements.ShieldContainerInterface;
 import org.schema.game.common.controller.elements.beam.damageBeam.DamageBeamHandler;
-import org.schema.game.common.data.ManagedSegmentController;
 import org.schema.game.common.data.SegmentPiece;
 
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 
 /**
  * Created by Jake on 12/8/2020.
@@ -64,9 +62,9 @@ public class ExtraEffectBeamListener {
 
                     //TODO refine this absolute mess
                 }
-                Vector3f color = new Vector3f (event.getBeamState().color.x, event.getBeamState().color.y ,event.getBeamState().color.z);
+                Vector4f color = new Vector4f(event.getBeamState().color.x, event.getBeamState().color.y ,event.getBeamState().color.z, 1);
                 if (ran % 15 == 0 && shields > 0) {
-                    ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(500).setOffset(color));
+                    ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(500).setColor(color));
                 }
 
                 normal.sub(event.getBeamState().from);
@@ -93,7 +91,7 @@ public class ExtraEffectBeamListener {
                             ExtraEffectsParticles.BEAM_HIT,
                             start,
                             SpriteList.RING.getSprite(),
-                        new ModParticleUtil.Builder().setLifetime(50).setOffset(color)
+                        new ModParticleUtil.Builder().setLifetime(500).setColor(color)
                     );
                 }
 
