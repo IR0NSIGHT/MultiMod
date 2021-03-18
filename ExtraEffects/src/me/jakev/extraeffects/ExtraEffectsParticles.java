@@ -74,7 +74,7 @@ public class ExtraEffectsParticles {
                 new IModParticleFactory() {
                     @Override
                     public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
-                        return new GodParticle(builder.getOffset());
+                        return new GodParticle(sprite,worldPos, builder.getLifetime());
                     }
                 }, ExtraEffects.inst);
 

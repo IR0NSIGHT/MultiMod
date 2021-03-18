@@ -14,27 +14,38 @@ import javax.vecmath.Vector4f;
  * TIME: 18:47
  */
 public class GodParticle extends ModParticle {
+    //TODO get set sizes
+    //TODO color snapshots
+    //TODO rotation over time: angles, boolean: perSecondOrAbsolute
     private Vector2f size;
-    //first position in array is ALWAYS used as startsize.
-    private Vector3f[] sizes = new Vector3f[]{new Vector3f(1,1,0)};
-    private Vector4f[] colors = new Vector4f[]{new Vector4f(0,1,1,0.5f), new Vector4f(0,1,1,0f)};
-    public GodParticle(Vector3f velocity) {
-        this.velocity = velocity;
-    }
 
-    @Override
-    public void spawn() {
-        float baseSize = 7.5f;
-        sizes = new Vector3f[]{
-                new Vector3f(baseSize,baseSize,0),
-                new Vector3f((float) (baseSize + Math.random() *5),(float) (baseSize + Math.random() *5),0.75f),
-        //       new Vector3f(20,20,1),
-        };
+    public void setSizes(Vector3f[] sizes) {
+        this.sizes = sizes;
         this.sizeX = sizes[0].x;
         this.sizeY = sizes[0].y;    //startsize
         lastSizeSnap = sizes[0];
         nextSizeSnap = sizes[0];
-        rotate(this,(float) Math.random()*360f);
+    }
+
+    //first position in array is ALWAYS used as startsize.
+    private Vector3f[] sizes = new Vector3f[]{new Vector3f(1,1,0)};
+    private Vector4f[] colors = new Vector4f[]{new Vector4f(0,1,1,0.5f), new Vector4f(0,1,1,0f)};
+    public GodParticle(int spriteID, Vector3f pos, int lifetime ) {
+        super();
+        this.particleSpriteId = spriteID;
+        this.lifetimeMs = lifetime;
+        this.startTime = System.currentTimeMillis();
+        this.position.set(pos);
+        this.updateCameraDistance();
+        this.spawn();
+
+    }
+
+    @Override
+    public void spawn() {
+        lastSizeSnap = sizes[0];
+        nextSizeSnap = sizes[0];
+        rotate(this,(float)Math.random() * 360);
     }
 
     int sizeIterator = 0;
@@ -67,7 +78,7 @@ public class GodParticle extends ModParticle {
         SetColor(GetColorAt(colors[0],colors[1],lifePassed));
        // fadeOverTime(this,currentTime);
 
-    //    rotate(this,(float)Math.random());
+
     }
 
     /**

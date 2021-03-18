@@ -12,6 +12,7 @@ import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
+import me.jakev.extraeffects.particles.GodParticle;
 import org.schema.game.common.controller.SegmentController;
 
 import javax.vecmath.Vector3f;
@@ -69,42 +70,47 @@ public class ExtraEffectCannonListener {
 //                Vector3f velocity = shooter.getLinearVelocity(new Vector3f());
                 Vector3f velocity = new Vector3f();
                 event.getContainer().getVelocity(event.getIndex(), velocity); //mutate velocity, fill with values of shot.
-                //velocity.normalize(); velocity.scale(1);
-                /* Transform
-                Origin: [x, y, z]
-                Basis:
-                [rightX, upX, forwardX]
-                [rightY, upY, forwardY]
-                [rightZ, upZ, forwardZ]
-                 */
+                velocity.normalize(); velocity.scale(100);
                 Transform world = new Transform();
                 world.origin.set(pos);
-                dir.normalize();
-                dir.scale(5);
-                Vector3f color = new Vector3f(
+
+                 Vector3f color = new Vector3f(
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).x,
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).y,
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).z);
-             //   for (int i = 0; i < 10; i++) {
-                 //
-                    //pos.add(dir);
+            //   GodParticle projectile = new GodParticle(SpriteList.GLOWBALL.getSprite(), pos,10000);
+            //   projectile.velocity = velocity;
+            //   projectile.setSizes(new Vector3f[]{new Vector3f(20,20,0)});
+            //   ModParticleUtil.playClientDirect(projectile);
 
-            //    }
-
-                ModParticleUtil.playClient(
-                        ExtraEffectsParticles.GOD_PARTICLE,
-                        new Vector3f(pos), SpriteList.SPARK.getSprite(),
-                        new ModParticleUtil.Builder().setLifetime(250)
-                                .setOffset(new Vector3f(velocity))
-                );
+                float damage = event.getContainer().getDamage(event.getIndex());
+                float scale = ExtraEffects.extrapolate(100,1000000,damage);
+                float size = (ExtraEffects.interpolate(0.5f,15,scale));
+                dir.normalize();
+                dir.scale(size);
+                int sprite = SpriteList.MULTISPARK_SMALL.getSprite();
+                if (scale < 0.75) {
+                    sprite = SpriteList.MULTISPARK_MEDIUM.getSprite();
+                }
+                if (scale < 0.5) {
+                    sprite = SpriteList.MULTISPARK_BIG.getSprite();
+                }
+                if (scale < 0.25) {
+                    sprite = SpriteList.FLASH.getSprite();
+                }
                 for (int i = 0; i < 500; i++) {
                     pos.add(dir);
-                    ModParticleUtil.playClient(
-                            ExtraEffectsParticles.GOD_PARTICLE,
-                            new Vector3f(pos), SpriteList.MULTISPARK.getSprite(),
-                            new ModParticleUtil.Builder().setLifetime((int) (Math.random() * 2000) + 4000 + i)
-                                    //.setOffset(new Vector3f(velocity))
-                    );
+                    GodParticle particle = new GodParticle(sprite, pos, (int) (ExtraEffects.interpolate(500, 8000,scale) + Math.random() * ExtraEffects.interpolate(500,3000,scale)));
+
+                    float baseSize = size * 0.75f;
+                    baseSize = baseSize * ExtraEffects.extrapolate(0,500,500-i);
+                    Vector3f[] sizes = new Vector3f[]{
+                            new Vector3f(baseSize + (float) Math.random() * baseSize ,baseSize + (float) Math.random() *baseSize,0),
+                            new Vector3f((float) (2*baseSize + Math.random() *baseSize),(float) (2*baseSize + Math.random() *baseSize),1f),
+                    };
+                    //TODO create delayed appearance throught color snaps
+                    particle.setSizes(sizes);
+                    ModParticleUtil.playClientDirect(particle);
                 }
 
                // ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_SHOOT, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(4000).setAmount(10));
