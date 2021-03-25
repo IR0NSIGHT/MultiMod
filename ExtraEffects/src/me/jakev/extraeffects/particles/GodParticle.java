@@ -40,7 +40,7 @@ public class GodParticle extends ModParticle {
         this.spawn();
 
     }
-
+    //TODO allow "facing to camera" or "realworld roation"
     @Override
     public void spawn() {
         lastSizeSnap = sizes[0];

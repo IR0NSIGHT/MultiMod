@@ -15,6 +15,7 @@ import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.GodParticle;
 import org.schema.game.common.controller.SegmentController;
 
+import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
@@ -36,6 +37,7 @@ public class ExtraEffectCannonListener {
                     }
                 });
          */
+        //TODO why is the hit particle so huge?
         StarLoader.registerListener(SegmentHitByProjectileEvent.class, new Listener<SegmentHitByProjectileEvent>() {
             @Override
             public void onEvent(SegmentHitByProjectileEvent event) {
@@ -47,8 +49,23 @@ public class ExtraEffectCannonListener {
                 dir.normalize();
                 dir.scale(0.3F);
 
-                ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_HIT, pos, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
-                ModParticleUtil.playClient(ExtraEffectsParticles.ORANGE_FLASH, pos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(300));
+                //TODO hit particles isnt always visible, maybe random inworld rotation?
+             //   ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_HIT, pos, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
+                float damageInitial = event.getShotHandler().initialDamage;
+             //   ModParticleUtil.playClient(ExtraEffectsParticles.SIMPLE_FLASH, pos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(3000).setSize(new Vector2f(20,0)));
+                GodParticle particle = new GodParticle(SpriteList.FLASH.getSprite(), pos, 200);
+                float baseSize = ExtraEffects.interpolate(  //size range dependenent on damage
+                        5,
+                        60,
+                        ExtraEffects.extrapolate(100,1000000,damageInitial) //allowed damage range
+                );
+                Vector3f[] sizes = new Vector3f[]{
+                        new Vector3f(baseSize + (float) Math.random() * baseSize ,baseSize + (float) Math.random() *baseSize,0),
+                        new Vector3f((float) (2*baseSize + Math.random() *baseSize),(float) (2*baseSize + Math.random() *baseSize),1f),
+                };
+                particle.setSizes(sizes);
+                ModParticleUtil.playClientDirect(particle);
+
             }
         }, mod);
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
