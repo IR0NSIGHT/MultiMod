@@ -13,7 +13,11 @@ import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.GodParticle;
+import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.controller.elements.ShieldAddOn;
+import org.schema.game.common.controller.elements.ShieldContainerInterface;
+import org.schema.game.common.data.SegmentPiece;
 
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
@@ -50,11 +54,11 @@ public class ExtraEffectCannonListener {
 
                 //TODO hit particles isnt always visible, maybe random inworld rotation?
                 float damageInitial = event.getShotHandler().initialDamage;
-                GodParticle particle = new GodParticle(SpriteList.FLASH.getSprite(), pos, 200);
+                GodParticle particle = new GodParticle(SpriteList.FLASH.getSprite(), pos, 100);
                 float baseSize = ExtraEffects.interpolate(  //size range dependenent on damage
-                        5,
+                        1f,
                         60,
-                        ExtraEffects.extrapolate(100,1000000,damageInitial) //allowed damage range
+                        ExtraEffects.extrapolate(50,1000000,damageInitial) //allowed damage range
                 );
                 float startSize = 0.5f * baseSize + (float) Math.random() * baseSize;
                 float endSize = 2 * baseSize + (float)  Math.random() *baseSize;
@@ -62,8 +66,15 @@ public class ExtraEffectCannonListener {
                         new Vector3f( startSize ,startSize,0),
                         new Vector3f(endSize,endSize,1f),
                 });
-                ModParticleUtil.playClientDirect(particle);
 
+                particle.setColors(new float[][] {
+                        new float[]{1,1,0,1,0},
+                        new float[]{1,0.6f,0.04f,0.5f,0.8f},
+                        new float[]{0.5f,0.3f,0,0,1},
+                });
+
+
+                ModParticleUtil.playClientDirect(particle);
             }
         }, mod);
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
