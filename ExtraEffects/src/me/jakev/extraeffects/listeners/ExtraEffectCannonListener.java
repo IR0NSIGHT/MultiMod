@@ -44,26 +44,24 @@ public class ExtraEffectCannonListener {
                 final Vector3f dir = new Vector3f();
                 Vector3f pos = new Vector3f();
                 pos.set(event.getShotHandler().posAfterUpdate);
-//                event.getParticles().getVelocity(event.getParticleIndex(), dir);
                 event.getParticles().getPos(event.getParticleIndex(), pos);
                 dir.normalize();
                 dir.scale(0.3F);
 
                 //TODO hit particles isnt always visible, maybe random inworld rotation?
-             //   ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_HIT, pos, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
                 float damageInitial = event.getShotHandler().initialDamage;
-             //   ModParticleUtil.playClient(ExtraEffectsParticles.SIMPLE_FLASH, pos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(3000).setSize(new Vector2f(20,0)));
                 GodParticle particle = new GodParticle(SpriteList.FLASH.getSprite(), pos, 200);
                 float baseSize = ExtraEffects.interpolate(  //size range dependenent on damage
                         5,
                         60,
                         ExtraEffects.extrapolate(100,1000000,damageInitial) //allowed damage range
                 );
-                Vector3f[] sizes = new Vector3f[]{
-                        new Vector3f(baseSize + (float) Math.random() * baseSize ,baseSize + (float) Math.random() *baseSize,0),
-                        new Vector3f((float) (2*baseSize + Math.random() *baseSize),(float) (2*baseSize + Math.random() *baseSize),1f),
-                };
-                particle.setSizes(sizes);
+                float startSize = 0.5f * baseSize + (float) Math.random() * baseSize;
+                float endSize = 2 * baseSize + (float)  Math.random() *baseSize;
+                particle.setSizes(new Vector3f[]{
+                        new Vector3f( startSize ,startSize,0),
+                        new Vector3f(endSize,endSize,1f),
+                });
                 ModParticleUtil.playClientDirect(particle);
 
             }
@@ -115,6 +113,11 @@ public class ExtraEffectCannonListener {
                 if (scale < 0.25) {
                     sprite = SpriteList.FLASH.getSprite();
                 }
+                float[][] colors = new float[][]{
+                        new float[]{color.x, color.y, color.z, 0.5f, 0.5f},
+                        new float[]{color.x, color.y, color.z, 0, 1}
+                };
+    //500
                 for (int i = 0; i < 500; i++) {
                     pos.add(dir);
                     GodParticle particle = new GodParticle(sprite, pos, (int) (ExtraEffects.interpolate(500, 8000,scale) + Math.random() * ExtraEffects.interpolate(500,3000,scale)));
@@ -127,6 +130,7 @@ public class ExtraEffectCannonListener {
                     };
                     //TODO create delayed appearance throught color snaps
                     particle.setSizes(sizes);
+                    particle.setColors(colors);
                     ModParticleUtil.playClientDirect(particle);
                 }
 
