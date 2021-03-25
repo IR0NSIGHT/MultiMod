@@ -111,7 +111,7 @@ public class ExtraEffectCannonListener {
                     sprite = SpriteList.MULTISPARK_BIG.getSprite();
                 }
                 if (scale < 0.25) {
-                    sprite = SpriteList.FLASH.getSprite();
+                    sprite = SpriteList.MULTISPARK_SINGLE.getSprite();
                 }
                 float[][] colors = new float[][]{
                         new float[]{color.x, color.y, color.z, 0.5f, 0.5f},
