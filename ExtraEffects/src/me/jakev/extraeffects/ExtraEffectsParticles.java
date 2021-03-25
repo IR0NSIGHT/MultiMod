@@ -19,6 +19,7 @@ public class ExtraEffectsParticles {
 
     public static int CANNON_HIT;
     public static int CANNON_SHOOT;
+    public static int GOD_PARTICLE;
 
     public static int MISSILE_FIRE_TRAIL;
     public static int MISSILE_SHOOT;
@@ -68,6 +69,14 @@ public class ExtraEffectsParticles {
                 return new DirectionFadeParticle(builder.getVelocity(), 0.01F, 0.5F,5F);
             }
         }, ExtraEffects.inst);
+
+        GOD_PARTICLE = event.addParticle(
+                new IModParticleFactory() {
+                    @Override
+                    public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
+                        return new GodParticle(sprite,worldPos, builder.getLifetime());
+                    }
+                }, ExtraEffects.inst);
 
         MISSILE_FIRE_TRAIL = event.addParticle(new IModParticleFactory() {
             @Override

@@ -15,6 +15,7 @@ import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import org.schema.common.util.linAlg.Vector3i;
 import org.schema.game.common.data.missile.Missile;
+import org.schema.game.common.data.missile.updates.MissileSpawnUpdate;
 import org.schema.game.common.data.world.Sector;
 import org.schema.schine.graphicsengine.core.Timer;
 
@@ -57,6 +58,10 @@ public class ExtraEffectMissileListener {
             @Override
             public void updateClientPost(Missile missile, Timer timer) {
 
+                if (missile.getType().equals(MissileSpawnUpdate.MissileType.BOMB)) {
+                    //no trail for bombs
+                    return;
+                }
 //                for (Vector3f pos : interpolate(2, this.pos, missile.getWorldTransform().origin)) {
                     ModParticleUtil.playClient(ExtraEffectsParticles.MISSILE_FIRE_TRAIL, missile.getWorldTransform().origin, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
 //                    ModParticleUtil.playClient(ExtraEffectsParticles.NORMAL_SMOKE, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(900).setType(ModParticleUtil.Builder.Type.EMISSION_BURST).setSpeed(0.2F));
@@ -83,6 +88,7 @@ public class ExtraEffectMissileListener {
             public void onEvent(final MissilePostAddEvent event) {
                 final Vector3f dir = new Vector3f();
                 event.getMissile().getDirection(dir);
+
                 dir.normalize();
                 dir.scale(0.3F);
                 Vector3f origin = event.getMissile().getWorldTransform().origin;
