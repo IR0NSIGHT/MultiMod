@@ -3,7 +3,7 @@
   "author": "JakeV",
   "description": "New effects and particles",
   "version": "1.4",
-  "starmade_version": "0.202.108",
+  "starmade_version": "0.202.110",
   "client_mod": false,
   "server_mod": false,
   "main_class": "me.jakev.extraeffects.ExtraEffects",

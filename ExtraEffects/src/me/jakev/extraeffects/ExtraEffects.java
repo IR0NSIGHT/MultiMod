@@ -1,6 +1,5 @@
 package me.jakev.extraeffects;
 
-import api.common.GameClient;
 import api.config.BlockConfig;
 import api.listener.Listener;
 import api.listener.events.controller.ClientInitializeEvent;
@@ -9,7 +8,6 @@ import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.network.Packet;
 import api.utils.particle.ModParticleUtil;
-import com.bulletphysics.linearmath.Transform;
 import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectCannonListener;
 import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
@@ -45,6 +43,7 @@ public class ExtraEffects extends StarMod {
 
     @Override
     public void onEnable() {
+
         Packet.dumpPacketLookup();
         ExtraEffectMissileListener.init(this);
         ExtraEffectBeamListener.init(this);
