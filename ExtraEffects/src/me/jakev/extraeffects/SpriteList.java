@@ -26,9 +26,11 @@ public enum SpriteList {
     BIGSMOKE,
     MULTISPARK,
     GLOWBALL,
+    MULTISPARK_SINGLE,
     MULTISPARK_MEDIUM,
     MULTISPARK_BIG,
-    MULTISPARK_SMALL
+    MULTISPARK_SMALL,
+    MULTISPARK_MANY
     ;
 
     private int sprite;
