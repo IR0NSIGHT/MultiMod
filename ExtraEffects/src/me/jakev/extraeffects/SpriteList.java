@@ -29,7 +29,8 @@ public enum SpriteList {
     MULTISPARK_SINGLE,
     MULTISPARK_SMALL,
     MULTISPARK_MEDIUM,
-    MULTISPARK_BIG
+    MULTISPARK_BIG,
+    MULTISPARK_MANY
     ;
 
     private int sprite;

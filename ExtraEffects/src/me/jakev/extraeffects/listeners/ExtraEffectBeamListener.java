@@ -5,17 +5,12 @@ import api.listener.events.weapon.BeamPostAddEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.utils.particle.ModParticleUtil;
-import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
-import org.schema.game.common.controller.ManagedUsableSegmentController;
-import org.schema.game.common.controller.SegmentController;
-import org.schema.game.common.controller.elements.ShieldAddOn;
-import org.schema.game.common.controller.elements.ShieldContainerInterface;
+import me.jakev.extraeffects.particles.godpresets.SimpleScalingFlash;
+import org.schema.game.common.controller.elements.BeamState;
 import org.schema.game.common.controller.elements.beam.damageBeam.DamageBeamHandler;
-import org.schema.game.common.data.SegmentPiece;
 
 import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
 
 /**
  * Created by Jake on 12/8/2020.
@@ -35,66 +30,55 @@ public class ExtraEffectBeamListener {
                 }
 
                 Vector3f start = new Vector3f(event.getBeamState().from);
-
-                Vector3f normal = new Vector3f();
                 Vector3f to = new Vector3f();
-                Vector3f hitPoint = event.getBeamState().hitPoint;
-                double shields = 0;
+                Vector3f normal = new Vector3f();
 
+                //play hit effect
                 if (event.getBeamState().hitPoint == null) {
                     normal.set(event.getBeamState().to);
                     to.set(event.getBeamState().to);
                 } else {
 
-                    normal.set(event.getBeamState().hitPoint);
                     to.set(event.getBeamState().hitPoint);
-                    //play hit effect
+                    normal.set(start); normal.sub(to); normal.normalize(); normal.scale(1);
 
-                    SegmentPiece block = event.getBeamState().currentHit;
-                    SegmentController hitObject = block.getSegmentController();
+                    BeamState bs = event.getBeamState();
+                    float damageInitial = bs.getPower();
 
-                    if (hitObject instanceof ManagedUsableSegmentController) {
-                        ShieldAddOn shield = ((ShieldContainerInterface) ((ManagedUsableSegmentController) hitObject).getManagerContainer()).getShieldAddOn();
-                        if (shield.isUsingLocalShieldsAtLeastOneActive()) {
-                            shields = shield.getShieldLocalAddOn().getActiveShields().get(0).shields;
-                        };
-                    };
-
-                    //TODO refine this absolute mess
-                }
-                Vector4f color = new Vector4f(event.getBeamState().color.x, event.getBeamState().color.y ,event.getBeamState().color.z, 1);
-                if (ran % 15 == 0 && shields > 0) {
-                    ModParticleUtil.playClient(ExtraEffectsParticles.BEAM_HIT, to, SpriteList.RING.getSprite(), new ModParticleUtil.Builder().setLifetime(500).setColor(color));
-                }
-
-                normal.sub(event.getBeamState().from);
-                float length = normal.length();
-                normal.normalize();
-
-                Vector3f inverseNormal = new Vector3f(normal);
-                inverseNormal.scale(-1F);
-                start.add(normal);
-                length = Math.min(5000,length);  //cap at 5000m
-                Vector3f timedOffset = new Vector3f(normal); //offset that depends on time -> movement over time
-                timedOffset.scale(System.currentTimeMillis() % 100);
-                start.add(timedOffset);
-                //create a particle every 50*normal step, very short lifetime (~1 frame), offset based on time for simulated speed
-                //better way would be to attach particles to the beam itself, instead of playing them 1 frame and respawn at new beampos.
-                for (int i = 0; i < length; i += 1) {
-                    start.add(normal);
-
-                    if (i % 50 != 0) {
-                        continue;
-                    }
-
-                    ModParticleUtil.playClient(
-                            ExtraEffectsParticles.BEAM_HIT,
-                            start,
-                            SpriteList.RING.getSprite(),
-                        new ModParticleUtil.Builder().setLifetime(500).setColor(color)
+                    //flying sparks
+                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(SpriteList.MULTISPARK_MANY.getSprite(), to, (int) (Math.random() * 200 + 100));
+                    sparksParticle.scaleByDamage(
+                            10,
+                            100000,
+                            damageInitial,
+                            1,
+                            60
                     );
-                }
+                    //TODO either make sparks bigger to be visible beyond 1km or dont draw to save performance
+                    sparksParticle.setColors(new float[][] {
+                            new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,1,0.5f},
+                            new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,0.5f,1f},
+                    });
 
+                    sparksParticle.velocity.set(normal);
+                    ModParticleUtil.playClientDirect(sparksParticle);
+
+                    //flash/burn particle
+                    SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.GLOWBALL.getSprite(), to, 100);
+                    flashParticle.scaleByDamage(
+                            10,
+                            100000,
+                            damageInitial,
+                            1,
+                            45
+                    );
+
+                    flashParticle.setColors(new float[][] {
+                            new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,1,0.5f},
+                    });
+
+                    flashParticle.velocity.set(normal);
+                    ModParticleUtil.playClientDirect(flashParticle);                }
 
             }
         }, mod);
