@@ -53,6 +53,8 @@ public class ExtraEffectCannonListener {
                 dir.scale(0.3F);
 
                 //TODO hit particles isnt always visible, maybe random inworld rotation?
+
+
                 float damageInitial = event.getShotHandler().initialDamage;
                 GodParticle particle = new GodParticle(SpriteList.FLASH.getSprite(), pos, 100);
                 float baseSize = ExtraEffects.interpolate(  //size range dependenent on damage
