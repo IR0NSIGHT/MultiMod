@@ -1,6 +1,8 @@
 package me.jakev.extraeffects.particles;
 
+import api.ModPlayground;
 import api.utils.particle.ModParticle;
+import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.ExtraEffects;
 
 import javax.vecmath.Vector2f;
@@ -14,10 +16,17 @@ import javax.vecmath.Vector4f;
  * TIME: 18:47
  */
 public class GodParticle extends ModParticle {
+    public static int particleCountGlobalClient = 0;
     //TODO get set sizes
     //TODO color snapshots
     //TODO rotation over time: angles, boolean: perSecondOrAbsolute
     private Vector2f size;
+
+    @Override
+    public void die() {
+        super.die();
+        particleCountGlobalClient --;
+    }
 
     /**
      * will set the size snapshots for the particle. format: x,y,% lifetime.
@@ -60,16 +69,21 @@ public class GodParticle extends ModParticle {
     };
     public GodParticle(int spriteID, Vector3f pos, int lifetime ) {
         super();
+   //     particleCountGlobalClient ++;
         this.particleSpriteId = spriteID;
         this.lifetimeMs = lifetime;
         this.startTime = System.currentTimeMillis();
         this.position.set(pos);
+
         this.updateCameraDistance();
         this.spawn();
 
     }
     @Override
     public void spawn() {
+        if (particleCountGlobalClient % 100 == 0) {
+            ModPlayground.broadcastMessage("particle count: " + particleCountGlobalClient);
+        }
         lastSizeSnap = sizes[0];
         nextSizeSnap = sizes[0];
 
@@ -164,5 +178,17 @@ public class GodParticle extends ModParticle {
 
         //update color
         SetColor(GetColorAt(lastColorSnap,nextColorSnap,percentLife));
+    }
+
+    /**
+     * will play the particle to the client this code is run on-
+     * @param force overwrite particle amount cap and play anyways
+     */
+    public void playOnClient(boolean force) {
+        if (!force && particleCountGlobalClient > 500) {
+            return;
+        }
+        particleCountGlobalClient ++;
+        ModParticleUtil.playClientDirect(this);
     }
 }

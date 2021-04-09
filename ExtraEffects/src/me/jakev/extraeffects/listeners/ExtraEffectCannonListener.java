@@ -76,7 +76,7 @@ public class ExtraEffectCannonListener {
                 });
 
 
-                ModParticleUtil.playClientDirect(particle);
+                particle.playOnClient(false);
             }
         }, mod);
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
@@ -106,12 +106,11 @@ public class ExtraEffectCannonListener {
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).x,
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).y,
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).z);
-            //   GodParticle projectile = new GodParticle(SpriteList.GLOWBALL.getSprite(), pos,10000);
-            //   projectile.velocity = velocity;
-            //   projectile.setSizes(new Vector3f[]{new Vector3f(20,20,0)});
-            //   ModParticleUtil.playClientDirect(projectile);
 
                 float damage = event.getContainer().getDamage(event.getIndex());
+                if (damage < 10000) {
+                    return;
+                }
                 float scale = ExtraEffects.extrapolate(100,1000000,damage);
                 float size = (ExtraEffects.interpolate(0.5f,15,scale));
                 dir.normalize();
@@ -130,7 +129,7 @@ public class ExtraEffectCannonListener {
                         new float[]{color.x, color.y, color.z, 0.5f, 0.5f},
                         new float[]{color.x, color.y, color.z, 0, 1}
                 };
-    //500
+
                 for (int i = 0; i < 500; i++) {
                     pos.add(dir);
                     GodParticle particle = new GodParticle(sprite, pos, (int) (ExtraEffects.interpolate(500, 8000,scale) + Math.random() * ExtraEffects.interpolate(500,3000,scale)));
@@ -144,10 +143,8 @@ public class ExtraEffectCannonListener {
                     //TODO create delayed appearance throught color snaps
                     particle.setSizes(sizes);
                     particle.setColors(colors);
-                    ModParticleUtil.playClientDirect(particle);
+                    particle.playOnClient(false);
                 }
-
-               // ModParticleUtil.playClient(ExtraEffectsParticles.CANNON_SHOOT, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(4000).setAmount(10));
             }
         }, mod);
     }
