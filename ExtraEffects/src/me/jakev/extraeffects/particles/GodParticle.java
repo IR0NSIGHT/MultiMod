@@ -17,16 +17,23 @@ import javax.vecmath.Vector4f;
  */
 public class GodParticle extends ModParticle {
     public static int particleCountGlobalClient = 0;
-    //TODO get set sizes
-    //TODO color snapshots
+    public static int maxParticleCount = 5000;
+
     //TODO rotation over time: angles, boolean: perSecondOrAbsolute
     private Vector2f size;
+    int sizeIterator = 0;
+    Vector3f lastSizeSnap;
+    Vector3f nextSizeSnap;
 
-    @Override
-    public void die() {
-        super.die();
-        particleCountGlobalClient --;
-    }
+    private float[][] colors = new float[][]{
+            new float[]{0, 1, 1, 0.5f, 0.5f},
+            new float[]{0, 1, 1, 0, 1}
+    };
+
+    int colorIterator = 0;
+    float[] lastColorSnap;
+    float[] nextColorSnap;
+
 
     /**
      * will set the size snapshots for the particle. format: x,y,% lifetime.
@@ -62,11 +69,6 @@ public class GodParticle extends ModParticle {
         nextColorSnap = colors[0];
     }
 
-    //TODO allow color snapshots with time info (Vector5)
-    private float[][] colors = new float[][]{
-            new float[]{0, 1, 1, 0.5f, 0.5f},
-            new float[]{0, 1, 1, 0, 1}
-    };
     public GodParticle(int spriteID, Vector3f pos, int lifetime ) {
         super();
    //     particleCountGlobalClient ++;
@@ -75,32 +77,33 @@ public class GodParticle extends ModParticle {
         this.startTime = System.currentTimeMillis();
         this.position.set(pos);
 
+        //initialize size fields
+        lastSizeSnap = sizes[0];
+        nextSizeSnap = sizes[0];
+
+        //initialize color fields
+        lastColorSnap = colors[0];
+        nextColorSnap = colors[0];
+
         this.updateCameraDistance();
-        this.spawn();
+
+    //    this.spawn();
 
     }
     @Override
     public void spawn() {
         if (particleCountGlobalClient % 100 == 0) {
-            ModPlayground.broadcastMessage("particle count: " + particleCountGlobalClient);
         }
-        lastSizeSnap = sizes[0];
-        nextSizeSnap = sizes[0];
-
-        lastColorSnap = colors[0];
-        nextColorSnap = colors[0];
-
         //TODO rotate around camera direction.
+        //TODO dont do by default.
         rotate(this,(float)Math.random() * 360);
     }
 
-    int sizeIterator = 0;
-    Vector3f lastSizeSnap;
-    Vector3f nextSizeSnap;
-
-    int colorIterator = 0;
-    float[] lastColorSnap;
-    float[] nextColorSnap;
+    @Override
+    public void die() {
+        super.die();
+        particleCountGlobalClient --;
+    }
 
     @Override
     public void update(long currentTime) {
@@ -185,10 +188,11 @@ public class GodParticle extends ModParticle {
      * @param force overwrite particle amount cap and play anyways
      */
     public void playOnClient(boolean force) {
-        if (!force && particleCountGlobalClient > 500) {
+        if (!force && particleCountGlobalClient > maxParticleCount) {
             return;
         }
         particleCountGlobalClient ++;
+        this.spawn();
         ModParticleUtil.playClientDirect(this);
     }
 }

@@ -1,5 +1,6 @@
 package me.jakev.extraeffects.listeners;
 
+import api.ModPlayground;
 import api.common.GameCommon;
 import api.listener.Listener;
 import api.listener.events.entity.SegmentHitByProjectileEvent;
@@ -13,11 +14,14 @@ import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.GodParticle;
+import org.schema.game.client.data.GameClientState;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
 import org.schema.game.common.controller.elements.ShieldAddOn;
 import org.schema.game.common.controller.elements.ShieldContainerInterface;
 import org.schema.game.common.data.SegmentPiece;
+import org.schema.game.common.data.SendableGameState;
+import org.schema.schine.network.objects.Sendable;
 
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
@@ -88,7 +92,11 @@ public class ExtraEffectCannonListener {
                 final Vector3f dir = new Vector3f();
                 Vector3f pos = new Vector3f();
                 int ownerId = event.getContainer().getOwnerId(event.getIndex());
-                if (!(GameCommon.getGameObject(ownerId) instanceof SegmentController)) {
+                SendableGameState sgs = GameClientState.instance.getGameState();
+                Sendable object = (Sendable) sgs.getState().getLocalAndRemoteObjectContainer().getLocalObjects().get(ownerId);
+
+                //Sendable gameObject = GameCommon.getGameObject(ownerId);
+                if (!(object instanceof SegmentController)) {
                     return;
                 }
                 event.getContainer().getPos(event.getIndex(), pos);
@@ -108,11 +116,12 @@ public class ExtraEffectCannonListener {
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).z);
 
                 float damage = event.getContainer().getDamage(event.getIndex());
-                if (damage < 10000) {
-                    return;
-                }
-                float scale = ExtraEffects.extrapolate(100,1000000,damage);
-                float size = (ExtraEffects.interpolate(0.5f,15,scale));
+
+               if (damage < 100000) { //roughly a 9x9x9 cannon + 100% beam
+                   return;
+               }
+                float scale = ExtraEffects.extrapolate(0,1000000,damage);
+                float size = (ExtraEffects.interpolate(1,15,scale));
                 dir.normalize();
                 dir.scale(size);
                 int sprite = SpriteList.MULTISPARK_SMALL.getSprite();
@@ -122,19 +131,21 @@ public class ExtraEffectCannonListener {
                 if (scale < 0.5) {
                     sprite = SpriteList.MULTISPARK_BIG.getSprite();
                 }
-                if (scale < 0.25) {
-                    sprite = SpriteList.MULTISPARK_SINGLE.getSprite();
+                if (scale < 0.1) {
+                //    sprite = SpriteList.MULTISPARK_SINGLE.getSprite();
                 }
                 float[][] colors = new float[][]{
-                        new float[]{color.x, color.y, color.z, 0.5f, 0.5f},
+                        new float[]{color.x, color.y, color.z, 0.5f, 0f},
                         new float[]{color.x, color.y, color.z, 0, 1}
                 };
-
+                int lifetime = 0;
                 for (int i = 0; i < 500; i++) {
                     pos.add(dir);
-                    GodParticle particle = new GodParticle(sprite, pos, (int) (ExtraEffects.interpolate(500, 8000,scale) + Math.random() * ExtraEffects.interpolate(500,3000,scale)));
+                    lifetime = (int) ExtraEffects.interpolate(2000, 6000,scale);
+                    lifetime = (int) (lifetime * (0.8f + Math.random() * 0.5));
+                    GodParticle particle = new GodParticle(sprite, pos, lifetime);
 
-                    float baseSize = size * 0.75f;
+                    float baseSize = size + size * (float) Math.random() * 0.3f;
                     baseSize = baseSize * ExtraEffects.extrapolate(0,500,500-i);
                     Vector3f[] sizes = new Vector3f[]{
                             new Vector3f(baseSize + (float) Math.random() * baseSize ,baseSize + (float) Math.random() *baseSize,0),

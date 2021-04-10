@@ -30,7 +30,7 @@ public class DebugListener {
                 }
                 if (event.getText().contains("uwu")) {
                     Vector3f playerPos = GameClientState.instance.getPlayer().getFirstControlledTransformableWOExc().getWorldTransform().origin;
-                    GodParticle gp = new GodParticle(SpriteList.MULTISPARK_SINGLE.getSprite(), playerPos,30000);
+                    GodParticle gp = new GodParticle(SpriteList.MULTISPARK_SINGLE.getSprite(), playerPos,3 * 1000);
                     gp.playOnClient(false);
                     ModPlayground.broadcastMessage("playing particle, count: " + GodParticle.particleCountGlobalClient);
                 }
