@@ -12,6 +12,7 @@ import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
 import me.jakev.extraeffects.listeners.ExtraEffectCannonListener;
 import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
 import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
+import org.schema.game.common.data.element.ElementInformation;
 
 /**
  * Created by Jake on 12/3/2020.
@@ -26,6 +27,9 @@ public class ExtraEffects extends StarMod {
 
     @Override
     public void onBlockConfigLoad(BlockConfig config) {
+        ElementInformation myBlock = BlockConfig.newElement(this, "MyBlock", new short[]{55, 56, 57, 58, 59, 60});
+        BlockConfig.setBasicInfo(myBlock, "test", 1, 1, true, false, 444);
+        BlockConfig.add(myBlock);
     }
 
     public static ExtraEffects inst;

@@ -29,6 +29,13 @@ public class ScalarMining extends StarMod {
 
      */
     SalvageBeamHitListener listener;
+    private static SegmentPiece getPieceFromSegmentController(SegmentController controller, int x, int y, int z){
+        try{
+            return controller.getSegmentBuffer().getPointUnsave( x, y, z);
+        }catch (NullPointerException e){
+            return null;
+        }
+    }
     @Override
     public void onEnable() {
         System.err.println("Scalar Mining enabled!!!!!!!!!!! woohoo");
@@ -38,7 +45,9 @@ public class ScalarMining extends StarMod {
                     SalvageBeamHandler handler, BeamState hittingBeam, int hits, BeamHandlerContainer<SegmentController> container, SegmentPiece hitPiece, Vector3f from,
                     Vector3f to, Timer timer, Collection<Segment> updatedSegments) {
 //                HashSet<Segment> segs = new HashSet<>(updatedSegments);
-                int r = Math.min(50, (int) (hittingBeam.getPower()/8000F));
+                int r = Math.min(50, (int) (hittingBeam.getPower()/1000F));
+                int powerThreshold = 200;
+                if(hittingBeam.getPower() < powerThreshold) return;
                 int origX = hitPiece.getAbsolutePosX();
                 int origY = hitPiece.getAbsolutePosY();
                 int origZ = hitPiece.getAbsolutePosZ();
@@ -46,7 +55,7 @@ public class ScalarMining extends StarMod {
                     for (int y = -r; y < r; y++) {
                         for (int z = -r; z < r; z++) {
                             if(x*x + y*y + z*z < r*r) {
-                                SegmentPiece pointUnsave = hitPiece.getSegmentController().getSegmentBuffer().getPointUnsave(origX + x, origY + y, origZ + z);
+                                SegmentPiece pointUnsave = getPieceFromSegmentController(hitPiece.getSegmentController(), origX + x, origY + y, origZ + z);
                                 if(pointUnsave != null) {
 //                                    segs.add(pointUnsave.getSegment());
                                     ((Salvager) handler.getBeamShooter()).handleSalvage(hittingBeam, hits, container, from, pointUnsave, timer, updatedSegments);
