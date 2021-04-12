@@ -39,6 +39,7 @@ public class ScalarMining extends StarMod {
     public static int getRadius(float power){
         int rad = (int)(Math.log(power/200) / Math.log(2)) + 1;
         if(rad < 1) rad = 1;
+        if(rad > 10) rad = 10;
         return rad;
     }
     @Override
