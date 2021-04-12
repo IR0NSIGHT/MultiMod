@@ -36,6 +36,11 @@ public class ScalarMining extends StarMod {
             return null;
         }
     }
+    public static int getRadius(float power){
+        int rad = (int)(Math.log(power/200) / Math.log(2)) + 1;
+        if(rad < 1) rad = 1;
+        return rad;
+    }
     @Override
     public void onEnable() {
         System.err.println("Scalar Mining enabled!!!!!!!!!!! woohoo");
@@ -45,7 +50,7 @@ public class ScalarMining extends StarMod {
                     SalvageBeamHandler handler, BeamState hittingBeam, int hits, BeamHandlerContainer<SegmentController> container, SegmentPiece hitPiece, Vector3f from,
                     Vector3f to, Timer timer, Collection<Segment> updatedSegments) {
 //                HashSet<Segment> segs = new HashSet<>(updatedSegments);
-                int r = Math.min(50, (int) (hittingBeam.getPower()/1000F));
+                int r = getRadius(hittingBeam.getPower());
                 int powerThreshold = 200;
                 if(hittingBeam.getPower() < powerThreshold) return;
                 int origX = hitPiece.getAbsolutePosX();
