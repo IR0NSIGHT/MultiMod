@@ -36,6 +36,6 @@ public class InvisibleEmitterParticle extends ModParticle {
         this.velocity.y += ry;
         this.velocity.z += rz;
         this.velocity.scale(0.999F);
-        ModParticleUtil.playClient(factory, this.position, spr, builder);
+        ModParticleUtil.playClient(sectorId, factory, this.position, spr, builder);
     }
 }

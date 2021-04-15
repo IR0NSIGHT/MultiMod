@@ -63,7 +63,7 @@ public class ExtraEffectMissileListener {
                     return;
                 }
 //                for (Vector3f pos : interpolate(2, this.pos, missile.getWorldTransform().origin)) {
-                    ModParticleUtil.playClient(ExtraEffectsParticles.MISSILE_FIRE_TRAIL, missile.getWorldTransform().origin, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
+                    ModParticleUtil.playClient(missile.getSectorId(), ExtraEffectsParticles.MISSILE_FIRE_TRAIL, missile.getWorldTransform().origin, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
 //                    ModParticleUtil.playClient(ExtraEffectsParticles.NORMAL_SMOKE, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(900).setType(ModParticleUtil.Builder.Type.EMISSION_BURST).setSpeed(0.2F));
 //                }
             }
@@ -93,7 +93,7 @@ public class ExtraEffectMissileListener {
                 dir.scale(0.3F);
                 Vector3f origin = event.getMissile().getWorldTransform().origin;
                 Sector sector = event.getMissile().getSector(event.getMissile().getSectorId());
-                ModParticleUtil.playServer(sector.pos, ExtraEffectsParticles.MISSILE_SHOOT, origin, SpriteList.BALL.getSprite(), new ModParticleUtil.Builder().setLifetime(1000).setAmount(40));
+                ModParticleUtil.playServer(sector.getSectorId(), ExtraEffectsParticles.MISSILE_SHOOT, origin, SpriteList.BALL.getSprite(), new ModParticleUtil.Builder().setLifetime(1000).setAmount(40));
                 //Remove the vanilla missile trail
                 new StarRunnable(){
                     @Override
@@ -112,8 +112,9 @@ public class ExtraEffectMissileListener {
                 float x = event.getExplosion().damageInitial;
                 float percentSize = ExtraEffects.extrapolate(100,1000000,x);
                 float absoluteSize = ExtraEffects.interpolate(10,400, percentSize) ;
-                ModParticleUtil.playServer(sector, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
-                ModParticleUtil.playServer(sector, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
+                int sectorId = event.getSector().getSectorId();
+                ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
+                ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
                         new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setEmissionBurst(true));
             }
         }, mod);
@@ -122,9 +123,9 @@ public class ExtraEffectMissileListener {
             @Override
             public void onEvent(MissileHitByProjectileEvent event) {
                 if(event.isServer()) {
-                    Vector3i sector = event.getMissile().getSector(event.getMissile().getSectorId()).pos;
+                    int sectorId = event.getMissile().getSector(event.getMissile().getSectorId()).getSectorId();
                     Vector3f pos = event.getMissile().getWorldTransform().origin;
-                    ModParticleUtil.playServer(sector, ExtraEffectsParticles.FLARE_EMITTER, pos, SpriteList.NOTHING.getSprite(),
+                    ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.FLARE_EMITTER, pos, SpriteList.NOTHING.getSprite(),
                             new ModParticleUtil.Builder().setLifetime(1000).setRandomLife(100).setAmount(6).setSpeed(0.6F).setEmissionBurst(true));
                 }
             }

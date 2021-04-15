@@ -32,7 +32,9 @@ public class ExtraEffectExplodeListener {
             public void onEvent(SegmentControllerOverheatEvent event) {
                 Vector3i sector = event.getEntity().getSector(new Vector3i());
                 final Vector3f pos = event.getEntity().getWorldTransformCenterOfMass(new Transform()).origin;
-                ModParticleUtil.playServer(sector,
+                int sectorId = event.getEntity().getSectorId();
+                int pSec = GameClient.getClientState().getCurrentSectorId();
+                ModParticleUtil.playServer(sectorId,
                         ExtraEffectsParticles.EXPLOSION_TRIGGER, pos, SpriteList.NOTHING.getSprite(), new ModParticleUtil.Builder());
             }
         }, inst);

@@ -6,7 +6,7 @@ package me.jakev.extraeffects;
  * DATE: 15.03.2021
  * TIME: 18:38
  */
-public class test {
+public class TestScratch {
     public static void main (String[] args) {
         long startTime = System.currentTimeMillis();
 

@@ -28,6 +28,6 @@ public class FlashFieldEmitterParticle extends ModParticle {
     public void update(long currentTime) {
         Vector3f v = new Vector3f(this.position);
         v.add(ModParticleUtil.getRandomDir(radius));
-        ModParticleUtil.playClient(ExtraEffectsParticles.SIMPLE_FLASH, v, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder());
+        ModParticleUtil.playClient(sectorId, ExtraEffectsParticles.SIMPLE_FLASH, v, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder());
     }
 }
