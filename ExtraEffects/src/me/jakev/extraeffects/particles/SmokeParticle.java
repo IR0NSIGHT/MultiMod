@@ -40,6 +40,5 @@ public class SmokeParticle extends ModParticle {
     @Override
     public void update(long currentTime) {
         colorOverTime(this, currentTime, startColor, endColor);
-
     }
 }
