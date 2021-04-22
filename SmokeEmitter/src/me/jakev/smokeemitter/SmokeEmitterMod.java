@@ -59,6 +59,7 @@ public class SmokeEmitterMod extends StarMod {
                     ManagedUsableSegmentController<?> msuc = (ManagedUsableSegmentController<?>) event.getSegmentPiece().getSegmentController();
                     ModManagerContainerModule modMCModule = msuc.getManagerContainer().getModMCModule(emitterBlock.id);
                     ((SmokeEmitterModule) modMCModule).red = !((SmokeEmitterModule) modMCModule).red;
+                    //Send the updated "red-ness" to the server
                     modMCModule.syncToServer();
                 }
             }
