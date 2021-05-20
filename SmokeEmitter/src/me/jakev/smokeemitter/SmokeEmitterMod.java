@@ -2,7 +2,7 @@ package me.jakev.smokeemitter;
 
 import api.config.BlockConfig;
 import api.listener.Listener;
-import api.listener.events.block.SegmentPieceActivateEvent;
+import api.listener.events.block.SegmentPieceActivateByPlayer;
 import api.listener.events.register.ManagerContainerRegisterEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
@@ -52,15 +52,15 @@ public class SmokeEmitterMod extends StarMod {
                 event.addModMCModule(new SmokeEmitterModule(event.getSegmentController(), event.getContainer(), SmokeEmitterMod.this, emitterBlock.id));
             }
         });
-        StarLoader.registerListener(SegmentPieceActivateEvent.class, this, new Listener<SegmentPieceActivateEvent>() {
+        StarLoader.registerListener(SegmentPieceActivateByPlayer.class, this, new Listener<SegmentPieceActivateByPlayer>() {
             @Override
-            public void onEvent(SegmentPieceActivateEvent event) {
+            public void onEvent(SegmentPieceActivateByPlayer event) {
                 if(event.getSegmentPiece().getType() == emitterBlock.id){
                     ManagedUsableSegmentController<?> msuc = (ManagedUsableSegmentController<?>) event.getSegmentPiece().getSegmentController();
                     ModManagerContainerModule modMCModule = msuc.getManagerContainer().getModMCModule(emitterBlock.id);
                     ((SmokeEmitterModule) modMCModule).red = !((SmokeEmitterModule) modMCModule).red;
                     //Send the updated "red-ness" to the server
-                    modMCModule.syncToServer();
+                    ((SmokeEmitterModule) modMCModule).updateColorClient();
                 }
             }
         });
