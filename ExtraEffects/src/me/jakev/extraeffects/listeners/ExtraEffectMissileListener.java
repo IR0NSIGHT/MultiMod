@@ -13,6 +13,7 @@ import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
+import me.jakev.extraeffects.particles.godpresets.SimpleScalingFlash;
 import org.schema.common.util.linAlg.Vector3i;
 import org.schema.game.common.data.missile.Missile;
 import org.schema.game.common.data.missile.updates.MissileSpawnUpdate;
@@ -69,20 +70,7 @@ public class ExtraEffectMissileListener {
             }
 
         });
-        //Remove vanilla trails
-//        try {
-//            Field field = MissileTrailDrawer.class.getDeclaredField("MAX_TRAILS");
-//            field.setAccessible(true);
-//
-//            Field modifiersField = Field.class.getDeclaredField("modifiers");
-//            modifiersField.setAccessible(true);
-//            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-//
-//            field.set(null, 0);
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-        //
+
         StarLoader.registerListener(MissilePostAddEvent.class, new Listener<MissilePostAddEvent>() {
             @Override
             public void onEvent(final MissilePostAddEvent event) {
@@ -116,6 +104,24 @@ public class ExtraEffectMissileListener {
                 ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
                 ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
                         new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setEmissionBurst(true));
+
+                for (int i = 0; i < 10; i++) {
+                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(SpriteList.MULTISPARK_MANY.getSprite(), toPos, (int) (Math.random() * 50 + 600)); //20*1000);//
+                    sparksParticle.scaleByDamage(
+                            10,
+                            4000000,
+                            x* (0.8f + 0.5f* (float)Math.random()),
+                            1,
+                            120
+                    );
+                    sparksParticle.setColors(new float[][] {
+                            new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,1,0.5f},
+                            new float[]{1f,1f,1f,1f},
+                    });
+                    ModParticleUtil.playClientDirect(sparksParticle);
+                }
+
+
             }
         }, mod);
 
