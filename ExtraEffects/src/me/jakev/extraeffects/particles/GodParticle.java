@@ -19,6 +19,7 @@ public class GodParticle extends ModParticle {
     //TODO color snapshots
     //TODO rotation over time: angles, boolean: perSecondOrAbsolute
     private Vector2f size;
+    public int angle = (int) (Math.random() * 360);
 
     /**
      * will set the size snapshots for the particle. format: x,y,% lifetime.
@@ -76,9 +77,6 @@ public class GodParticle extends ModParticle {
 
         lastColorSnap = colors[0];
         nextColorSnap = colors[0];
-
-        //TODO rotate around camera direction.
-        rotate(this,(float)Math.random() * 360);
     }
 
     int sizeIterator = 0;
@@ -88,9 +86,13 @@ public class GodParticle extends ModParticle {
     int colorIterator = 0;
     float[] lastColorSnap;
     float[] nextColorSnap;
-
+    int i = 0;
     @Override
     public void update(long currentTime) {
+        if (i == 0) {
+            rotate(this, angle);
+            i++;
+        }
         //interpolate between current size position and next based on lifetime
         float percentLife = getLifetimePercent(currentTime);
         if (nextSizeSnap.z < percentLife) {

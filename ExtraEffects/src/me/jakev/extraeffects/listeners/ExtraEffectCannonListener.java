@@ -13,6 +13,7 @@ import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.GodParticle;
+import me.jakev.extraeffects.particles.godpresets.SimpleScalingFlash;
 import org.schema.game.common.controller.ManagedUsableSegmentController;
 import org.schema.game.common.controller.SegmentController;
 import org.schema.game.common.controller.elements.ShieldAddOn;
@@ -33,52 +34,83 @@ public class ExtraEffectCannonListener {
     static float dampening = 0.025F;
 
     public static void init(StarMod mod) {
-        /*
-                        ModParticleUtil.playClient(pos, SpriteList.RING.getSprite(), 1, 500, new Vector3f(0, 0F, 0), new ModParticleFactory() {
-                    @Override
-                    public ModParticle newParticle() {
-                        return new CannonShotParticle();
-                    }
-                });
-         */
-        //TODO why is the hit particle so huge?
+
         StarLoader.registerListener(SegmentHitByProjectileEvent.class, new Listener<SegmentHitByProjectileEvent>() {
             @Override
             public void onEvent(SegmentHitByProjectileEvent event) {
                 final Vector3f dir = new Vector3f();
-                Vector3f pos = new Vector3f();
-                pos.set(event.getShotHandler().posAfterUpdate);
-                event.getParticles().getPos(event.getParticleIndex(), pos);
-                dir.normalize();
-                dir.scale(0.3F);
-
-                //TODO hit particles isnt always visible, maybe random inworld rotation?
-
+                Vector3f toPos = new Vector3f();
+                toPos.set(event.getShotHandler().posAfterUpdate);
 
                 float damageInitial = event.getShotHandler().initialDamage;
-                GodParticle particle = new GodParticle(SpriteList.FLASH.getSprite(), pos, 100);
-                float baseSize = ExtraEffects.interpolate(  //size range dependenent on damage
-                        1f,
-                        60,
-                        ExtraEffects.extrapolate(50,1000000,damageInitial) //allowed damage range
-                );
-                float startSize = 0.5f * baseSize + (float) Math.random() * baseSize;
-                float endSize = 2 * baseSize + (float)  Math.random() *baseSize;
-                particle.setSizes(new Vector3f[]{
-                        new Vector3f( startSize ,startSize,0),
-                        new Vector3f(endSize,endSize,1f),
-                });
+                float percent = ExtraEffects.extrapolate(0,500000,damageInitial);
+                int sprite = SpriteList.BRIGHT_FLASH_WIDE_01.getSprite(); //SpriteList.MULTISPARK_MANY.getSprite()
+                Vector3f baseColor = new Vector3f(1f,1f,1f);
+                for (int i = 0; i < 1; i++) {
+                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(sprite, toPos, (int) (100*percent+100)); //20*1000);//
+                    sparksParticle.angle = 0;
+                    sparksParticle.scaleByDamage(
+                            10,
+                            500000,
+                            damageInitial* (0.8f + 0.5f* (float)Math.random()),
+                            1,
+                            150
+                    );
+                    sparksParticle.setColors(new float[][] {
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,//+ 0.2f * (float)Math.random(),
+                                    baseColor.z,//+ 0.2f * (float)Math.random(),
+                                    1f,
+                                    0.5f},
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,// + 0.2f * (float)Math.random(),
+                                    baseColor.z,// + 0.2f * (float)Math.random(),
+                                    0f,
+                                    1f},
+                    });
+                    ModParticleUtil.playClientDirect(sparksParticle);
+                    /*
+                    //Flash particles, a bit randomized pos, smaller than sparks
+                    //flash/burn particle
+                    float randomX = (float) (-25 + Math.random() * 50) * percentSize;
+                    float randomY = (float) (-25 + Math.random() * 50) * percentSize;
+                    float randomZ = (float) (-25 + Math.random() * 50) * percentSize;
 
-                particle.setColors(new float[][] {
-                        new float[]{1,1,0,1,0},
-                        new float[]{1,0.6f,0.04f,0.5f,0.8f},
-                        new float[]{0.5f,0.3f,0,0,1},
-                });
+                    Vector3f pos = new Vector3f(toPos.x + randomX, toPos.y + randomY, toPos.z + randomZ);
+                    SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.SMOKEY_01.getSprite(), pos,(int) (Math.random() * 200 + 100));
 
+                    flashParticle.scaleByDamage(
+                            10,
+                            1000000,
+                            damageInitial * (0.8f + 0.5f* (float)Math.random()),
+                            1,
+                            90
+                    );
 
-                ModParticleUtil.playClientDirect(particle);
+                    flashParticle.setColors(new float[][] {
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,//+ 0.2f * (float)Math.random(),
+                                    baseColor.z,//+ 0.2f * (float)Math.random(),
+                                    1f,
+                                    0.5f},
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,// + 0.2f * (float)Math.random(),
+                                    baseColor.z,// + 0.2f * (float)Math.random(),
+                                    0f,
+                                    1f},
+                    });
+
+                    //    flashParticle.velocity.set(normal);
+                    ModParticleUtil.playClientDirect(flashParticle);
+                    */
+                }
             }
         }, mod);
+
         StarLoader.registerListener(CannonProjectileAddEvent.class, new Listener<CannonProjectileAddEvent>() {
             @Override
             public void onEvent(CannonProjectileAddEvent event) {

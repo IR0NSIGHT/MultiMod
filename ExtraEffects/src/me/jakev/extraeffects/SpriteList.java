@@ -15,6 +15,7 @@ public enum SpriteList {
     SMOKEY_01,
     SMOKEY_SPARK_01,
     FLASH,
+    BRIGHT_FLASH_WIDE_01,
     ENERGY,
     BALL,
     CLOUD,
