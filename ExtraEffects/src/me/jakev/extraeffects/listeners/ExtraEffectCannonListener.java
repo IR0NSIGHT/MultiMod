@@ -105,7 +105,11 @@ public class ExtraEffectCannonListener {
                  Vector3f color = new Vector3f(
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).x,
                         event.getContainer().getColor(event.getIndex(),new Vector4f()).y,
-                        event.getContainer().getColor(event.getIndex(),new Vector4f()).z);
+                        event.getContainer().getColor(event.getIndex(),new Vector4f()).z
+                 );
+                 if (color.equals(new Vector3f(1,1,1))) {
+                     color.set(0.67f,1,0.48f); //turn white into light green
+                 }
             //   GodParticle projectile = new GodParticle(SpriteList.GLOWBALL.getSprite(), pos,10000);
             //   projectile.velocity = velocity;
             //   projectile.setSizes(new Vector3f[]{new Vector3f(20,20,0)});
@@ -113,21 +117,21 @@ public class ExtraEffectCannonListener {
 
                 float damage = event.getContainer().getDamage(event.getIndex());
                 float scale = ExtraEffects.extrapolate(100,1000000,damage);
-                float size = (ExtraEffects.interpolate(0.5f,15,scale));
+                float size = (ExtraEffects.interpolate(0.5f,30,scale));
                 dir.normalize();
                 dir.scale(size);
                 int sprite = SpriteList.MULTISPARK_SMALL.getSprite();
-                if (scale < 0.75) {
+                if (scale < 0.25) {
                     sprite = SpriteList.MULTISPARK_MEDIUM.getSprite();
                 }
-                if (scale < 0.5) {
+                if (scale < 0.1) {
                     sprite = SpriteList.MULTISPARK_BIG.getSprite();
                 }
-                if (scale < 0.25) {
+                if (scale < 0.05) {
                     sprite = SpriteList.MULTISPARK_SINGLE.getSprite();
                 }
                 float[][] colors = new float[][]{
-                        new float[]{color.x, color.y, color.z, 0.5f, 0.5f},
+                        new float[]{color.x, color.y, color.z, 0.2f, 0.5f},
                         new float[]{color.x, color.y, color.z, 0, 1}
                 };
     //500

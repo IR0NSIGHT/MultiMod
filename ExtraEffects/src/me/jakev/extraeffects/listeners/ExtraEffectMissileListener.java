@@ -15,6 +15,9 @@ import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.particles.godpresets.SimpleScalingFlash;
 import org.schema.common.util.linAlg.Vector3i;
+import org.schema.game.common.controller.ManagedUsableSegmentController;
+import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.data.ManagedSegmentController;
 import org.schema.game.common.data.missile.Missile;
 import org.schema.game.common.data.missile.updates.MissileSpawnUpdate;
 import org.schema.game.common.data.world.Sector;
@@ -98,30 +101,76 @@ public class ExtraEffectMissileListener {
                 Vector3i sector = event.getSector().pos;
                 Vector3f toPos = event.getExplosion().fromPos;
                 float x = event.getExplosion().damageInitial;
-                float percentSize = ExtraEffects.extrapolate(100,1000000,x);
+                float percentSize = ExtraEffects.extrapolate(100,2000000,x);
                 float absoluteSize = ExtraEffects.interpolate(10,400, percentSize) ;
                 int sectorId = event.getSector().getSectorId();
-                ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
-                ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
-                        new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setEmissionBurst(true));
 
+            //    ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
+            //    ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
+            //            new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setEmissionBurst(true));
+                //get shooting weapon + its color
+                int sprite = SpriteList.SMOKEY_SPARK_01.getSprite(); //SpriteList.MULTISPARK_MANY.getSprite()
+                Vector3f baseColor = new Vector3f(0.12f,1.00f,0.94f);
                 for (int i = 0; i < 10; i++) {
-                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(SpriteList.MULTISPARK_MANY.getSprite(), toPos, (int) (Math.random() * 50 + 600)); //20*1000);//
+                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(sprite, toPos, (int) (Math.random() * 300 + 150)); //20*1000);//
                     sparksParticle.scaleByDamage(
                             10,
-                            4000000,
+                            6000000,
                             x* (0.8f + 0.5f* (float)Math.random()),
                             1,
                             120
                     );
                     sparksParticle.setColors(new float[][] {
-                            new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,1,0.5f},
-                            new float[]{1f,1f,1f,1f},
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,//+ 0.2f * (float)Math.random(),
+                                    baseColor.z,//+ 0.2f * (float)Math.random(),
+                                    1f,
+                                    0.5f},
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,// + 0.2f * (float)Math.random(),
+                                    baseColor.z,// + 0.2f * (float)Math.random(),
+                                    0f,
+                                    1f},
                     });
                     ModParticleUtil.playClientDirect(sparksParticle);
+
+                    //Flash particles, a bit randomized pos, smaller than sparks
+                    //flash/burn particle
+                    float randomX = (float) (-25 + Math.random() * 50) * percentSize;
+                    float randomY = (float) (-25 + Math.random() * 50) * percentSize;
+                    float randomZ = (float) (-25 + Math.random() * 50) * percentSize;
+
+                    Vector3f pos = new Vector3f(toPos.x + randomX, toPos.y + randomY, toPos.z + randomZ);
+                    SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.SMOKEY_01.getSprite(), pos,(int) (Math.random() * 400 + 200));
+
+                    flashParticle.scaleByDamage(
+                            10,
+                            6000000,
+                            x * (0.8f + 0.5f* (float)Math.random()),
+                            1,
+                            90
+                    );
+
+                    flashParticle.setColors(new float[][] {
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,//+ 0.2f * (float)Math.random(),
+                                    baseColor.z,//+ 0.2f * (float)Math.random(),
+                                    1f,
+                                    0.5f},
+                            new float[]{
+                                    0.6f * (float)Math.random(),
+                                    baseColor.y,// + 0.2f * (float)Math.random(),
+                                    baseColor.z,// + 0.2f * (float)Math.random(),
+                                    0f,
+                                    1f},
+                    });
+
+                    //    flashParticle.velocity.set(normal);
+                    ModParticleUtil.playClientDirect(flashParticle);
                 }
-
-
             }
         }, mod);
 

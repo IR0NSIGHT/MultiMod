@@ -12,6 +12,8 @@ import java.io.IOException;
 public enum SpriteList {
     SPARK,
     SMOKE,
+    SMOKEY_01,
+    SMOKEY_SPARK_01,
     FLASH,
     ENERGY,
     BALL,

@@ -60,8 +60,8 @@ public class ExtraEffectBeamListener {
                     SimpleScalingFlash sparksParticle = new SimpleScalingFlash(SpriteList.MULTISPARK_MANY.getSprite(), to, (int) (Math.random() * 300 + 50)); //20*1000);//
                     sparksParticle.scaleByDamage(
                             10,
-                            100000,
-                            damageInitial * (0.8f + 0.5f* (float)Math.random()),
+                            200000,
+                            damageInitial * (0.5f + 0.5f* (float)Math.random()),
                             1,
                             120
                     );
@@ -84,7 +84,7 @@ public class ExtraEffectBeamListener {
                     SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.GLOWBALL.getSprite(), to, 100);
                     flashParticle.scaleByDamage(
                             10,
-                            100000,
+                            200000,
                             damageInitial * (0.8f + 0.5f* (float)Math.random()),
                             1,
                             90

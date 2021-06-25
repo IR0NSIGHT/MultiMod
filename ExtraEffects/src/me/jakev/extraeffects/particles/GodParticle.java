@@ -6,6 +6,7 @@ import me.jakev.extraeffects.ExtraEffects;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
+import java.util.Arrays;
 
 /**
  * STARMADE MOD
@@ -42,12 +43,12 @@ public class GodParticle extends ModParticle {
      * @param colors
      */
     public void setColors(float[][] colors) {
-    //    for (float[] color: colors) {
-    //        if (color.length != 5) {
-    //            System.err.println("GodParticle received wrong format of colors: " + color);
-    //            return;
-    //        }
-    //    }
+        for (float[] color: colors) {
+            if (color.length != 5) {
+                System.err.println("GodParticle received wrong format of colors: " + Arrays.toString(color)+ " should be [r,g,b,a,t]");
+                return;
+            }
+        }
         this.colors = colors;
         lastColorSnap = colors[0];
         nextColorSnap = colors[0];
