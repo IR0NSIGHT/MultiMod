@@ -70,11 +70,11 @@ public class ExtraEffectsParticles {
             }
         }, ExtraEffects.inst);
 
-        GOD_PARTICLE = event.addParticle(
+        GOD_PARTICLE = event.addParticle( //this does not allow passing of sector ID, dont recommend using.
                 new IModParticleFactory() {
                     @Override
                     public ModParticle newParticle(int factoryId, int sprite, Vector3f worldPos, ModParticleUtil.Builder builder) {
-                        return new GodParticle(sprite,worldPos, builder.getLifetime());
+                        return new GodParticle(sprite,worldPos, builder.getLifetime(), 0);
                     }
                 }, ExtraEffects.inst);
 

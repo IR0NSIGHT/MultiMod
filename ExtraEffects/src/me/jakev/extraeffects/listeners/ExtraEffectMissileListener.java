@@ -13,11 +13,8 @@ import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.ExtraEffectsParticles;
 import me.jakev.extraeffects.SpriteList;
-import me.jakev.extraeffects.particles.godpresets.SimpleScalingFlash;
+import me.jakev.extraeffects.particles.advanced.BasicExplosion;
 import org.schema.common.util.linAlg.Vector3i;
-import org.schema.game.common.controller.ManagedUsableSegmentController;
-import org.schema.game.common.controller.SegmentController;
-import org.schema.game.common.data.ManagedSegmentController;
 import org.schema.game.common.data.missile.Missile;
 import org.schema.game.common.data.missile.updates.MissileSpawnUpdate;
 import org.schema.game.common.data.world.Sector;
@@ -67,7 +64,7 @@ public class ExtraEffectMissileListener {
                     return;
                 }
 //                for (Vector3f pos : interpolate(2, this.pos, missile.getWorldTransform().origin)) {
-                    ModParticleUtil.playClient(missile.getSectorId(), ExtraEffectsParticles.MISSILE_FIRE_TRAIL, missile.getWorldTransform().origin, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
+                //    ModParticleUtil.playClient(missile.getSectorId(), ExtraEffectsParticles.MISSILE_FIRE_TRAIL, missile.getWorldTransform().origin, SpriteList.FIRE.getSprite(), new ModParticleUtil.Builder().setLifetime(700));
 //                    ModParticleUtil.playClient(ExtraEffectsParticles.NORMAL_SMOKE, pos, SpriteList.BIGSMOKE.getSprite(), new ModParticleUtil.Builder().setLifetime(900).setType(ModParticleUtil.Builder.Type.EMISSION_BURST).setSpeed(0.2F));
 //                }
             }
@@ -79,109 +76,40 @@ public class ExtraEffectMissileListener {
             public void onEvent(final MissilePostAddEvent event) {
                 final Vector3f dir = new Vector3f();
                 event.getMissile().getDirection(dir);
-
+                event.getMissile().endTrail();
                 dir.normalize();
                 dir.scale(0.3F);
                 Vector3f origin = event.getMissile().getWorldTransform().origin;
                 Sector sector = event.getMissile().getSector(event.getMissile().getSectorId());
-                ModParticleUtil.playServer(sector.getSectorId(), ExtraEffectsParticles.MISSILE_SHOOT, origin, SpriteList.BALL.getSprite(), new ModParticleUtil.Builder().setLifetime(1000).setAmount(40));
-                //Remove the vanilla missile trail
-                new StarRunnable(){
-                    @Override
-                    public void run() {
-//                        GameClientState.instance.getWorldDrawer().getTrailDrawer().endTrail(event.getMissile());
-                    }
-                }.runLater(ExtraEffects.inst, 3);
+        //        ModParticleUtil.playServer(sector.getSectorId(), ExtraEffectsParticles.MISSILE_SHOOT, origin, SpriteList.BALL.getSprite(), new ModParticleUtil.Builder().setLifetime(1000).setAmount(40));
+
             }
         }, mod);
 
         StarLoader.registerListener(ExplosionEvent.class, new Listener<ExplosionEvent>() {
             @Override
             public void onEvent(ExplosionEvent event) {
-                Vector3i sector = event.getSector().pos;
+                int sectorID = event.getSector().getSectorId();
                 Vector3f toPos = event.getExplosion().fromPos;
                 float x = event.getExplosion().damageInitial;
-                float percentSize = ExtraEffects.extrapolate(100,2000000,x);
-                float absoluteSize = ExtraEffects.interpolate(10,400, percentSize) ;
-                int sectorId = event.getSector().getSectorId();
 
-            //    ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.SIMPLE_FLASH_SCALABLE, toPos, SpriteList.FLASH.getSprite(), new ModParticleUtil.Builder().setLifetime(156).setOffset(absoluteSize,0,0));
-            //    ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.MINOR_SMOKE, toPos, SpriteList.FLASH.getSprite(),
-            //            new ModParticleUtil.Builder().setAmount(100).setLifetime(500).setSpeed(0.4F).setEmissionBurst(true));
-                //get shooting weapon + its color
-                int sprite = SpriteList.SMOKEY_SPARK_01.getSprite(); //SpriteList.MULTISPARK_MANY.getSprite()
-                Vector3f baseColor = new Vector3f(0.12f,1.00f,0.94f);
-                for (int i = 0; i < 10; i++) {
-                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(sprite, toPos, (int) (Math.random() * 300 + 150)); //20*1000);//
-                    sparksParticle.scaleByDamage(
-                            10,
-                            6000000,
-                            x* (0.8f + 0.5f* (float)Math.random()),
-                            1,
-                            120
-                    );
-                    sparksParticle.setColors(new float[][] {
-                            new float[]{
-                                    0.6f * (float)Math.random(),
-                                    baseColor.y,//+ 0.2f * (float)Math.random(),
-                                    baseColor.z,//+ 0.2f * (float)Math.random(),
-                                    1f,
-                                    0.5f},
-                            new float[]{
-                                    0.6f * (float)Math.random(),
-                                    baseColor.y,// + 0.2f * (float)Math.random(),
-                                    baseColor.z,// + 0.2f * (float)Math.random(),
-                                    0f,
-                                    1f},
-                    });
-                    ModParticleUtil.playClientDirect(sparksParticle);
+                //get shooting weapon + its color new Vector3f(0,0.85f,1)
+                new BasicExplosion(toPos,1000, (int) x /20000,0.3f,new Vector3f(0,0.85f,1), sectorID).play();
+           //     new BasicExplosion(toPos,10000, (int) x /100000,0.5f,new Vector3f(1,0.5f,0), sectorID).play();
 
-                    //Flash particles, a bit randomized pos, smaller than sparks
-                    //flash/burn particle
-                    float randomX = (float) (-25 + Math.random() * 50) * percentSize;
-                    float randomY = (float) (-25 + Math.random() * 50) * percentSize;
-                    float randomZ = (float) (-25 + Math.random() * 50) * percentSize;
-
-                    Vector3f pos = new Vector3f(toPos.x + randomX, toPos.y + randomY, toPos.z + randomZ);
-                    SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.SMOKEY_01.getSprite(), pos,(int) (Math.random() * 400 + 200));
-
-                    flashParticle.scaleByDamage(
-                            10,
-                            6000000,
-                            x * (0.8f + 0.5f* (float)Math.random()),
-                            1,
-                            90
-                    );
-
-                    flashParticle.setColors(new float[][] {
-                            new float[]{
-                                    0.6f * (float)Math.random(),
-                                    baseColor.y,//+ 0.2f * (float)Math.random(),
-                                    baseColor.z,//+ 0.2f * (float)Math.random(),
-                                    1f,
-                                    0.5f},
-                            new float[]{
-                                    0.6f * (float)Math.random(),
-                                    baseColor.y,// + 0.2f * (float)Math.random(),
-                                    baseColor.z,// + 0.2f * (float)Math.random(),
-                                    0f,
-                                    1f},
-                    });
-
-                    //    flashParticle.velocity.set(normal);
-                    ModParticleUtil.playClientDirect(flashParticle);
-                }
             }
         }, mod);
 
         StarLoader.registerListener(MissileHitByProjectileEvent.class, new Listener<MissileHitByProjectileEvent>() {
-            @Override
+            @Override //why you prokem TODO
             public void onEvent(MissileHitByProjectileEvent event) {
                 if(event.isServer()) {
+                    if (event.getDamage() < event.getMissile().getHp()) return;
                     int sectorId = event.getMissile().getSector(event.getMissile().getSectorId()).getSectorId();
                     Vector3f pos = event.getMissile().getWorldTransform().origin;
-                    ModParticleUtil.playServer(sectorId, ExtraEffectsParticles.FLARE_EMITTER, pos, SpriteList.NOTHING.getSprite(),
-                            new ModParticleUtil.Builder().setLifetime(1000).setRandomLife(100).setAmount(6).setSpeed(0.6F).setEmissionBurst(true));
+
+
+                    new BasicExplosion(pos,1000, event.getMissile().getDamage()/20000,0.3f,new Vector3f(0,0.85f,1), sectorId).play();
                 }
             }
         }, mod);

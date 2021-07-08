@@ -12,27 +12,29 @@ import javax.vecmath.Vector3f;
  * DATE: 05.07.2021
  * TIME: 19:23
  */
-public class basic_explosion {
+public class BasicExplosion {
     Vector3f pos; //in sector
+    int sectorID;
+
     Vector3f color; //rgb
     int duration; //millis, not exact but average
     int size; //abtract
-    SpriteList bodySprite = SpriteList.SMOKEY_SPARK_01;
-    SpriteList fillerSprite = SpriteList.SMOKEY_01;
+    SpriteList bodySprite = SpriteList.SMOKEY_01;
+    SpriteList fillerSprite = SpriteList.SMOKEY_SPARK_01;
+    float range;
     /**
      * creates a particle explosion
      * @param pos in sector position
      * @param duration in millis on average
-     * @param size size in 1..1000
+     * @param strength strength in 1..1000
      * @param color color of explosion in V3 rgb
-     * @param play directly play (use exp.play() to trigger manually)
      */
-    public basic_explosion(Vector3f pos, int duration, int size, Vector3f color, boolean play) {
+    public BasicExplosion(Vector3f pos, int duration, int strength, float colorrange, Vector3f color, int SectorID) {
         this.pos = pos;
         this.duration = duration;
-        this.size = size;
+        this.size = (int) Math.sqrt(strength/Math.PI);
         this.color = color;
-        if (play) play();
+        this.range = colorrange;
     }
 
     public void setSprites(SpriteList body, SpriteList filler) {
@@ -41,63 +43,57 @@ public class basic_explosion {
     }
 
     public void play() {
-        for (int i = 0; i < 10; i++) {
-            SimpleScalingFlash sparksParticle = new SimpleScalingFlash(bodySprite.getSprite(), pos, (int) ((Math.random() + 0.5f) * duration)); //20*1000);//
-            sparksParticle.scaleByDamage(
-                    1,
-                    1000,
-                    size * (0.6f + 0.4f * (float) Math.random()),
-                    1,
-                    120
-            );
-            sparksParticle.setColors(new float[][]{
-                    new float[]{
-                            0.6f * (float) Math.random(),
-                            color.y,//+ 0.2f * (float)Math.random(),
-                            color.z,//+ 0.2f * (float)Math.random(),
-                            1f,
-                            0.5f},
-                    new float[]{
-                            0.6f * (float) Math.random(),
-                            color.y,// + 0.2f * (float)Math.random(),
-                            color.z,// + 0.2f * (float)Math.random(),
-                            0f,
-                            1f},
-            });
-            ModParticleUtil.playClientDirect(sparksParticle);
 
+
+        for (int i = 0; i < 10; i++) {
+            int lifetime = (int) ((0.7f*Math.random()+0.3f) * duration);
             //Flash particles, a bit randomized pos, smaller than sparks
             //flash/burn particle
-            float randomX = (float) (-1 + Math.random() * 2) * size;
-            float randomY = (float) (-1 + Math.random() * 2) * size;
-            float randomZ = (float) (-1 + Math.random() * 2) * size;
+            float randomX = (float) (-1 + Math.random() * 2) * 0.5f * size;
+            float randomY = (float) (-1 + Math.random() * 2) * 0.5f * size;
+            float randomZ = (float) (-1 + Math.random() * 2) * 0.5f * size;
 
             Vector3f posR = new Vector3f(pos.x + randomX, pos.y + randomY, pos.z + randomZ);
-            SimpleScalingFlash flashParticle = new SimpleScalingFlash(fillerSprite.getSprite(), posR, (int) (Math.random() * 400 + 200));
+            SimpleScalingFlash bodyParticle = new SimpleScalingFlash(bodySprite.getSprite(), posR, lifetime,sectorID);
 
-            flashParticle.scaleByDamage(
-                    10,
-                    6000000,
-                    size * (0.6f + 0.4f * (float) Math.random()),
+            bodyParticle.scaleByDamage(
                     1,
-                    90
+                    1000,
+                    7* size * (0.6f + 0.4f * (float) Math.random()),
+                    1,
+                    200
+            );
+        //    color = new Vector3f(0.5f,0.5f,0.5f);
+            bodyParticle.setColors(new float[][]{
+                    getRandomColor(color,1,0.3f,range),
+                    getRandomColor(color,0,1,range)
+            });
+            ModParticleUtil.playClientDirect(bodyParticle);
+
+            SimpleScalingFlash fillerParticle = new SimpleScalingFlash(fillerSprite.getSprite(), posR, lifetime,sectorID);
+
+            fillerParticle.scaleByDamage(
+                    1,
+                    1000,
+                    10* size * (0.6f + 0.4f * (float) Math.random()),
+                    1,
+                    200
             );
 
-            flashParticle.setColors(new float[][]{
-                    new float[]{
-                            0.6f * (float) Math.random(),
-                            color.y,//+ 0.2f * (float)Math.random(),
-                            color.z,//+ 0.2f * (float)Math.random(),
-                            1f,
-                            0.5f},
-                    new float[]{
-                            0.6f * (float) Math.random(),
-                            color.y,// + 0.2f * (float)Math.random(),
-                            color.z,// + 0.2f * (float)Math.random(),
-                            0f,
-                            1f},
+            fillerParticle.setColors(new float[][]{
+                getRandomColor(color,0.5f,0f,range),
+                getRandomColor(color,0,1,range)
             });
-            ModParticleUtil.playClientDirect(flashParticle);
+            ModParticleUtil.playClientDirect(fillerParticle);
         }
+    }
+    private float[] getRandomColor(Vector3f color,float a,float t, float range) {
+        float[] out = new float[]{color.x,color.y,color.z,0,0};
+        for (int i = 0; i <= 2; i++) {
+            out[i] = Math.min(Math.max((float) ((-1f+2*Math.random())*range + out[i]),0),1);
+        }
+        out[3] = a;
+        out[4] = t;
+        return out;
     }
 }

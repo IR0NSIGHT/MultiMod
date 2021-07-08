@@ -57,7 +57,7 @@ public class ExtraEffectBeamListener {
                     to.add(camDir);
 
                     //flying sparks
-                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(SpriteList.MULTISPARK_MANY.getSprite(), to, (int) (Math.random() * 300 + 50)); //20*1000);//
+                    SimpleScalingFlash sparksParticle = new SimpleScalingFlash(SpriteList.MULTISPARK_MANY.getSprite(), to, (int) (Math.random() * 300 + 50),event.getBeamState().cachedLastSegment.getSectorId()); //20*1000);//
                     sparksParticle.scaleByDamage(
                             10,
                             200000,
@@ -81,13 +81,13 @@ public class ExtraEffectBeamListener {
                     Vector3f toCamera =  c.getCachedForward();
 
                     //flash/burn particle
-                    SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.GLOWBALL.getSprite(), to, 100);
+                    SimpleScalingFlash flashParticle = new SimpleScalingFlash(SpriteList.GLOWBALL.getSprite(), to, 100,event.getBeamState().cachedLastSegment.getSectorId());
                     flashParticle.scaleByDamage(
                             10,
                             200000,
                             damageInitial * (0.8f + 0.5f* (float)Math.random()),
                             1,
-                            90
+                            300
                     );
 
                     flashParticle.setColors(new float[][] {

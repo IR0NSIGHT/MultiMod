@@ -60,13 +60,15 @@ public class GodParticle extends ModParticle {
             new float[]{0, 1, 1, 0.5f, 0.5f},
             new float[]{0, 1, 1, 0, 1}
     };
-    public GodParticle(int spriteID, Vector3f pos, int lifetime ) {
+
+    public GodParticle(int spriteID, Vector3f pos, int lifetime, int sectorID) {
         super();
         this.particleSpriteId = spriteID;
         this.lifetimeMs = lifetime;
         this.startTime = System.currentTimeMillis();
         this.position.set(pos);
         this.updateCameraDistance();
+        if (sectorID != 0) this.sectorId = sectorID;
         this.spawn();
 
     }

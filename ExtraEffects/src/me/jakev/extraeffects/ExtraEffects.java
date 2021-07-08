@@ -8,10 +8,7 @@ import api.mod.StarLoader;
 import api.mod.StarMod;
 import api.network.Packet;
 import api.utils.particle.ModParticleUtil;
-import me.jakev.extraeffects.listeners.ExtraEffectBeamListener;
-import me.jakev.extraeffects.listeners.ExtraEffectCannonListener;
-import me.jakev.extraeffects.listeners.ExtraEffectExplodeListener;
-import me.jakev.extraeffects.listeners.ExtraEffectMissileListener;
+import me.jakev.extraeffects.listeners.*;
 import org.schema.game.common.data.element.ElementInformation;
 
 /**
@@ -53,31 +50,8 @@ public class ExtraEffects extends StarMod {
         ExtraEffectBeamListener.init(this);
         ExtraEffectExplodeListener.init(this);
         ExtraEffectCannonListener.init(this);
-
-        StarLoader.registerListener(KeyPressEvent.class, new Listener<KeyPressEvent>() {
-            @Override
-            public void onEvent(KeyPressEvent event) {
-               //     Transform transform = new Transform(GameClient.getClientState().getCurrentPosition());
-//                    Vector3f vector3f = new Vector3f();
-//                    transform.basis.getColumn(2, vector3f);
-//                    transform.origin.add(vector3f);
-             //   if(event.getChar() == 'l'){
-
-//                    ModParticleUtil.playClient(transform.origin, SpriteList.ENERGY.getSprite(), 400, 400, 2F, 0,0,0, new ModParticleFactory() {
-//                        @Override
-//                        public ModParticle newParticle() {
-//                            return new EnergyParticle();
-//                        }
-//                    });
-//                    ModParticleUtil.play(transform.origin, SpriteList.FLASH.getSprite(), 1, 500, new Vector3f(0, 0F, 0), new ModParticleFactory() {
-//                        @Override
-//                        public ModParticle newParticle() {
-//                            return new FlashParticle();
-//                        }
-//                    });
-            //    }
-            }
-        }, this);
+        ExtraEffectsDrawUtil.init();
+        ExtraEffectsJumpListener.init(this);
     };
 
     /**

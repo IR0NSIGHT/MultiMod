@@ -17,8 +17,8 @@ import javax.vecmath.Vector3f;
  */
 public class SimpleScalingFlash extends GodParticle {
 
-    public SimpleScalingFlash(int spriteID, Vector3f pos, int lifetime) {
-        super(spriteID, pos, lifetime);
+    public SimpleScalingFlash(int spriteID, Vector3f pos, int lifetime, int sectorID) {
+        super(spriteID, pos, lifetime, sectorID);
     }
 
     /**
@@ -31,11 +31,13 @@ public class SimpleScalingFlash extends GodParticle {
      */
     public void scaleByDamage(float minDmg, float maxDmg, float damage, float minSize, float maxSize) {
         float rangePoint = ExtraEffects.extrapolate(minDmg, maxDmg, damage); //allowed damage range
+        //rangePoint = (float) Math.sqrt(rangePoint/Math.PI);
         float baseSize = ExtraEffects.interpolate(  //sprite size range dependenent on damage
                 minSize,
                 maxSize,
                 rangePoint
         );
+        baseSize = (float) Math.sqrt(baseSize/Math.PI); //use as area of circle, instead of radius
         float startSize = 0.5f * baseSize + 0.5f * (float) Math.random() * baseSize;
         float endSize = 4 * baseSize + (float)  Math.random() *baseSize;
 
