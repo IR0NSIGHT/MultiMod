@@ -20,11 +20,14 @@ public class ExtraEffectsDrawUtil {
         StarLoader.registerListener(PlayerGUIDrawEvent.class, new Listener<PlayerGUIDrawEvent>() {
             @Override
             public void onEvent(PlayerGUIDrawEvent event) {
-                for (Runnable o: subscribers) {
-                    o.run();
-                }
+                runAll();
             }
         }, ExtraEffects.inst);
+    }
+    public static void runAll() {
+        for (Runnable o: subscribers) {
+            o.run();
+        }
     }
     private static HashSet<Runnable> subscribers = new HashSet<>();
     public static void subscribe(Runnable r) {

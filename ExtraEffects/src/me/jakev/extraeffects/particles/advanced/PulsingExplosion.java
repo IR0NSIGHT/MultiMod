@@ -1,22 +1,16 @@
 package me.jakev.extraeffects.particles.advanced;
 
-import api.ModPlayground;
-import api.listener.Listener;
-import api.listener.events.gui.PlayerGUIDrawEvent;
-import api.mod.StarLoader;
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.listeners.ExtraEffectsDrawUtil;
 import me.jakev.extraeffects.particles.GodParticle;
-import org.apache.commons.collections4.iterators.EntrySetMapIterator;
-import org.lwjgl.Sys;
-import org.lwjgl.util.vector.Vector;
+import org.schema.game.common.controller.SegmentController;
+
 
 import javax.vecmath.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * STARMADE MOD
@@ -41,43 +35,8 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
         super(pos, duration, strength, colorrange, color, SectorID);
     }
 
-    int pulseTime;
-    int pulseRadius;
-    int amountParticles;
-
-    public void setAttributes(int pulseRadius, int amountParticles) {
-        pulseTime = duration;
-        buildup = (long) (pulseTime*0.2f);
-        remain = (long) (pulseTime*0.2f);
-        collapse = (long) (pulseTime*0.6f);
-        this.pulseRadius = pulseRadius;
-        this.amountParticles = amountParticles;
-    }
-
-    @Override
-    public void play() {
-
-        this.stop = System.currentTimeMillis() + duration;
-        this.start = System.currentTimeMillis();
-        ExtraEffectsDrawUtil.subscribe(this);
-        Vector3f[] arr = distributeOverSphere(amountParticles);
-        //create a bunch of particles
-        for (int i = 0; i < amountParticles; i++) {
-            GodParticle p = new GodParticle(SpriteList.GLOWBALL.getSprite(), pos, duration, sectorID);
-            p.setColors(new float[][]{
-                    new float[]{1,1,0,0,0},
-                    new float[]{0,1,0,1,0.2f},
-                    new float[]{0,1,1,1,0.4f},
-                    new float[]{0,1,0,0, (float) (1f-Math.random()*0.3)},
-            });
-            p.setSizes(new Vector3f[]{new Vector3f(5,5,0)});
-            ModParticleUtil.playClientDirect(p);
-            float offset = (float) (pulseRadius*5*(0.8*Math.random()+0.2));
-            //arr[i].scale(offset);
-            this.particles.put(p,arr[i]);
-            this.offsets.put(p, offset);
-        }
-    }
+    private int pulseRadius;
+    private int amountParticles;
     private HashMap<GodParticle,Vector3f> particles = new HashMap<>();
     private HashMap<GodParticle,Float> offsets = new HashMap<>();
     private long stop;
@@ -85,6 +44,52 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
     private long buildup; //length
     private long remain; //length
     private long collapse; //length
+    private float pSize; //partilce size, depends on radius
+    private SegmentController ship;
+    public void setAttributes(int pulseRadius, int amountParticles) {
+        buildup  = (long) (duration * 0.05f);
+        remain   = (long) (duration * 0.2f);
+        collapse = (long) (duration * 0.75f);
+        this.pulseRadius = pulseRadius;
+        this.amountParticles = amountParticles;
+        pSize = (float) (2*pulseRadius/Math.sqrt(amountParticles))*6;
+    }
+
+    public void setSC(SegmentController ship){
+        this.ship = ship;
+    }
+
+    @Override
+    public void play() {
+        this.stop = System.currentTimeMillis() + duration;
+        this.start = System.currentTimeMillis();
+        ExtraEffectsDrawUtil.subscribe(this);
+        Vector3f[] arr = distributeOverSphere(amountParticles);
+        //create a bunch of particles
+        for (int i = 0; i < amountParticles; i++) {
+            GodParticle p = new GodParticle(SpriteList.GLOWBALL.getSprite(), pos, duration, sectorID);
+            float vanish = (float) (((buildup+remain+0.5*collapse)+Math.random()*0.5*collapse)/duration);
+            p.setColors(new float[][]{
+                    new float[]{1,1,0,0,0},
+                    new float[]{0,1,0,1,((float)buildup/duration)}, //end of buildup
+                    new float[]{0,1,1,1,(((float)remain+(float)buildup)/duration)}, //end of remain
+                    new float[]{0,1,0,0,vanish} //collapse
+            });
+            p.setSizes(new Vector3f[]{
+                    new Vector3f(0,0,0),
+                    new Vector3f(0.1f*pSize,0.1f*pSize,  (0.5f*buildup)/duration),
+                    new Vector3f(pSize,pSize,  ((float)buildup/duration)), //jump grpahic effect starts
+                    new Vector3f(pSize,pSize,(((float)remain+(float)buildup)/duration)), //end of remain
+                    new Vector3f(0,0, vanish)//collapse
+            });
+            ModParticleUtil.playClientDirect(p);
+            float offset = (float) (pulseRadius*5*(0.8*Math.random()+0.2));
+            //arr[i].scale(offset);
+            this.particles.put(p,arr[i]);
+            this.offsets.put(p, offset);
+        }
+    }
+
 
 
 
@@ -103,21 +108,25 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
     }
 
     private void remain(float percent) {
-    //    for (Map.Entry<GodParticle,Float> e: offsets.entrySet()) {
-    //        GodParticle particle = e.getKey();
-    //    }
+       for (Map.Entry<GodParticle,Float> e: offsets.entrySet()) {
+            GodParticle particle = e.getKey();
+            if (ship != null) this.pos = ship.getWorldTransform().origin;
+            offsetParticle(particle,pos,particles.get(particle),pulseRadius);
+       }
     }
 
     private void collapse(float percent) {
-        for (Map.Entry<GodParticle,Float> e: offsets.entrySet()) {
-             GodParticle particle = e.getKey();
-             Vector3f vel = new Vector3f(-.5f +(float)  Math.random(),-.5f +(float)Math.random(),-.5f +(float)Math.random());
-             vel.normalize(); vel.add(particles.get(particle));vel.normalize();
-             vel.scale((float) Math.random()/4);
-             particle.velocity = vel;
+    //    remain(percent);
+       for (Map.Entry<GodParticle,Float> e: offsets.entrySet()) {
+            GodParticle particle = e.getKey();
+            Vector3f vel = new Vector3f(-.5f +(float)  Math.random(),-.5f +(float)Math.random(),-.5f +(float)Math.random());
+            vel.normalize(); vel.add(particles.get(particle));vel.normalize();
+            vel.scale((float) Math.random()/4);
+       //     if (ship != null) vel.add(ship.getLinearVelocity(new Vector3f()));
+            particle.velocity = vel;
 
-        }
-        collapsed = true;
+       }
+       collapsed = true;
     }
     private boolean collapsed = false;
     @Override
