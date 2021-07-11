@@ -1,8 +1,8 @@
 {
   "name": "ExtraEffects",
   "author": "JakeV",
-  "description": "New effects (IRN DEV)",
-  "version": "1.7",
+  "description": "New effects",
+  "version": "1.8.0",
   "starmade_version": "0.202.110",
   "client_mod": false,
   "server_mod": false,
