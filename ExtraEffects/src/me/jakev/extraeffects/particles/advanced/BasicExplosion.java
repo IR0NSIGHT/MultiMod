@@ -2,9 +2,12 @@ package me.jakev.extraeffects.particles.advanced;
 
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.SpriteList;
+import me.jakev.extraeffects.listeners.Playable;
 import me.jakev.extraeffects.particles.godpresets.SimpleScalingFlash;
+import org.schema.game.client.data.GameClientState;
 
 import javax.vecmath.Vector3f;
+import java.io.Serializable;
 
 /**
  * STARMADE MOD
@@ -12,7 +15,7 @@ import javax.vecmath.Vector3f;
  * DATE: 05.07.2021
  * TIME: 19:23
  */
-public class BasicExplosion {
+public class BasicExplosion implements Serializable, Playable {
     Vector3f pos; //in sector
     int sectorID;
 
@@ -29,37 +32,48 @@ public class BasicExplosion {
      * @param strength strength in 1..1000
      * @param color color of explosion in V3 rgb
      */
-    public BasicExplosion(Vector3f pos, int duration, int strength, float colorrange, Vector3f color, int SectorID) {
+    public BasicExplosion(Vector3f pos, int duration, int strength, float colorrange, Vector3f color, int sectorID) {
         this.pos = pos;
         this.duration = duration;
         this.size = (int) Math.sqrt(strength/Math.PI);
         this.color = color;
         this.range = colorrange;
+        this.sectorID = sectorID;
+
     }
 
+    /**
+     * ooptional, will default to explosion sprites
+     * @param body
+     * @param filler
+     */
     public void setSprites(SpriteList body, SpriteList filler) {
         this.fillerSprite = filler;
         this.bodySprite = body;
     }
 
+    @Override
+    /**
+     * play this explosion effect
+     */
     public void play() {
-
-
+    //    sectorID = GameClientState.instance.getCurrentSectorId();
+    //    size = 120;
+        this.range = 0.1f;
         for (int i = 0; i < 10; i++) {
             int lifetime = (int) ((0.7f*Math.random()+0.3f) * duration);
             //Flash particles, a bit randomized pos, smaller than sparks
             //flash/burn particle
-            float randomX = (float) (-1 + Math.random() * 2) * 0.5f * size;
-            float randomY = (float) (-1 + Math.random() * 2) * 0.5f * size;
-            float randomZ = (float) (-1 + Math.random() * 2) * 0.5f * size;
+            float randomX = (float) (-0.5f + Math.random()) * 0.5f * size/20;
+            float randomY = (float) (-0.5f + Math.random()) * 0.5f * size/20;
+            float randomZ = (float) (-0.5f + Math.random()) * 0.5f * size/20;
 
             Vector3f posR = new Vector3f(pos.x + randomX, pos.y + randomY, pos.z + randomZ);
             SimpleScalingFlash bodyParticle = new SimpleScalingFlash(bodySprite.getSprite(), posR, lifetime,sectorID);
-
             bodyParticle.scaleByDamage(
                     1,
                     1000,
-                    7* size * (0.6f + 0.4f * (float) Math.random()),
+                    4* size * (0.6f + 0.4f * (float) Math.random()),
                     1,
                     200
             );
@@ -75,7 +89,7 @@ public class BasicExplosion {
             fillerParticle.scaleByDamage(
                     1,
                     1000,
-                    10* size * (0.6f + 0.4f * (float) Math.random()),
+                    5* size * (0.6f + 0.4f * (float) Math.random()),
                     1,
                     200
             );
@@ -84,7 +98,7 @@ public class BasicExplosion {
                 getRandomColor(color,0.5f,0f,range),
                 getRandomColor(color,0,1,range)
             });
-            ModParticleUtil.playClientDirect(fillerParticle);
+            ModParticleUtil.playClientDirect(fillerParticle); //TODO play with sectorID
         }
     }
     private float[] getRandomColor(Vector3f color,float a,float t, float range) {
@@ -95,5 +109,19 @@ public class BasicExplosion {
         out[3] = a;
         out[4] = t;
         return out;
+    }
+
+    @Override
+    public String toString() {
+        return "BasicExplosion{" +
+                "pos=" + pos +
+                ", sectorID=" + sectorID +
+                ", color=" + color +
+                ", duration=" + duration +
+                ", size=" + size +
+                ", bodySprite=" + bodySprite +
+                ", fillerSprite=" + fillerSprite +
+                ", range=" + range +
+                '}';
     }
 }

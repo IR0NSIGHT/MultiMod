@@ -35,19 +35,21 @@ public class ExtraEffectCannonListener {
         StarLoader.registerListener(SegmentHitByProjectileEvent.class, new Listener<SegmentHitByProjectileEvent>() {
             @Override
             public void onEvent(SegmentHitByProjectileEvent event) {
-                int sectorID = event.getProjectileController().getSectorId();
-                //spawn a bright flash particle that expands very fast
-                Vector3f toPos = new Vector3f();
-                toPos.set(event.getShotHandler().posAfterUpdate);
-                float damageInitial = event.getShotHandler().initialDamage;
-                float percent = ExtraEffects.extrapolate(0,500000,damageInitial);
-                float absSize = ExtraEffects.interpolate(0,120,percent);
-                int sprite = SpriteList.BRIGHT_FLASH_WIDE_01.getSprite();
-                GodParticle p = new SimpleScalingFlash(sprite,toPos,10000,sectorID);
-                p.setColors(new float[][]{new float[]{1,1,1,1,0},new float[]{1,1,1,0,1}});
-                p.setSizes(new Vector3f[]{new Vector3f(0,0,0),new Vector3f(absSize,2*absSize,1)});
-                p.angle = 0;
-                ModParticleUtil.playClientDirect(p);
+                //BROKEN event isnt fired reliably
+
+            //    int sectorID = event.getProjectileController().getSectorId();
+            //    //spawn a bright flash particle that expands very fast
+            //    Vector3f toPos = new Vector3f();
+            //    toPos.set(event.getShotHandler().posAfterUpdate);
+            //    float damageInitial = event.getShotHandler().initialDamage;
+            //    float percent = ExtraEffects.extrapolate(0,500000,damageInitial);
+            //    float absSize = ExtraEffects.interpolate(0,120,percent);
+            //    int sprite = SpriteList.BRIGHT_FLASH_WIDE_01.getSprite();
+            //    GodParticle p = new SimpleScalingFlash(sprite,toPos,10000,sectorID);
+            //    p.setColors(new float[][]{new float[]{1,1,1,1,0},new float[]{1,1,1,0,1}});
+            //    p.setSizes(new Vector3f[]{new Vector3f(0,0,0),new Vector3f(absSize,2*absSize,1)});
+            //    p.angle = 0;
+            //    ModParticleUtil.playClientDirect(p);
             }
         }, mod);
 

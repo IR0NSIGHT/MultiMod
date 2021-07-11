@@ -1,12 +1,11 @@
 package me.jakev.extraeffects;
 
 import api.config.BlockConfig;
-import api.listener.Listener;
 import api.listener.events.controller.ClientInitializeEvent;
-import api.listener.events.input.KeyPressEvent;
-import api.mod.StarLoader;
+import api.listener.events.controller.ServerInitializeEvent;
 import api.mod.StarMod;
 import api.network.Packet;
+import api.network.packets.PacketUtil;
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.listeners.*;
 import org.schema.game.common.data.element.ElementInformation;
@@ -33,8 +32,18 @@ public class ExtraEffects extends StarMod {
 
     @Override
     public void onClientCreated(ClientInitializeEvent event) {
+        ExtraEffectsDrawUtil.init();
+        ExtraEffectCannonListener.init(this);
+
     }
 
+    @Override
+    public void onServerCreated(ServerInitializeEvent event) {
+        super.onServerCreated(event);
+        ExtraEffectMissileListener.init(this);
+        ExtraEffectsJumpListener.init(this);
+
+    }
 
     @Override
     public void onLoadModParticles(ModParticleUtil.LoadEvent event) {
@@ -44,14 +53,10 @@ public class ExtraEffects extends StarMod {
 
     @Override
     public void onEnable() {
-
         Packet.dumpPacketLookup();
-        ExtraEffectMissileListener.init(this);
+        PacketUtil.registerPacket(RemotePlay.class);
         ExtraEffectBeamListener.init(this);
         ExtraEffectExplodeListener.init(this);
-        ExtraEffectCannonListener.init(this);
-        ExtraEffectsDrawUtil.init();
-        ExtraEffectsJumpListener.init(this);
     };
 
     /**

@@ -42,7 +42,7 @@ public class ExtraEffectBeamListener {
                     normal.set(event.getBeamState().to);
                     to.set(event.getBeamState().to);
                 } else {
-
+                    //TODO move sparks thingy into its own class, preferable remotely playable (RemotePlay)
                     to.set(event.getBeamState().hitPoint);
                     normal.set(start); normal.sub(to); normal.normalize(); normal.scale(1);
 
@@ -65,7 +65,6 @@ public class ExtraEffectBeamListener {
                             1,
                             120
                     );
-                    //TODO either make sparks bigger to be visible beyond 1km or dont draw to save performance
                     sparksParticle.setColors(new float[][] {
                             new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,1,0.5f},
                             new float[]{1f,(float) (0.2f + 0.8f * Math.random()),(float) Math.random() * 0.3f,0.5f,1f},

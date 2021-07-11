@@ -1,12 +1,12 @@
 package me.jakev.extraeffects.listeners;
 
-import api.common.GameServer;
+import api.DebugFile;
 import api.listener.Listener;
 import api.listener.events.entity.ShipJumpEngageEvent;
 import api.listener.events.player.PlayerChatEvent;
 import api.mod.StarLoader;
 import api.mod.StarMod;
-import me.jakev.extraeffects.particles.advanced.PulsingExplosion;
+import me.jakev.extraeffects.particles.advanced.JumpEffect;
 import org.schema.common.util.linAlg.Vector3i;
 import org.schema.game.client.data.GameClientState;
 import org.schema.game.common.controller.SegmentController;
@@ -25,21 +25,6 @@ import java.io.IOException;
  */
 public class ExtraEffectsJumpListener {
     public static void init(StarMod mod) {
-        //debug
-        StarLoader.registerListener(PlayerChatEvent.class, new Listener<PlayerChatEvent>() {
-            @Override
-            public void onEvent(PlayerChatEvent event) {
-                if (event.isServer()) return;
-                if(!event.getText().contains("jump")) return;
-                Transform t;
-                SimpleTransformableSendableObject obj = GameClientState.instance.getCurrentPlayerObject();
-                if (!(obj instanceof SegmentController)) return;
-                SegmentController sc = (SegmentController) obj;
-                playJumpEffect(sc,sc.getSector(new Vector3i()));
-
-
-            }
-        },mod);
         StarLoader.registerListener(ShipJumpEngageEvent.class, new Listener<ShipJumpEngageEvent>() {
             @Override
             public void onEvent(ShipJumpEngageEvent event) {
@@ -60,9 +45,9 @@ public class ExtraEffectsJumpListener {
             return;
         }
         Vector3f pos = ship.getWorldTransform().origin;
-        PulsingExplosion p = new PulsingExplosion(pos,20000,0,0, new Vector3f(),sectorID);
-        p.setAttributes((int) ship.getBoundingSphereTotal().radius,200);
-        p.setSC(ship);
-        p.play();
+        JumpEffect p = new JumpEffect(pos,20000,sectorID);
+        p.setAttributes((int) ship.getBoundingSphereTotal().radius,200, ship.getUniqueIdentifier());
+        DebugFile.log("Jumpeffect: " + p.toString());
+        new RemotePlay(p).broadcastToAll();
     }
 }

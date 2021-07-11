@@ -1,10 +1,15 @@
 package me.jakev.extraeffects.particles.advanced;
 
+import api.DebugFile;
+import api.common.GameClient;
+import api.common.GameServer;
 import api.utils.particle.ModParticleUtil;
 import me.jakev.extraeffects.ExtraEffects;
 import me.jakev.extraeffects.SpriteList;
 import me.jakev.extraeffects.listeners.ExtraEffectsDrawUtil;
+import me.jakev.extraeffects.listeners.Playable;
 import me.jakev.extraeffects.particles.GodParticle;
+import org.schema.game.client.data.GameClientState;
 import org.schema.game.common.controller.SegmentController;
 
 
@@ -18,49 +23,59 @@ import java.util.Map;
  * DATE: 08.07.2021
  * TIME: 19:46
  */
-public class PulsingExplosion extends BasicExplosion implements Runnable {
-
-
-    /**
-     * creates a particle explosion that
-     *
+public class JumpEffect implements Runnable, Playable {
+     /**
+     * creates a particle effect that collects particles around a ship, forms them into a glowing ball,
+     * and after some time pops like a bubble
      * @param pos        in sector position
      * @param duration   in millis on average
-     * @param strength   strength in 1..1000
-     * @param colorrange
-     * @param color      color of explosion in V3 rgb
-     * @param SectorID
      */
-    public PulsingExplosion(Vector3f pos, int duration, int strength, float colorrange, Vector3f color, int SectorID) {
-        super(pos, duration, strength, colorrange, color, SectorID);
+    public JumpEffect(Vector3f pos, int duration, int sectorID) {
+       this.pos = pos; this.duration = duration; this.sectorID= sectorID;
     }
+
+    private transient HashMap<GodParticle,Vector3f> particles;
+    private transient HashMap<GodParticle,Float> offsets;
+    private transient SegmentController ship;
 
     private int pulseRadius;
     private int amountParticles;
-    private HashMap<GodParticle,Vector3f> particles = new HashMap<>();
-    private HashMap<GodParticle,Float> offsets = new HashMap<>();
-    private long stop;
-    private long start;
+    private long stop; //systemtime
+    private long start; //systemtime
     private long buildup; //length
     private long remain; //length
     private long collapse; //length
-    private float pSize; //partilce size, depends on radius
-    private SegmentController ship;
-    public void setAttributes(int pulseRadius, int amountParticles) {
+    private int duration;
+    private int sectorID;
+    private Vector3f pos;
+    private boolean collapsed = false;
+    private float pSize; //particle size, depends on radius
+    private String shipUID;
+
+    public void setAttributes(int pulseRadius, int amountParticles, String shipUID) {
         buildup  = (long) (duration * 0.05f);
         remain   = (long) (duration * 0.2f);
         collapse = (long) (duration * 0.75f);
         this.pulseRadius = pulseRadius;
         this.amountParticles = amountParticles;
+        this.shipUID = shipUID;
         pSize = (float) (2*pulseRadius/Math.sqrt(amountParticles))*6;
     }
 
-    public void setSC(SegmentController ship){
-        this.ship = ship;
-    }
-
+    /**
+     * plays explosion on local machine (needs to be run on a client. use RemotePlay.class to play from server)
+     */
     @Override
     public void play() {
+        try {
+            ship = (SegmentController) GameClientState.instance.getLocalAndRemoteObjectContainer().getUidObjectMap().get(shipUID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            DebugFile.log("FAILED TO GET SC ON CLIENT");
+            return;
+        }
+        offsets  = new HashMap<>();
+        particles  = new HashMap<>();
         this.stop = System.currentTimeMillis() + duration;
         this.start = System.currentTimeMillis();
         ExtraEffectsDrawUtil.subscribe(this);
@@ -90,10 +105,7 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
         }
     }
 
-
-
-
-    /**
+   /**
      *
      * @param percent how far the process is done
      */
@@ -128,7 +140,7 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
        }
        collapsed = true;
     }
-    private boolean collapsed = false;
+
     @Override
     public void run() {
         //runs every draw update (probably frame)
@@ -149,6 +161,7 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
         }
 
     }
+
     private void offsetParticle(GodParticle p, Vector3f pos, Vector3f dir, float offset) {
         Vector3f particlePos = new Vector3f(pos);
         Vector3f direction = new Vector3f(dir);
@@ -156,6 +169,7 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
         particlePos.add(direction);
         p.position = particlePos;
     }
+
     //shamelessly stolen from stackoverflow https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
     private static Vector3f[] distributeOverSphere(int n) {
         Vector3f[] arr = new Vector3f[n];
@@ -172,5 +186,27 @@ public class PulsingExplosion extends BasicExplosion implements Runnable {
             int uwu = 0;
         }
         return arr;
+    }
+
+    @Override
+    public String toString() {
+        return "JumpEffect{" +
+                "particles=" + particles +
+                ", offsets=" + offsets +
+                ", pulseRadius=" + pulseRadius +
+                ", amountParticles=" + amountParticles +
+                ", stop=" + stop +
+                ", start=" + start +
+                ", buildup=" + buildup +
+                ", remain=" + remain +
+                ", collapse=" + collapse +
+                ", duration=" + duration +
+                ", sectorID=" + sectorID +
+                ", pos=" + pos +
+                ", collapsed=" + collapsed +
+                ", pSize=" + pSize +
+                ", shipUID='" + shipUID + '\'' +
+                ", ship=" + ship +
+                '}';
     }
 }
